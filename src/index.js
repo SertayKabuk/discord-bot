@@ -3,6 +3,29 @@ const path = require('node:path');
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const { token } = require('./../config.json');
 
+const express = require('express');
+const http = require('http');
+
+const app = express();
+const router = express.Router();
+
+router.use((req, res, next) => {
+	res.header('Access-Control-Allow-Methods', 'GET');
+	next();
+});
+
+router.get('/health', (req, res) => {
+	const data = {
+		uptime: process.uptime(),
+		message: 'Ok',
+		date: new Date(),
+	};
+
+	res.status(200).send(data);
+});
+
+app.use('/api/v1', router);
+
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions] });
 
 client.commands = new Collection();
@@ -40,4 +63,6 @@ for (const file of eventFiles) {
 	}
 }
 
+const server = http.createServer(app);
+server.listen(80);
 client.login(token);
