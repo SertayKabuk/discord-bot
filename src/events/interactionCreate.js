@@ -6,7 +6,7 @@ module.exports = {
 
 		const command = interaction.client.commands.get(interaction.commandName);
 
-		if (!command) {
+		if (command !== undefined && !command) {
 			console.error(`No command matching ${interaction.commandName} was found.`);
 			return;
 		}
@@ -36,7 +36,7 @@ module.exports = {
 			timestamps.set(interaction.user.id, now);
 			setTimeout(() => timestamps.delete(interaction.user.id), cooldownAmount);
 
-			if (!command) {
+			if (command !== undefined && !command) {
 				console.error(`No command matching ${interaction.commandName} was found.`);
 				return;
 			}
