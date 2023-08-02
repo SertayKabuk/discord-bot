@@ -1,17 +1,19 @@
-const { REST, Routes } = require('discord.js');
-const { clientId, guildId, token } = require('../config.json');
-const fs = require('node:fs');
-const path = require('node:path');
+import { REST, Routes } from "discord.js";
+import * as path from 'path';
+import { readdirSync } from "fs";
+import { config } from "dotenv";
+config()
 
 const commands = [];
 // Grab all the command files from the commands directory you created earlier
-const foldersPath = path.join(__dirname, 'commands');
-const commandFolders = fs.readdirSync(foldersPath);
 
-for (const folder of commandFolders) {
+let slashCommandsDir = path.join(__dirname,"/slashCommands")
+const slashCommandsFolder = readdirSync(slashCommandsDir);
+
+for (const folder of slashCommandsFolder) {
 	// Grab all the command files from the commands directory you created earlier
-	const commandsPath = path.join(foldersPath, folder);
-	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+	const commandsPath = path.join(slashCommandsDir, folder);
+	const commandFiles = readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 	// Grab the SlashCommandBuilder#toJSON() output of each command's data for deployment
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file);
@@ -26,7 +28,7 @@ for (const folder of commandFolders) {
 }
 
 // Construct and prepare an instance of the REST module
-const rest = new REST().setToken(token);
+const rest = new REST().setToken(process.env.TOKEN);
 
 // and deploy your commands!
 (async () => {
@@ -35,9 +37,9 @@ const rest = new REST().setToken(token);
 
 		// The put method is used to fully refresh all commands in the guild with the current set
 		const data = await rest.put(
-			Routes.applicationGuildCommands(clientId, guildId),
-			{ body: commands },
-		);
+			Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
+			{ body: [] },
+		) as string;
 		// for global registration
 		// await rest.put(
 		// 	Routes.applicationCommands(clientId),
