@@ -6,8 +6,8 @@
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cls && node build/index.js",
-    "deploy": "cls && node build/deploy.js"
+    "start": "node build/index.js",
+    "deploy": "node build/deploy.js"
   },
   "author": "",
   "license": "ISC",
