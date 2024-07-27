@@ -1,24 +1,38 @@
-import { Client, GatewayIntentBits, Collection, PermissionFlagsBits, } from "discord.js";
-const { Guilds, MessageContent, GuildMessages, GuildMembers } = GatewayIntentBits
+import "./env";
+import { Client, GatewayIntentBits, Collection, Partials } from "discord.js";
 import { Command, SlashCommand } from "./types";
-import { config } from "dotenv";
 import { readdirSync } from "fs";
 import { join } from "path";
 import { HttpServer } from "./httpServer";
-config()
+import { PostgreSqlDriver, MikroORM } from '@mikro-orm/postgresql';
+import ormConfig from './mikro-orm.config';
+import { DI } from "./DI";
 
-const client = new Client({ intents: [Guilds, MessageContent, GuildMessages, GuildMembers] })
+async function main() {
 
-client.slashCommands = new Collection<string, SlashCommand>()
-client.commands = new Collection<string, Command>()
-client.cooldowns = new Collection<string, number>()
+    const orm = await MikroORM.init<PostgreSqlDriver>(ormConfig);
 
-const handlersDir = join(__dirname, "./handlers")
-readdirSync(handlersDir).forEach(handler => {
-    if (!handler.endsWith(".js")) return;
-    require(`${handlersDir}/${handler}`)(client)
-})
+    DI.em = orm.em;
 
-let server = new HttpServer(80);
-server.CreateServer();
-client.login(process.env.TOKEN);
+    const { Guilds, MessageContent, GuildMessages, GuildMembers, DirectMessages } = GatewayIntentBits
+
+    const client = new Client({ intents: [Guilds, MessageContent, GuildMessages, GuildMembers, DirectMessages], partials: [Partials.Channel] });
+
+    client.slashCommands = new Collection<string, SlashCommand>();
+    client.commands = new Collection<string, Command>();
+    client.cooldowns = new Collection<string, number>();
+
+    const handlersDir = join(__dirname, "./handlers");
+
+    readdirSync(handlersDir).forEach(handler => {
+        if (!handler.endsWith(".js")) return;
+        require(`${handlersDir}/${handler}`)(client)
+    });
+
+    const server = new HttpServer(process.env.API_PORT);
+    server.CreateServer();
+    await client.login(process.env.TOKEN);
+    DI.client = client;
+}
+
+main();
