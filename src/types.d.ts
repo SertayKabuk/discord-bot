@@ -1,8 +1,8 @@
-import { SlashCommandBuilder, CommandInteraction, Collection, PermissionResolvable, Message, AutocompleteInteraction, ChatInputCommandInteraction } from "discord.js"
+import { SlashCommandBuilder, Client, CommandInteraction, Collection, PermissionResolvable, Message, AutocompleteInteraction, ChatInputCommandInteraction } from "discord.js"
 
 export interface SlashCommand {
     command: SlashCommandBuilder,
-    execute: (interaction : ChatInputCommandInteraction) => void,
+    execute: (interaction: ChatInputCommandInteraction) => void,
     autocomplete?: (interaction: AutocompleteInteraction) => void,
     cooldown?: number // in seconds
     category: string
@@ -40,8 +40,17 @@ declare global {
             TOKEN: string,
             CLIENT_ID: string,
             GUILD_ID: string,
+            ADMIN_USER_ID: string,
+            DB_HOST: string,
+            DB_PORT: number,
+            DB_NAME: string,
+            DB_USER: string,
+            DB_PASSWORD: string,
+            API_PORT: number,
         }
     }
+
+    var client: Client
 }
 
 declare module "discord.js" {
@@ -49,6 +58,7 @@ declare module "discord.js" {
         slashCommands: Collection<string, SlashCommand>
         commands: Collection<string, Command>,
         cooldowns: Collection<string, number>
+        channels: Collection<string, Channel>
     }
 }
 
@@ -65,7 +75,7 @@ interface CardImage {
     png: string,
 }
 
-interface Cards {
+interface Card {
     code: string,
     image: string,
     images: CardImage[],
@@ -76,5 +86,5 @@ interface Cards {
 export interface DrawedCard {
     success: string,
     deck_id: string,
-    cards: Cards[],
+    cards: Card[],
 }

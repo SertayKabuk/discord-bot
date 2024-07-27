@@ -1,6 +1,9 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, ComponentType, SlashCommandBuilder } from "discord.js"
-import { HttpClient } from "../../httpClient";
-import { SlashCommand, CardDeck, DrawedCard } from "../../types";
+import { PokerGame } from "../../games/PokerGame";
+import { SlashCommand } from "../../types";
+
+const startingMoney = 100;
+const blindStartingMoney = 2;
 
 const command: SlashCommand = {
 	cooldown: 5,
@@ -9,7 +12,6 @@ const command: SlashCommand = {
 		.setName('poker')
 		.setDescription('Starts a poker game!'),
 	execute: async (interaction) => {
-
 		const confirm = new ButtonBuilder()
 			.setCustomId('join')
 			.setLabel('Join')
@@ -21,29 +23,20 @@ const command: SlashCommand = {
 			.setStyle(ButtonStyle.Primary);
 
 		const message = await interaction.reply({
-			content: 'Katilmka isteyen join e bassin!',
+			content: 'Katilmak isteyen join e bassin!',
 			components: [new ActionRowBuilder<ButtonBuilder>({ components: [confirm, draw] })],
 			fetchReply: true
 		});
 
-		const httpClient = new HttpClient();
-
-		const baseUrl = 'https://deckofcardsapi.com/';
-		// todo
-		// set dealer, draw button should only be available to the dealer
+		let game = new PokerGame(interaction.channelId);
 
 		// first, get new deck
-		const response = await httpClient.Get<CardDeck>(`${baseUrl}api/deck/new/shuffle/?deck_count=1`);
-		let deckId = '';
+		let deckId = await game.GetNewDeck();
 
-		if (response !== null)
-			deckId = response.deck_id;
-		else {
+		if (deckId === '') {
 			await interaction.editReply({ content: 'Sikinti var!' });
 			return;
 		}
-
-		console.log(deckId);
 
 		const acceptedUsers = new Array();
 
@@ -60,26 +53,29 @@ const command: SlashCommand = {
 					console.log(`Collected from ${i.user.tag}`);
 
 					await i.deferReply({ ephemeral: true });
-					// draw card from deck
 
-					const response = await httpClient.Get<DrawedCard>(`${baseUrl}api/deck/${deckId}/draw/?count=2`);
-					let cards = '';
+					let replyMessage = '';
 
-					if (response != null) {
-						response.cards.forEach(element => {
-							cards += ' ' + element.image;
+					// draw 2 cards from deck for each user
+					let cards = await game.DrawCardsFromDeck(deckId, blindStartingMoney);
+
+					game.SetUser(i.user.id, i.user.globalName as string, cards, startingMoney);
+
+					let imageUrls = game.GetCardImageUrl(cards);
+
+					if (imageUrls.length > 0) {
+						imageUrls.forEach(url => {
+							replyMessage += ' ' + url;
 						});
-						await i.editReply({ content: `Desten! ${i.user.tag} ${cards}` });
 
+						await i.editReply({ content: `Desten! ${i.user.tag} ${replyMessage}` });
 					}
 					else
 						await i.editReply({ content: `${i.user.tag} kart bulamadim.` });
-
-
 				}
 			}
 			else if ((i.component as ButtonComponent).customId === 'draw') {
-				await i.reply({ content: 'Dealer degeilsin.', ephemeral: true });
+				await i.reply({ content: 'Dealer degilsin.', ephemeral: true });
 			}
 		});
 
@@ -89,14 +85,17 @@ const command: SlashCommand = {
 			if (acceptedUsers.length > 0) {
 				summation = acceptedUsers.map(user => user.globalName).join('\n');
 
+				const dealer = game.SetDealer();
+				game.StartGame(blindStartingMoney);
+				
 				await interaction.followUp({ content: 'Katilanlar!\n' + summation });
+				await interaction.followUp({ content: 'Dealer : ' + dealer });
 			}
 			else {
 				await interaction.followUp({ content: 'Kimse gelmedi :(' });
 			}
-
 		});
-	},
+	}
 };
 
 export default command
