@@ -1,5 +1,5 @@
 import "./env";
-import { Client, GatewayIntentBits, Collection, Partials } from "discord.js";
+import { Client as DiscordClient, GatewayIntentBits, Collection, Partials } from "discord.js";
 import { Command, SlashCommand } from "./types";
 import { readdirSync } from "fs";
 import { join } from "path";
@@ -7,16 +7,24 @@ import { HttpServer } from "./httpServer";
 import { PostgreSqlDriver, MikroORM } from '@mikro-orm/postgresql';
 import ormConfig from './mikro-orm.config';
 import { DI } from "./DI";
+import { Client as GraphQLClient, cacheExchange, fetchExchange } from "@urql/core";
 
 async function main() {
 
+    const graphQLClient = new GraphQLClient({
+        url: process.env.TARKOV_GRAPHQL_CLIENT,
+        exchanges: [cacheExchange, fetchExchange],
+    });
+
+    DI.graphQLClient = graphQLClient;
+    
     const orm = await MikroORM.init<PostgreSqlDriver>(ormConfig);
 
     DI.em = orm.em;
 
     const { Guilds, MessageContent, GuildMessages, GuildMembers, DirectMessages } = GatewayIntentBits
 
-    const client = new Client({ intents: [Guilds, MessageContent, GuildMessages, GuildMembers, DirectMessages], partials: [Partials.Channel] });
+    const client = new DiscordClient({ intents: [Guilds, MessageContent, GuildMessages, GuildMembers, DirectMessages], partials: [Partials.Channel] });
 
     client.slashCommands = new Collection<string, SlashCommand>();
     client.commands = new Collection<string, Command>();
@@ -32,7 +40,7 @@ async function main() {
     const server = new HttpServer(process.env.API_PORT);
     server.CreateServer();
     await client.login(process.env.TOKEN);
-    DI.client = client;
+    DI.discordClient = client;
 }
 
 main();

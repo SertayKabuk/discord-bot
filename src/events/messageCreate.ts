@@ -24,7 +24,7 @@ const event: BotEvent = {
             const command = args?.shift()?.toLowerCase();
 
             if (command) {
-                const cmd = DI.client.commands.get(command);
+                const cmd = DI.discordClient.commands.get(command);
 
                 if (!cmd) return;
 

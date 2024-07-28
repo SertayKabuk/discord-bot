@@ -39,7 +39,7 @@ export const checkDuplicateUrl = async (message: Message) => {
 
                     message.reply("Bu linki daha once " + userMention(element.userId) + " gondermis.");
 
-                    const channel = DI.client.channels.cache.get(element.channelId);
+                    const channel = DI.discordClient.channels.cache.get(element.channelId);
 
                     if (channel) {
                         if (channel.type == ChannelType.GuildText) {

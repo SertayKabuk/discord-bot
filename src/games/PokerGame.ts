@@ -92,7 +92,7 @@ export class PokerGame {
     public StartGame(blind: number): void {
         this.SaveGame(blind);
         //TODO needs abstraction, discord specific methods needs to go
-        const channel = DI.client.channels.cache.get(this.channelId) as Channel;
+        const channel = DI.discordClient.channels.cache.get(this.channelId) as Channel;
 
         if (channel.isTextBased()) {
             channel.send({ content: 'Oyun basliyor...' });
