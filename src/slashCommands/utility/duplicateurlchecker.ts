@@ -41,7 +41,7 @@ const DuplicateUrlCheckCommand: SlashCommand = {
         if (foundRecords.length > 0) {
             for (let index = 0; index < foundRecords.length; index++) {
                 const element = foundRecords[index];
-                const channel = DI.client.channels.cache.get(element.channelId);
+                const channel = DI.discordClient.channels.cache.get(element.channelId);
 
                 if (channel) {
                     if (channel.type == ChannelType.GuildText) {

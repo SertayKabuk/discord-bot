@@ -1,7 +1,9 @@
 import { EntityManager } from '@mikro-orm/postgresql';
-import { Client } from "discord.js";
+import { Client as DiscordClient } from "discord.js";
+import { Client as GraphQLClient } from '@urql/core';
 
 export const DI = {} as {
   em: EntityManager,
-  client : Client
+  discordClient: DiscordClient,
+  graphQLClient: GraphQLClient
 }
