@@ -8,6 +8,7 @@ import { PostgreSqlDriver, MikroORM } from '@mikro-orm/postgresql';
 import ormConfig from './mikro-orm.config';
 import { DI } from "./DI";
 import { Client as GraphQLClient, cacheExchange, fetchExchange } from "@urql/core";
+import { Ollama } from "@langchain/ollama";
 
 async function main() {
 
@@ -21,6 +22,15 @@ async function main() {
     const orm = await MikroORM.init<PostgreSqlDriver>(ormConfig);
 
     DI.em = orm.em;
+
+    const llm = new Ollama({
+        model: "llama3.1:8b",
+        temperature: 0,
+        maxRetries: 2,
+        baseUrl: process.env.OLLAMA_URL
+      });
+
+      DI.llm = llm;
 
     const { Guilds, MessageContent, GuildMessages, GuildMembers, DirectMessages } = GatewayIntentBits
 
