@@ -47,7 +47,10 @@ declare global {
             DB_USER: string,
             DB_PASSWORD: string,
             API_PORT: number,
-            TARKOV_GRAPHQL_CLIENT: string
+            TARKOV_GRAPHQL_CLIENT: string,
+            LANGCHAIN_TRACING_V2: string,
+            LANGCHAIN_API_KEY: string,
+            OLLAMA_URL: string,
         }
     }
 

@@ -40,14 +40,13 @@ const command: SlashCommand = {
                         high24hPrice
                         wikiLink,
                         inspectImageLink
-                        description
                         buyFor {
                             price
                             currency
                             vendor {
                                 name
                             }
-                        }
+                        }                   
                     }
                 }
             `;
@@ -90,8 +89,8 @@ const command: SlashCommand = {
                     .setTitle(item?.name ?? "")
                     .setURL(item?.wikiLink ?? "")
                     .setAuthor({ name: item?.name ?? "", iconURL: item?.inspectImageLink ?? "", url: item?.wikiLink ?? "" })
-                    .setDescription(item?.description ?? "")
-                    .setThumbnail(item?.inspectImageLink ?? "")
+                    // .setDescription(item?.description ?? "")
+                    // .setThumbnail(item?.inspectImageLink ?? "")
                     .addFields(
                         { name: '\u200B', value: '\u200B' },
                         { name: 'Last Low Price', value: formatter.format(item?.lastLowPrice ?? 0).toString() },
@@ -99,7 +98,7 @@ const command: SlashCommand = {
                         { name: 'Avg 24h Price', value: formatter.format(item?.avg24hPrice ?? 0).toString(), inline: true },
                         { name: 'Min 24h Price', value: formatter.format(item?.low24hPrice ?? 0).toString(), inline: true },
                         { name: 'Max 24h Price', value: formatter.format(item?.high24hPrice ?? 0).toString(), inline: true },
-                        { name: '\u200B', value: '\u200B' },
+                        { name: '\u200B', value: '\u200B'  },
                     )
                     .addFields(fields)
                     .setImage(item?.inspectImageLink ?? "")
