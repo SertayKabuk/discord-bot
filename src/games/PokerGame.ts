@@ -2,7 +2,7 @@ import { CardDeck, DrawedCard, Card } from "../types";
 import { HttpClient } from "../httpClient";
 import { Guid } from "typescript-guid";
 import { Channel } from "discord.js";
-import { DI } from "../DI";
+import discordClient from "../discord_client_helper";
 
 export class PokerGame {
     gameId: Guid;
@@ -92,7 +92,7 @@ export class PokerGame {
     public StartGame(blind: number): void {
         this.SaveGame(blind);
         //TODO needs abstraction, discord specific methods needs to go
-        const channel = DI.discordClient.channels.cache.get(this.channelId) as Channel;
+        const channel = discordClient.client.channels.cache.get(this.channelId) as Channel;
 
         if (channel.isTextBased()) {
             channel.send({ content: 'Oyun basliyor...' });

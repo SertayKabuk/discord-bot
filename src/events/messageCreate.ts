@@ -1,8 +1,8 @@
-import { ChannelType, Message, } from "discord.js";
+import { Message } from "discord.js";
 import { BotEvent } from "../types";
-import { DI } from "../DI";
 import { checkDuplicateUrl } from "../behaviors/duplicateUrlBehavior";
 import { logDmMessage } from "../behaviors/dmMessageBehavior";
+import discordClient from "../discord_client_helper";
 
 
 const event: BotEvent = {
@@ -24,7 +24,7 @@ const event: BotEvent = {
             const command = args?.shift()?.toLowerCase();
 
             if (command) {
-                const cmd = DI.discordClient.commands.get(command);
+                const cmd = discordClient.client.commands.get(command);
 
                 if (!cmd) return;
 

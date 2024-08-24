@@ -1,7 +1,8 @@
 import { ChannelType, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types";
-import { DI } from "../../DI";
 import { ChannelMessage } from "../../db/entities/ChannelMessage.entity";
+import dbHelper from "../../db_helper";
+import discordClient from "../../discord_client_helper";
 
 const DuplicateUrlCheckCommand: SlashCommand = {
     command: new SlashCommandBuilder()
@@ -31,7 +32,7 @@ const DuplicateUrlCheckCommand: SlashCommand = {
             await interaction.reply({ content: 'server_id bilgisi gerekli', ephemeral: true });
             return;
         }
-        const foundRecords = await DI.em.find(ChannelMessage, {
+        const foundRecords = await dbHelper.em.find(ChannelMessage, {
             $and: [{ guildId: serverId },
             { urls: { $some: { url: url } } }]
         },
@@ -41,7 +42,7 @@ const DuplicateUrlCheckCommand: SlashCommand = {
         if (foundRecords.length > 0) {
             for (let index = 0; index < foundRecords.length; index++) {
                 const element = foundRecords[index];
-                const channel = DI.discordClient.channels.cache.get(element.channelId);
+                const channel = discordClient.client.channels.cache.get(element.channelId);
 
                 if (channel) {
                     if (channel.type == ChannelType.GuildText) {
