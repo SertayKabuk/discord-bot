@@ -2,7 +2,8 @@ import { ChannelType, Message, userMention } from "discord.js";
 import { ChannelMessage } from "../db/entities/ChannelMessage.entity";
 import { ChannelMessageUrl } from "../db/entities/ChannelMessageUrl.entity";
 import { extractUrls } from "../functions";
-import { DI } from "../DI";
+import dbHelper from "../db_helper";
+import discordClient from "../discord_client_helper";
 
 export const checkDuplicateUrl = async (message: Message) => {
 
@@ -12,7 +13,7 @@ export const checkDuplicateUrl = async (message: Message) => {
         const excludedUrls = ['.gif', 'tenor.com'];
 
         if (urls) {
-            const foundRecords = await DI.em.find(ChannelMessage, {
+            const foundRecords = await dbHelper.em.find(ChannelMessage, {
                 $and: [{ guildId: message.guildId },
                 { urls: { $some: { url: urls } } }]
             },
@@ -39,7 +40,7 @@ export const checkDuplicateUrl = async (message: Message) => {
 
                     message.reply("Bu linki daha once " + userMention(element.userId) + " gondermis.");
 
-                    const channel = DI.discordClient.channels.cache.get(element.channelId);
+                    const channel = discordClient.client.channels.cache.get(element.channelId);
 
                     if (channel) {
                         if (channel.type == ChannelType.GuildText) {
@@ -68,7 +69,7 @@ export const checkDuplicateUrl = async (message: Message) => {
                 });
 
                 if (dbMessage.urls.length > 0) {
-                    await DI.em.persist(dbMessage).flush();
+                    await dbHelper.em.persist(dbMessage).flush();
                 }
             }
         }

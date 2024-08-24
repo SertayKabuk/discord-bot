@@ -1,7 +1,7 @@
 import { APIEmbedField, EmbedBuilder, SlashCommandBuilder } from "discord.js"
 import { SlashCommand } from "../../types.js";
 import { GameMode, Query, LanguageCode, QueryItemsArgs } from "../../__generated__/graphql.js";
-import { DI } from "../../DI";
+import graphQLHelper from "../../graphQL_helper.js";
 
 const command: SlashCommand = {
     command: new SlashCommandBuilder()
@@ -51,7 +51,7 @@ const command: SlashCommand = {
                 }
             `;
 
-        const { data, error } = await DI.graphQLClient.query<Query, QueryItemsArgs>(query, { lang: LanguageCode.En, gameMode: GameMode.Regular, limit: limit, name: itemName })
+        const { data, error } = await graphQLHelper.client.query<Query, QueryItemsArgs>(query, { lang: LanguageCode.En, gameMode: GameMode.Regular, limit: limit, name: itemName })
 
         if (error)
             console.log(error);

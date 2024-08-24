@@ -1,26 +1,30 @@
-import { SlashCommandBuilder } from "discord.js"
+import { SlashCommandBuilder, AttachmentBuilder } from "discord.js"
 import { SlashCommand } from "../../types";
-import ollama from "../../ollama_helper";
+import mqConnection from "../../rabbit_mq_conn";
 
 const command: SlashCommand = {
     command: new SlashCommandBuilder()
-        .setName("ollama")
+        .setName("flux")
         .addStringOption(option => {
             return option
                 .setName("prompt")
                 .setDescription("prompt")
                 .setRequired(true)
         })
-        .setDescription("Chat with LLM!"),
+        .setDescription("Generate image with Flux!"),
     execute: async (interaction) => {
         await interaction.deferReply();
         const prompt = interaction.options.getString("prompt");
 
         if (prompt !== null) {
-
             try {
-                const completion = await ollama.llm.invoke(prompt);
-                await interaction.editReply(completion);
+                const base64Image = await mqConnection.sendToQueue("flux_input", prompt);
+
+                const imageBuffer = Buffer.from(base64Image, 'base64');
+
+                const attachment = new AttachmentBuilder(imageBuffer, { name: 'image.png' });
+
+                await interaction.editReply({ content: 'Olmus mu?', files: [attachment] });
             } catch (error) {
                 console.log(error);
                 await interaction.editReply("Pc kapali daha sonra gel.");
