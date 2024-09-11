@@ -1,7 +1,7 @@
 import { CardDeck, DrawedCard, Card } from "../types";
 import { HttpClient } from "../httpClient";
 import { Guid } from "typescript-guid";
-import { Channel } from "discord.js";
+import { Channel, ChannelType } from "discord.js";
 import discordClient from "../discord_client_helper";
 
 export class PokerGame {
@@ -95,7 +95,9 @@ export class PokerGame {
         const channel = discordClient.client.channels.cache.get(this.channelId) as Channel;
 
         if (channel.isTextBased()) {
-            channel.send({ content: 'Oyun basliyor...' });
+            if (channel.type == ChannelType.GuildText)  {
+                channel.send({ content: 'Oyun basliyor...' });
+            }
         }
 
         // client.users.send('358669734130089995', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');

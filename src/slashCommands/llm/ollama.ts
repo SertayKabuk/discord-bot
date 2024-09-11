@@ -11,7 +11,7 @@ const command: SlashCommand = {
                 .setDescription("prompt")
                 .setRequired(true)
         })
-        .setDescription("Chat with LLM!"),
+        .setDescription("Chat with LLM!") as SlashCommandBuilder,
     execute: async (interaction) => {
         await interaction.deferReply();
         const prompt = interaction.options.getString("prompt");

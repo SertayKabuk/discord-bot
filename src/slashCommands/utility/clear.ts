@@ -12,12 +12,12 @@ const ClearCommand: SlashCommand = {
                 .setName("messagecount")
                 .setDescription("How many messages? 0-100")
         })
-        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages) as SlashCommandBuilder,
     execute: interaction => {
         let messageCount = Number(interaction.options.get("messagecount")?.value)
         interaction.channel?.messages.fetch({ limit: messageCount })
             .then(async msgs => {
-                if (interaction.channel?.type === ChannelType.DM)
+                if (interaction.channel === null || interaction.channel.type !== ChannelType.GuildText)
                     return;
 
                 const deletedMessages = await interaction.channel?.bulkDelete(msgs, true)

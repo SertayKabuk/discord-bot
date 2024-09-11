@@ -18,7 +18,7 @@ const command: SlashCommand = {
                 .setDescription("Item count limit.")
                 .setMaxValue(10)
         })
-        .setDescription("Find item price from tarkov market."),
+        .setDescription("Find item price from tarkov market.") as SlashCommandBuilder,
     execute: async (interaction) => {
         const itemName = interaction.options.getString("item_name");
         let limit = interaction.options.getNumber("limit");

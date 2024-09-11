@@ -12,7 +12,7 @@ const command: SlashCommand = {
 				.setDescription("The input to echo.")
 				.setRequired(true);
 		})
-		.setDescription("Replies each letter with 1 sec delay!"),
+		.setDescription("Replies each letter with 1 sec delay!") as SlashCommandBuilder,
 	execute: async (interaction) => {
 		const input = interaction.options.getString('input') ?? 'No input provided';
 

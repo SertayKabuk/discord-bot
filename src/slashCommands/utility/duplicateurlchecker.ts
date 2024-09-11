@@ -18,7 +18,7 @@ const DuplicateUrlCheckCommand: SlashCommand = {
                 .setName("server_id")
                 .setDescription("serverId")
         })
-        .setDescription("Check if url is sent before."),
+        .setDescription("Check if url is sent before.") as SlashCommandBuilder,
 
     execute: async (interaction) => {
         const url = String(interaction.options.get("url")?.value);
@@ -36,7 +36,7 @@ const DuplicateUrlCheckCommand: SlashCommand = {
             $and: [{ guildId: serverId },
             { urls: { $some: { url: url } } }]
         },
-            { populate: ['urls'] }
+            { populate: ['urls'], limit: 1, orderBy: { createdAt: "ASC" } }
         );
 
         if (foundRecords.length > 0) {

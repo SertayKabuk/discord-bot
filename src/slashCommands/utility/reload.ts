@@ -11,7 +11,7 @@ const command: SlashCommand = {
 				.setDescription('The command to reload.')
 				.setRequired(true))
 		.setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-		.setDescription('Reloads a command.'),
+		.setDescription('Reloads a command.') as SlashCommandBuilder,
 	execute: async (interaction) => {
 		const commandName = interaction.options.getString('command', true);
 		const command = interaction.client.slashCommands.get(commandName);

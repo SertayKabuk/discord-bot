@@ -16,29 +16,29 @@
   "dependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
     "@langchain/ollama": "^0.0.4",
-    "@mikro-orm/cli": "^6.2.2",
+    "@mikro-orm/cli": "^6.3.9",
     "@mikro-orm/core": "^6.2.2",
-    "@mikro-orm/migrations": "^6.2.2",
-    "@mikro-orm/postgresql": "^6.2.2",
-    "@mikro-orm/reflection": "^6.2.2",
+    "@mikro-orm/migrations": "^6.3.9",
+    "@mikro-orm/postgresql": "^6.3.9",
+    "@mikro-orm/reflection": "^6.3.9",
     "@types/amqplib": "^0.10.5",
-    "@types/express": "^4.17.17",
-    "@urql/core": "^5.0.4",
+    "@types/express": "^4.17.21",
+    "@urql/core": "^5.0.6",
     "amqplib": "^0.10.4",
-    "axios": "^1.4.0",
+    "axios": "^1.7.7",
     "chalk": "^4.1.2",
-    "discord.js": "^14.12.1",
+    "discord.js": "^14.16.1",
     "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "langchain": "^0.2.16",
+    "express": "^5.0.0",
+    "langchain": "^0.2.18",
     "typescript-guid": "^1.0.3"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.2",
-    "@graphql-codegen/client-preset": "^4.3.2",
-    "@types/node": "^20.4.6",
-    "eslint": "^8.46.0",
+    "@graphql-codegen/client-preset": "^4.3.3",
+    "@types/node": "^20.16.5",
+    "eslint": "^8.57.0",
     "graphql": "^16.9.0",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.2"
   }
 }

@@ -16,7 +16,7 @@ const SendDmCommand: SlashCommand = {
                 .setDescription("Message")
         })
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-        .setDescription("Send DM to specific user."),
+        .setDescription("Send DM to specific user.") as SlashCommandBuilder,
 
     execute: async (interaction) => {
         let userId = String(interaction.options.get("userid")?.value);

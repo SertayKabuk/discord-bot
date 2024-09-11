@@ -11,7 +11,7 @@ const command: SlashCommand = {
                 .setDescription("prompt")
                 .setRequired(true)
         })
-        .setDescription("Generate image with Flux!"),
+        .setDescription("Generate image with Flux!") as SlashCommandBuilder,
     execute: async (interaction) => {
         await interaction.deferReply();
         const prompt = interaction.options.getString("prompt");
