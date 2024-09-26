@@ -51,6 +51,7 @@ declare global {
             LANGCHAIN_TRACING_V2: string,
             LANGCHAIN_API_KEY: string,
             OLLAMA_URL: string,
+            OLLAMA_MODEL: string,
             RABBITMQ_HOST: string,
         }
     }

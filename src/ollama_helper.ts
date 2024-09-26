@@ -3,12 +3,12 @@ import { Ollama } from "@langchain/ollama";
 class OllamaHelper {
     llm!: Ollama;
 
-    init() {
+    init(model:string, url: string) {
         this.llm = new Ollama({
-            model: "llama3.1:8b",
+            model: model,
             temperature: 0,
             maxRetries: 2,
-            baseUrl: process.env.OLLAMA_URL
+            baseUrl: url
         });
     }
 }

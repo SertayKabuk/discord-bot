@@ -25,8 +25,8 @@ class DiscordClientHelper {
 
     }
     
-    async connect() {
-        await this.client.login(process.env.TOKEN);
+    async connect(token: string) {
+        await this.client.login(token);
     }
 }
 

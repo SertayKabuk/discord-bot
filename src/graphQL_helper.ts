@@ -3,9 +3,9 @@ import { Client as GraphQLClient, cacheExchange, fetchExchange } from "@urql/cor
 class GraphQlHelper {
     client!: GraphQLClient;
 
-    init() {
+    init(url:string) {
         this.client = new GraphQLClient({
-            url: process.env.TARKOV_GRAPHQL_CLIENT,
+            url: url,
             exchanges: [cacheExchange, fetchExchange],
         });
 
