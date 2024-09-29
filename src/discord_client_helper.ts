@@ -4,7 +4,17 @@ import { join } from "path";
 import { readdirSync } from "fs";
 
 class DiscordClientHelper {
+    private static instance: DiscordClientHelper;
     client!: DiscordClient;
+
+    private constructor() {}
+
+    static getInstance(): DiscordClientHelper {
+        if (!DiscordClientHelper.instance) {
+            DiscordClientHelper.instance = new DiscordClientHelper();
+        }
+        return DiscordClientHelper.instance;
+    }
 
     async init() {
 
@@ -30,6 +40,6 @@ class DiscordClientHelper {
     }
 }
 
-const discordClient = new DiscordClientHelper();
+const discordClient = DiscordClientHelper.getInstance();
 
 export default discordClient;

@@ -1,9 +1,18 @@
 import { Ollama } from "@langchain/ollama";
-
 class OllamaHelper {
+    private static instance: OllamaHelper;
     llm!: Ollama;
 
-    init(model:string, url: string) {
+    private constructor() {}
+
+    static getInstance(): OllamaHelper {
+        if (!OllamaHelper.instance) {
+            OllamaHelper.instance = new OllamaHelper();
+        }
+        return OllamaHelper.instance;
+    }
+
+    init(model: string, url: string) {
         this.llm = new Ollama({
             model: model,
             temperature: 0,
@@ -13,6 +22,6 @@ class OllamaHelper {
     }
 }
 
-const ollama = new OllamaHelper();
+const ollama = OllamaHelper.getInstance();
 
 export default ollama;

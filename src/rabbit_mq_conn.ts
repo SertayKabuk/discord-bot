@@ -2,9 +2,19 @@ import client, { Connection, Channel } from "amqplib";
 import { randomUUID } from "crypto";
 
 class RabbitMQConnection {
+  private static instance: RabbitMQConnection;
   connection!: Connection;
   channel!: Channel;
   private connected!: Boolean;
+
+  private constructor() {}
+
+  static getInstance(): RabbitMQConnection {
+    if (!RabbitMQConnection.instance) {
+      RabbitMQConnection.instance = new RabbitMQConnection();
+    }
+    return RabbitMQConnection.instance;
+  }
 
   async connect() {
     if (this.connected && this.channel) return;
@@ -15,6 +25,11 @@ class RabbitMQConnection {
       this.connection = await client.connect(
         `amqp://${process.env.RABBITMQ_HOST}:5672`
       );
+
+      this.connection.on("close", () => {
+        console.error(`❌ Rabbit MQ Connection closed.`);
+        this.connected = false;
+      });
 
       console.log(`✅ Rabbit MQ Connection is ready`);
 
@@ -29,17 +44,19 @@ class RabbitMQConnection {
 
   async sendToQueue(queue: string, message: string) {
     try {
-      if (!this.channel) {
+      if (!this.connected) {
         await this.connect();
       }
 
-      const replyQueue = await this.channel.assertQueue('', { exclusive: true });
+      const replyQueue = await this.channel.assertQueue("", {
+        exclusive: true,
+      });
 
       const correlationId = randomUUID();
 
       this.channel.sendToQueue(queue, Buffer.from(message), {
         correlationId: correlationId,
-        replyTo: replyQueue.queue
+        replyTo: replyQueue.queue,
       });
 
       // Consume responses from the temporary queue
@@ -58,6 +75,6 @@ class RabbitMQConnection {
   }
 }
 
-const mqConnection = new RabbitMQConnection();
+const rabbitMQConnection = RabbitMQConnection.getInstance();
 
-export default mqConnection;
+export default rabbitMQConnection;
