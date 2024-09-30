@@ -14,7 +14,7 @@ const event : BotEvent = {
         client.user?.setPresence({
             status: "online",
             activities:[ {
-                name: "",
+                name: "alien invasion",
                 type: ActivityType.Custom,
                 state: "👽 Kidnapping humans!",
             }]
