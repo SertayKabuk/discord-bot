@@ -1,4 +1,4 @@
-FROM --platform=arm64 node:22-alpine
+FROM --platform=linux/arm64 node:22-alpine
 
 # Create app directory
 WORKDIR /usr/src/app
