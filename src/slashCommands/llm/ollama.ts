@@ -22,7 +22,7 @@ const command: SlashCommand = {
         const stream = await ollama.llm.stream([
           [
             "system",
-            "You are a helpful assistant that helps users in Discord chat. Your answer must be under 2000 characters.",
+            "You are a helpful assistant who talks to users in the Discord chat channel. Your answer should be short and witty.",
           ],
           ["human", input],
         ]);
