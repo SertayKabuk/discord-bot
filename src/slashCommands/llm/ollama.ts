@@ -15,11 +15,17 @@ const command: SlashCommand = {
     .setDescription("Chat with LLM!") as SlashCommandBuilder,
   execute: async (interaction) => {
     await interaction.deferReply();
-    const prompt = interaction.options.getString("prompt");
-
-    if (prompt !== null) {
+    const input = interaction.options.getString("prompt");
+ 
+    if (input !== null) {
       try {
-        const stream = await ollama.llm.stream(prompt);
+        const stream = await ollama.llm.stream([
+          [
+            "system",
+            "You are a helpful assistant that helps users in Discord chat. Your answer must be under 2000 characters.",
+          ],
+          ["human", input],
+        ]);
 
         let gathered: string | undefined = undefined;
         
