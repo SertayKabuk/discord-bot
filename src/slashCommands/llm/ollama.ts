@@ -2,7 +2,6 @@ import { SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types";
 import ollama from "../../ollama_helper";
 import { concat } from "@langchain/core/utils/stream";
-import type { AIMessageChunk } from "@langchain/core/messages";
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()
@@ -22,18 +21,17 @@ const command: SlashCommand = {
       try {
         const stream = await ollama.llm.stream(prompt);
 
-        let gathered: AIMessageChunk | undefined = undefined;
-
+        let gathered: string | undefined = undefined;
+        
         for await (const chunk of stream) {
-          console.log(chunk);
           if (gathered === undefined) {
-            gathered = chunk;
+            gathered = (chunk?.content ?? "").toString();
           } else {
-            gathered = concat(gathered, chunk);
+            gathered = concat(gathered, (chunk?.content ?? "").toString());
           }
 
           if (gathered !== undefined)
-            await interaction.editReply((gathered?.content ?? "").toString());
+            await interaction.editReply((gathered ?? "").toString());
         }
       } catch (error) {
         console.log(error);

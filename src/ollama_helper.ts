@@ -15,9 +15,8 @@ class OllamaHelper {
     init(model: string, url: string) {
         this.llm = new ChatOllama({
             model: model,
-            temperature: 0,
-            maxRetries: 2,
-            baseUrl: url
+            baseUrl: url,
+            streaming: true,
         });
     }
 }
