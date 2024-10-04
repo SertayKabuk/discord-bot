@@ -6,7 +6,6 @@ import dbHelper from "./db_helper";
 import graphQLHelper from "./graphQL_helper";
 
 async function main() {
-
     graphQLHelper.init(process.env.TARKOV_GRAPHQL_CLIENT);
     await dbHelper.init(); 
     ollama.init(process.env.OLLAMA_MODEL, process.env.OLLAMA_URL);

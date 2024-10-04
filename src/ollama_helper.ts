@@ -1,7 +1,7 @@
-import { Ollama } from "@langchain/ollama";
+import { ChatOllama } from "@langchain/ollama";
 class OllamaHelper {
     private static instance: OllamaHelper;
-    llm!: Ollama;
+    llm!: ChatOllama;
 
     private constructor() {}
 
@@ -13,7 +13,7 @@ class OllamaHelper {
     }
 
     init(model: string, url: string) {
-        this.llm = new Ollama({
+        this.llm = new ChatOllama({
             model: model,
             temperature: 0,
             maxRetries: 2,

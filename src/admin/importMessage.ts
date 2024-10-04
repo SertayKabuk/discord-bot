@@ -1,91 +1,72 @@
+import { ChannelMessage } from "../db/entities/ChannelMessage.entity";
+import { ChannelMessageUrl } from "../db/entities/ChannelMessageUrl.entity";
+import { ChannelType } from "discord.js";
+import discordClient from "../discord_client_helper";
+import dbHelper from "../db_helper";
+import { extractUrls } from "../functions";
 
-// import { extractUrls } from "./functions";
-// import { ChannelMessage } from "./db/entities/ChannelMessage.entity";
-// import { ChannelMessageUrl } from "./db/entities/ChannelMessageUrl.entity";
+export const importAllMessages = async () => {
+  const channel = await discordClient.client.channels.fetch(
+    "485913862067978262"
+  );
 
+  const excludedUrls = [".gif", "tenor.com"];
 
+  if (channel && channel.type == ChannelType.GuildText) {
+    let lastMessageId;
 
-// const channel = await client.channels.fetch("485913862067978262");
+    while (true) {
+      let messages = await channel.messages.fetch({
+        limit: 100,
+        cache: false,
+        before: lastMessageId,
+      });
 
-// if (channel && channel.type == ChannelType.GuildText) {
-//     let lastMessageId = "1232024580646768792";
+      if (messages.size == 0) break;
 
-//     while (true) {
-//         let messages = await channel.messages.fetch({ limit: 100, cache: false, before: lastMessageId });
+      messages.forEach(async (message) => {
+        let lastId = message.id;
 
-//         if (messages.size == 0)
-//             break;
+        let urls = extractUrls(message.content);
 
-//         messages.forEach(async message => {
-//             let lastId = message.id;
+        if (urls) {
+          const dbMessage = new ChannelMessage();
+          dbMessage.guildId = message.guildId;
+          dbMessage.channelId = message.channel.id;
+          dbMessage.messageId = message.id;
+          dbMessage.createdAt = message.createdAt;
+          dbMessage.userId = message.author.id;
+          dbMessage.username = message.author.username;
 
-//             let urls = extractUrls(message.content);
+          urls.forEach((url) => {
+            let excluded = false;
 
-//             if (urls) {
-//                 const dbMessage = new ChannelMessage();
-//                 dbMessage.channelId = message.channel.id;
-//                 dbMessage.messageId = message.id;
-//                 dbMessage.createdAt = message.createdAt;
-//                 dbMessage.userId = message.author.id;
-//                 dbMessage.username = message.author.username;
+            excludedUrls.forEach((excludedUrl) => {
+              if (url.includes(excludedUrl)) {
+                excluded = true;
+              }
+            });
 
-//                 for (let index = 0; index < urls.length; index++) {
-//                     const element = urls[index];
-//                     const urlMessage = new ChannelMessageUrl();
-//                     urlMessage.url = element;
+            if (excluded) return;
 
-//                     if (element.length < 256) {
-//                         dbMessage.urls.add(urlMessage);
-//                     }
-//                 }
+            const urlMessage = new ChannelMessageUrl();
+            urlMessage.url = url;
 
-//                 if (dbMessage.urls.length > 0) {
-//                     orm.em.persist(dbMessage);
-//                 }
-//             }
-//             lastMessageId = lastId;
-//         });
+            if (url.length < 256) {
+              dbMessage.urls.add(urlMessage);
+            }
+          });
 
-//         await orm.em.flush();
-//     }
-// // }
+          if (dbMessage.urls.length > 0) {
+            await dbHelper.em.persist(dbMessage).flush();
+          }
+        }
+        lastMessageId = lastId;
+      });
 
-// import { ChannelMessage } from "../db/entities/ChannelMessage.entity";
-// import { ChannelType } from "discord.js";
-// import { DI } from "../DI";
+      console.log("last:" + lastMessageId);
 
-// export const importAllMessages = async () => {
-
-//     const channel = await DI.discordClient.channels.fetch("485913862067978262");
-
-//     if (channel && channel.type == ChannelType.GuildText) {
-//         let lastMessageId;
-
-//         while (true) {
-//             let messages = await channel.messages.fetch({ limit: 100, cache: false, before: lastMessageId });
-
-//             if (messages.size == 0)
-//                 break;
-
-//             messages.forEach(async message => {
-//                 let lastId = message.id;
-
-//                 const dbMessage = new ChannelMessage();
-//                 dbMessage.channelId = message.channel.id;
-//                 dbMessage.messageId = message.id;
-//                 dbMessage.createdAt = message.createdAt;
-//                 dbMessage.userId = message.author.id;
-//                 dbMessage.username = message.author.username;
-//                 dbMessage.guildId = message.guildId;
-//                 dbMessage.message = message.content;
-
-//                 DI.em.persist(dbMessage);
-//                 lastMessageId = lastId;
-//             });
-
-//             console.log("last:" + lastMessageId);
-
-//             await DI.em.flush();
-//         }
-//     }
-// }
+      await dbHelper.em.flush();
+    }
+  }
+};
