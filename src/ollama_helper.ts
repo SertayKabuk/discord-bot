@@ -16,7 +16,7 @@ class OllamaHelper {
         this.llm = new ChatOllama({
             model: model,
             baseUrl: url,
-            streaming: true,
+            keepAlive: -1,// -1 for infinite
         });
     }
 }

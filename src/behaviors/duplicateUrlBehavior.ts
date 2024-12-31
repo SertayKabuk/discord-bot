@@ -4,6 +4,10 @@ import { ChannelMessageUrl } from "../db/entities/ChannelMessageUrl.entity";
 import { extractUrls } from "../functions";
 import dbHelper from "../db_helper";
 import discordClient from "../discord_client_helper";
+import urlParserHelper from "../url_parser_helper";
+import vectorStoreHelper from "../vector_store_helper";
+import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
+import { v4 as uuidv4 } from "uuid";
 
 export const checkDuplicateUrl = async (message: Message) => {
   if (message.guildId !== null) {
@@ -57,6 +61,7 @@ export const checkDuplicateUrl = async (message: Message) => {
           }
         }
       } else {
+       
         const dbMessage = new ChannelMessage();
         dbMessage.guildId = message.guildId;
         dbMessage.channelId = message.channel.id;
@@ -76,6 +81,39 @@ export const checkDuplicateUrl = async (message: Message) => {
 
         if (dbMessage.urls.length > 0) {
           await dbHelper.em.persist(dbMessage).flush();
+        }
+
+        try {
+          for (let index = 0; index < urls.length; index++) {
+            const parsedUrl = await urlParserHelper.parse(urls[index]);
+
+            const parsedContentString = urlParserHelper.toString(parsedUrl);
+
+            if (parsedContentString === null) {
+              continue;
+            }
+
+            let vectorStore: PGVectorStore | null = null;
+
+            if (parsedUrl !== null) {
+              if ("title" in parsedUrl) {
+                vectorStore = vectorStoreHelper.youtube_vectorStore;
+              } else if ("tweetBody" in parsedUrl) {
+                vectorStore = vectorStoreHelper.x_vectorStore;
+              }
+
+              const uuid = uuidv4();
+
+              await vectorStoreHelper.addDocument(
+                uuid,
+                message.id,
+                parsedContentString,
+                urls[index]
+              );
+            }
+          }
+        } catch (error) {
+          console.error("Error: ", error);
         }
       }
     }
