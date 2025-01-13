@@ -4,13 +4,13 @@ import { getVoiceConnection } from "@discordjs/voice";
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()
-    .setName("kick_channel")
-    .setDescription("Kick from a channel!") as SlashCommandBuilder,
+    .setName("leave_channel")
+    .setDescription("Leave from a channel!") as SlashCommandBuilder,
   execute: async (interaction) => {
     if (interaction.guildId === null || interaction.guild === null) {
       await interaction.reply({
         ephemeral: true,
-        content: "Servedan dogru cagir beni!",
+        content: "Serverdan dogru cagir beni!",
       });
       return;
     }

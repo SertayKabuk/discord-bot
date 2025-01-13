@@ -51,7 +51,7 @@ const command: SlashCommand = {
 
     try {
       const base64Wav = await mqConnection.sendToQueue("tts_input", input);
-      
+
       const binaryWav = Buffer.from(base64Wav, "base64");
 
       const audioPath = path.join(__dirname, "../../../output/output.wav");
@@ -61,18 +61,6 @@ const command: SlashCommand = {
 
       player.on(AudioPlayerStatus.Playing, () => {
         console.log(`The audio player has started playing! ${input}`);
-      });
-
-      player.on(AudioPlayerStatus.AutoPaused, () => {
-        console.log(`The audio player has AutoPaused! ${input}`);
-      });
-
-      player.on(AudioPlayerStatus.Buffering, () => {
-        console.log(`The audio player has Buffering! ${input}`);
-      });
-
-      player.on(AudioPlayerStatus.Paused, () => {
-        console.log(`The audio player has Paused! ${input}`);
       });
 
       player.on("error", (error) => {
