@@ -129,3 +129,4 @@ dist
 
 config.json
 build/
+output/

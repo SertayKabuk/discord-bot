@@ -18,9 +18,9 @@ class DiscordClientHelper {
 
     async init() {
 
-        const { Guilds, MessageContent, GuildMessages, GuildMembers, DirectMessages } = GatewayIntentBits
+        const { Guilds, MessageContent, GuildMessages, GuildMembers, DirectMessages, GuildVoiceStates } = GatewayIntentBits
 
-        this.client = new DiscordClient({ intents: [Guilds, MessageContent, GuildMessages, GuildMembers, DirectMessages], partials: [Partials.Channel] });
+        this.client = new DiscordClient({ intents: [Guilds, MessageContent, GuildMessages, GuildMembers, DirectMessages, GuildVoiceStates], partials: [Partials.Channel] });
 
         this.client.slashCommands = new Collection<string, SlashCommand>();
         this.client.commands = new Collection<string, Command>();
