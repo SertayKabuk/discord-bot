@@ -2,6 +2,7 @@ FROM --platform=linux/arm64 node:22-alpine
 
 # Create app directory
 WORKDIR /usr/src/app
+RUN mkdir /usr/src/app/output
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied

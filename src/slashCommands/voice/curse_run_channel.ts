@@ -12,6 +12,7 @@ const command: SlashCommand = {
         return option
           .setName("input")
           .setDescription("Ne dicen?")
+          .setMaxLength(500)
           .setRequired(true);
       })
     .setDescription("Söv ve kaç!") as SlashCommandBuilder,

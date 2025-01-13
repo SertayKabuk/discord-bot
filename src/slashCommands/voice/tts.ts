@@ -17,6 +17,7 @@ const command: SlashCommand = {
       return option
         .setName("input")
         .setDescription("Ne solicen?")
+        .setMaxLength(500)
         .setRequired(true);
     })
     .setDescription("Soverim!") as SlashCommandBuilder,
