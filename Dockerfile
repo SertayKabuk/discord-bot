@@ -24,6 +24,6 @@ COPY --from=build /usr/src/app/build /usr/src/app/build
 COPY --from=build /usr/src/app/package*.json ./
 
 # Install only production dependencies
-RUN npm install --only=production
+RUN npm install --omit=dev
 
 CMD [ "npm", "start"]
