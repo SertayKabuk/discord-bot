@@ -6,9 +6,8 @@ import {
   createAudioResource,
   AudioPlayerStatus,
 } from "@discordjs/voice";
-import path from "path";
-import fs from "fs";
 import mqConnection from "../../rabbit_mq_conn";
+import { Readable } from "stream";
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()
@@ -55,8 +54,8 @@ const command: SlashCommand = {
 
       const binaryWav = Buffer.from(base64Wav, "base64");
 
-      const audioPath = path.join(__dirname, "../../../output/output.wav");
-      await fs.promises.writeFile(audioPath, binaryWav);
+      // Create readable stream from buffer
+      const audioStream = Readable.from(binaryWav);
 
       const player = createAudioPlayer();
 
@@ -68,7 +67,7 @@ const command: SlashCommand = {
         console.error(`Error: ${error.message} with resource ${input}`);
       });
 
-      const resource = createAudioResource(audioPath);
+      const resource = createAudioResource(audioStream);
       const subscription = connection.subscribe(player);
       player.play(resource);
 
