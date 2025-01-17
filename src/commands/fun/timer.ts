@@ -8,8 +8,10 @@ const command: Command = {
     if (message.channel.type == ChannelType.GuildText) {
       const minutes = parseInt(args[0]);
 
-      if (!minutes && minutes > 0) {
-        return message.channel.send("Please provide a time in minutes.");
+      if (!minutes) {
+        return message.channel.send("Please provide a valid number for minutes.");
+      } else if (minutes < 1) {
+        return message.channel.send("Timer duration must be at least 1 minute.");
       }
 
       message.channel.send(
@@ -20,9 +22,9 @@ const command: Command = {
 
       setTimeout(() => {
         if (message.channel.type == ChannelType.GuildText) {
-          message.channel.send(`${userMention(
-            message.member!.user.id
-          )} ${minutes} dakika bitti.`);
+          message.channel.send(
+            `${userMention(message.member!.user.id)} ${minutes} dakika bitti.`
+          );
         }
       }, minutes * 60 * 1000); // Convert minutes to milliseconds
     }
