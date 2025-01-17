@@ -6,7 +6,16 @@ import {
   createAudioResource,
 } from "@discordjs/voice";
 import mqConnection from "../rabbit_mq_conn";
-import { Readable } from 'stream';
+import { Readable } from "stream";
+
+// Create array of welcome messages at the top of the file
+const welcomeMessages = [
+  "Hoş geldin değerli arkadaşım {name}. Nasılsın?",
+  "Vay vay vay kimler gelmiş! {name} hoş geldin!",
+  "Oh oh! {name} gelmiş, sefalar getirdin!",
+  "Selam {name}! Seni görmek ne güzel.",
+  "Hey {name}! Hoş geldin aramıza!",
+];
 
 const event: BotEvent = {
   name: "voiceStateUpdate",
@@ -31,7 +40,14 @@ const event: BotEvent = {
           return;
         }
 
-        const input = `Hoş geldin değerli arkadaşım ${newState.member?.displayName}. Nasılsın?`;
+        // Replace static input with random message
+        const randomMessage =
+          welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+          
+        const input = randomMessage.replace(
+          "{name}",
+          newState.member?.displayName || "dostum"
+        );
 
         const base64Wav = await mqConnection.sendToQueue("tts_input", input);
         const binaryWav = Buffer.from(base64Wav, "base64");
@@ -46,15 +62,14 @@ const event: BotEvent = {
         connection.subscribe(player);
 
         // Error handling
-        player.on('error', error => {
-          console.error('Error:', error);
+        player.on("error", (error) => {
+          console.error("Error:", error);
         });
-
       }
     } catch (error) {
-      console.error('Error in voiceStateUpdate:', error);
+      console.error("Error in voiceStateUpdate:", error);
     }
-  }
+  },
 };
 
 export default event;
