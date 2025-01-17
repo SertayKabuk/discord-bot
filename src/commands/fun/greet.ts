@@ -17,7 +17,7 @@ const command: Command = {
   },
   cooldown: 10,
   aliases: ["sayhello"],
-  permissions: ["Administrator", PermissionFlagsBits.ManageGuildExpressions], // to test
+  permissions: ["SendMessages", PermissionFlagsBits.SendMessages], // to test
 };
 
 export default command;
