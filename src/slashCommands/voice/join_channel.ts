@@ -1,4 +1,4 @@
-import { ChannelType, SlashCommandBuilder } from "discord.js";
+import { ChannelType, GuildMember, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types";
 import { joinVoiceChannel } from "@discordjs/voice";
 
@@ -16,7 +16,7 @@ const command: SlashCommand = {
     }
 
     //get current users voice channel
-    const member = interaction.guild.members.cache.get(interaction.user.id);
+    const member = interaction.member;
     if (!member) {
       await interaction.reply({
         ephemeral: true,
@@ -25,8 +25,8 @@ const command: SlashCommand = {
       return;
     }
 
-    const voiceChannel = member.voice.channel;
-    
+    const voiceChannel = (member as GuildMember).voice.channel;
+
     if (
       !voiceChannel ||
       voiceChannel === null ||

@@ -1,6 +1,7 @@
 import { SlashCommandBuilder, AttachmentBuilder } from "discord.js"
 import { SlashCommand } from "../../types";
 import mqConnection from "../../rabbit_mq_conn";
+import { QueueNames } from "../../constants/queue-names";
 
 const command: SlashCommand = {
     command: new SlashCommandBuilder()
@@ -18,7 +19,7 @@ const command: SlashCommand = {
 
         if (prompt !== null) {
             try {
-                const base64Image = await mqConnection.sendToQueue("flux_input", prompt);
+                const base64Image = await mqConnection.sendToQueue(QueueNames.FLUX_INPUT, prompt);
 
                 const imageBuffer = Buffer.from(base64Image, 'base64');
 

@@ -1,4 +1,4 @@
-import { ChannelType, SlashCommandBuilder } from "discord.js";
+import { ChannelType, GuildMember, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types";
 import {
   AudioPlayerStatus,
@@ -8,6 +8,7 @@ import {
 } from "@discordjs/voice";
 import mqConnection from "../../rabbit_mq_conn";
 import { Readable } from "stream";
+import { QueueNames } from "../../constants/queue-names";
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()
@@ -37,7 +38,7 @@ const command: SlashCommand = {
     }
 
     //get current users voice channel
-    const member = interaction.guild.members.cache.get(interaction.user.id);
+    const member = interaction.member;
     if (!member) {
       await interaction.reply({
         ephemeral: true,
@@ -46,7 +47,7 @@ const command: SlashCommand = {
       return;
     }
 
-    const voiceChannel = member.voice.channel;
+    const voiceChannel = (member as GuildMember).voice.channel;
 
     if (
       !voiceChannel ||
@@ -70,7 +71,7 @@ const command: SlashCommand = {
     });
 
     try {
-      const base64Wav = await mqConnection.sendToQueue("tts_input", input);
+      const base64Wav = await mqConnection.sendToQueue(QueueNames.TTS_INPUT, input);
 
       const binaryWav = Buffer.from(base64Wav, "base64");
 
@@ -80,7 +81,7 @@ const command: SlashCommand = {
       const player = createAudioPlayer();
 
       player.on(AudioPlayerStatus.Playing, () => {
-        console.log(`The audio player has started playing! ${input}`);
+        console.log(`The audio player has started playing! ${interaction.user.displayName} : ${input}`);
       });
 
       player.on("error", (error) => {
