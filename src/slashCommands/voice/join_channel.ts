@@ -1,5 +1,5 @@
 import { ChannelType, GuildMember, SlashCommandBuilder } from "discord.js";
-import { SlashCommand } from "../../types";
+import { SlashCommand } from "../../types.js";
 import { joinVoiceChannel } from "@discordjs/voice";
 
 const command: SlashCommand = {

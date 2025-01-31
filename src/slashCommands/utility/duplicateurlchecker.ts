@@ -1,15 +1,15 @@
 import { ChannelType, SlashCommandBuilder } from "discord.js";
-import { SlashCommand } from "../../types";
-import { ChannelMessage } from "../../db/entities/ChannelMessage.entity";
-import dbHelper from "../../db_helper";
-import discordClient from "../../discord_client_helper";
+import { SlashCommand } from "../../types.js";
+import { ChannelMessage } from "../../db/entities/ChannelMessage.entity.js";
+import dbHelper from "../../db_helper.js";
+import discordClient from "../../discord_client_helper.js";
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { createRetrievalChain } from "langchain/chains/retrieval";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
-import urlParserHelper from "../../url_parser_helper";
-import vectorStoreHelper from "../../vector_store_helper";
-import ollama from "../../ollama_helper";
+import urlParserHelper from "../../url_parser_helper.js";
+import vectorStoreHelper from "../../vector_store_helper.js";
+import ollama from "../../ollama_helper.js";
 
 const DuplicateUrlCheckCommand: SlashCommand = {
   command: new SlashCommandBuilder()

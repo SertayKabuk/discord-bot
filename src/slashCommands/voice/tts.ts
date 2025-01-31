@@ -1,14 +1,14 @@
 import { SlashCommandBuilder } from "discord.js";
-import { SlashCommand } from "../../types";
+import { SlashCommand } from "../../types.js";
 import {
   getVoiceConnection,
   createAudioPlayer,
   createAudioResource,
   AudioPlayerStatus,
 } from "@discordjs/voice";
-import mqConnection from "../../rabbit_mq_conn";
+import mqConnection from "../../rabbit_mq_conn.js";
 import { Readable } from "stream";
-import { QueueNames } from "../../constants/queue-names";
+import { QueueNames } from "../../constants/queue-names.js";
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()

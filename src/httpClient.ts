@@ -15,3 +15,5 @@ export class HttpClient {
 			return null;
 	}
 };
+
+export const httpClient = new HttpClient();

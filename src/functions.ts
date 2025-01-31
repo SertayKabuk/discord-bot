@@ -1,6 +1,6 @@
-import chalk from "chalk"
+import chalk from 'chalk';
 import { Guild, GuildMember, PermissionFlagsBits, PermissionResolvable, PermissionsBitField, TextChannel } from "discord.js"
-import { GuildOption } from "./types"
+import { GuildOption } from "./types.js"
 
 type colorType = "text" | "variable" | "error"
 

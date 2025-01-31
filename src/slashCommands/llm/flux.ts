@@ -1,7 +1,7 @@
 import { SlashCommandBuilder, AttachmentBuilder } from "discord.js"
-import { SlashCommand } from "../../types";
-import mqConnection from "../../rabbit_mq_conn";
-import { QueueNames } from "../../constants/queue-names";
+import { SlashCommand } from "../../types.js";
+import mqConnection from "../../rabbit_mq_conn.js";
+import { QueueNames } from "../../constants/queue-names.js";
 
 const command: SlashCommand = {
     command: new SlashCommandBuilder()

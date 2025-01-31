@@ -1,10 +1,11 @@
-import "./env";
-import { HttpServer } from "./httpServer";
-import discordClient from "./discord_client_helper";
-import ollama from "./ollama_helper";
-import dbHelper from "./db_helper";
-import graphQLHelper from "./graphQL_helper";
-import vectorStoreHelper from "./vector_store_helper";
+import "./env.js";
+import { HttpServer } from "./httpServer.js";
+import discordClient from "./discord_client_helper.js";
+import ollama from "./ollama_helper.js";
+import dbHelper from "./db_helper.js";
+import graphQLHelper from "./graphQL_helper.js";
+import vectorStoreHelper from "./vector_store_helper.js";
+import openai from "./openai_helper.js";
 
 async function main() {
     await vectorStoreHelper.init();
@@ -12,6 +13,7 @@ async function main() {
     await dbHelper.init(); 
     ollama.init(process.env.OLLAMA_MODEL, process.env.OLLAMA_URL);
     await discordClient.init();
+    openai.init(process.env.OPEN_ROUTER_URL, process.env.OPEN_ROUTER_API_KEY);
 
     const server = new HttpServer(process.env.API_PORT);
     server.CreateServer();

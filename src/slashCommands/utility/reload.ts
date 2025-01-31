@@ -1,5 +1,5 @@
 import { GuildMember, SlashCommandBuilder, PermissionFlagsBits } from "discord.js"
-import { SlashCommand } from "../../types";
+import { SlashCommand } from "../../types.js";
 import path, { join } from "path";
 
 
@@ -26,7 +26,7 @@ const command: SlashCommand = {
 
 		try {
 			interaction.client.slashCommands.delete(command.command.name);
-			const newCommand = require(`${commandDir}/${command.category}/${command.command.name}.js`).default;
+			const newCommand = (await import(`${commandDir}/${command.category}/${command.command.name}.js`)).default;
 			interaction.client.slashCommands.set(newCommand.command.name, newCommand);
 			await interaction.reply(`Command \`${newCommand.command.name}\` was reloaded!`);
 		}

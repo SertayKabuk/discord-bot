@@ -1,5 +1,5 @@
 import { ChannelType, PermissionFlagsBits, userMention } from "discord.js";
-import { Command } from "../../types";
+import { Command } from "../../types.js";
 
 const command: Command = {
   category: "fun",

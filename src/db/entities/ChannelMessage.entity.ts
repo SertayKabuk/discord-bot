@@ -1,5 +1,5 @@
 import { Entity, PrimaryKey, Property, OneToMany, Collection, Index } from '@mikro-orm/core';
-import { ChannelMessageUrl } from './ChannelMessageUrl.entity';
+import { ChannelMessageUrl } from './ChannelMessageUrl.entity.js';
 
 @Entity()
 export class ChannelMessage {

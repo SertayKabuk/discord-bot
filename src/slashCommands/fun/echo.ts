@@ -1,7 +1,6 @@
 import { SlashCommandBuilder } from "discord.js"
-import { SlashCommand } from "../../types";
-
-const wait = require('node:timers/promises').setTimeout;
+import { SlashCommand } from "../../types.js";
+import { setTimeout as wait } from 'timers/promises';
 
 const command: SlashCommand = {
 	command: new SlashCommandBuilder()

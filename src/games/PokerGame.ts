@@ -1,8 +1,8 @@
-import { CardDeck, DrawedCard, Card } from "../types";
-import { HttpClient } from "../httpClient";
+import { CardDeck, DrawedCard, Card } from "../types.js";
+import { httpClient } from "../httpClient.js";
 import { Guid } from "typescript-guid";
 import { Channel, ChannelType } from "discord.js";
-import discordClient from "../discord_client_helper";
+import discordClient from "../discord_client_helper.js";
 
 export class PokerGame {
     gameId: Guid;
@@ -11,7 +11,6 @@ export class PokerGame {
     userHands: UserHand[] = [];
 
     private static SavedGames: SavedGame[];
-    private static httpClient = new HttpClient();
     private baseUrl = 'https://deckofcardsapi.com/api/';
 
     constructor(channelId: string, gameId: Guid = Guid.create()) {
@@ -37,7 +36,7 @@ export class PokerGame {
     }
 
     public async GetNewDeck(): Promise<string> {
-        const response = await PokerGame.httpClient.Get<CardDeck>(`${this.baseUrl}deck/new/shuffle/?deck_count=1`);
+        const response = await httpClient.Get<CardDeck>(`${this.baseUrl}deck/new/shuffle/?deck_count=1`);
 
         let deckId = '';
 
@@ -51,7 +50,7 @@ export class PokerGame {
         if (deckId === '')
             return new Array<Card>();
 
-        const response = await PokerGame.httpClient.Get<DrawedCard>(`${this.baseUrl}deck/${deckId}/draw/?count=${numberOfCards}`);
+        const response = await httpClient.Get<DrawedCard>(`${this.baseUrl}deck/${deckId}/draw/?count=${numberOfCards}`);
 
         return response?.cards ?? new Array<Card>();
     }

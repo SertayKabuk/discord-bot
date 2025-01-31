@@ -3,7 +3,7 @@ import { SlashCommandBuilder, Client, CommandInteraction, Collection, Permission
 export interface SlashCommand {
     command: SlashCommandBuilder,
     execute: (interaction: ChatInputCommandInteraction) => void,
-    autocomplete?: (interaction: AutocompleteInteraction) => void,
+    async autocomplete?: (interaction: AutocompleteInteraction) => void,
     cooldown?: number // in seconds
     category: string
 }
@@ -53,6 +53,9 @@ declare global {
             OLLAMA_URL: string,
             OLLAMA_MODEL: string,
             RABBITMQ_HOST: string,
+            OPEN_ROUTER_URL: string,
+            OPEN_ROUTER_API_KEY: string,
+            OPEN_ROUTER_MODEL: string,
         }
     }
 

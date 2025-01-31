@@ -1,5 +1,5 @@
 import { REST, Routes } from "discord.js";
-import discordClient from "../discord_client_helper";
+import discordClient from "../discord_client_helper.js";
 
 
 export const deleteAllCommands = async () => {

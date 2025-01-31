@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, ComponentType, SlashCommandBuilder } from "discord.js"
-import { PokerGame } from "../../games/PokerGame";
-import { SlashCommand } from "../../types";
+import { PokerGame } from "../../games/PokerGame.js";
+import { SlashCommand } from "../../types.js";
 
 const startingMoney = 100;
 const blindStartingMoney = 2;

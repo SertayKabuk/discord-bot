@@ -1,5 +1,5 @@
-import { Entity, PrimaryKey, Property, ManyToOne, Unique, Index } from '@mikro-orm/core';
-import { ChannelMessage } from './ChannelMessage.entity';
+import { Entity, PrimaryKey, Property, ManyToOne, Rel, Index } from '@mikro-orm/core';
+import { ChannelMessage } from './ChannelMessage.entity.js';
 
 @Entity()
 export class ChannelMessageUrl {
@@ -10,6 +10,6 @@ export class ChannelMessageUrl {
     @Index()
     url!: string;
 
-    @ManyToOne() // plain decorator is enough, type will be sniffer via reflection!
-    channelMessage!: ChannelMessage;
+    @ManyToOne(() => ChannelMessage)
+    channelMessage!: Rel<ChannelMessage>;
 }

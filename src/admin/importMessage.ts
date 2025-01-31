@@ -1,9 +1,9 @@
-import { ChannelMessage } from "../db/entities/ChannelMessage.entity";
-import { ChannelMessageUrl } from "../db/entities/ChannelMessageUrl.entity";
+import { ChannelMessage } from "../db/entities/ChannelMessage.entity.js";
+import { ChannelMessageUrl } from "../db/entities/ChannelMessageUrl.entity.js";
 import { ChannelType } from "discord.js";
-import discordClient from "../discord_client_helper";
-import dbHelper from "../db_helper";
-import { extractUrls } from "../functions";
+import discordClient from "../discord_client_helper.js";
+import dbHelper from "../db_helper.js";
+import { extractUrls } from "../functions.js";
 
 export const importAllMessages = async () => {
   const channel = await discordClient.client.channels.fetch(

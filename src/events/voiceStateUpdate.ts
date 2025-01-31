@@ -1,13 +1,13 @@
 import { VoiceState } from "discord.js";
-import { BotEvent } from "../types";
+import { BotEvent } from "../types.js";
 import {
   getVoiceConnection,
   createAudioPlayer,
   createAudioResource,
 } from "@discordjs/voice";
-import mqConnection from "../rabbit_mq_conn";
+import mqConnection from "../rabbit_mq_conn.js";
 import { Readable } from "stream";
-import { QueueNames } from "../constants/queue-names";
+import { QueueNames } from "../constants/queue-names.js";
 
 const event: BotEvent = {
   name: "voiceStateUpdate",

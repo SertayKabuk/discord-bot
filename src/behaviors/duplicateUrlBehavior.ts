@@ -1,11 +1,11 @@
 import { ChannelType, Message, userMention } from "discord.js";
-import { ChannelMessage } from "../db/entities/ChannelMessage.entity";
-import { ChannelMessageUrl } from "../db/entities/ChannelMessageUrl.entity";
-import { extractUrls } from "../functions";
-import dbHelper from "../db_helper";
-import discordClient from "../discord_client_helper";
-import urlParserHelper from "../url_parser_helper";
-import vectorStoreHelper from "../vector_store_helper";
+import { ChannelMessage } from "../db/entities/ChannelMessage.entity.js";
+import { ChannelMessageUrl } from "../db/entities/ChannelMessageUrl.entity.js";
+import { extractUrls } from "../functions.js";
+import dbHelper from "../db_helper.js";
+import discordClient from "../discord_client_helper.js";
+import urlParserHelper from "../url_parser_helper.js";
+import vectorStoreHelper from "../vector_store_helper.js";
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
 import { v4 as uuidv4 } from "uuid";
 
