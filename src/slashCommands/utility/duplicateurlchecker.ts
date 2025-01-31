@@ -1,4 +1,4 @@
-import { ChannelType, SlashCommandBuilder } from "discord.js";
+import { ChannelType, MessageFlags, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types.js";
 import { ChannelMessage } from "../../db/entities/ChannelMessage.entity.js";
 import dbHelper from "../../db_helper.js";
@@ -36,7 +36,7 @@ const DuplicateUrlCheckCommand: SlashCommand = {
     if (serverId === undefined || serverId === "undefined") {
       await interaction.reply({
         content: "server_id bilgisi gerekli",
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
       });
       return;
     }
@@ -60,7 +60,7 @@ const DuplicateUrlCheckCommand: SlashCommand = {
             const oldMessage = await channel.messages.fetch(element.messageId);
             await interaction.reply({
               content: oldMessage.url,
-              ephemeral: true,
+              flags: MessageFlags.Ephemeral,
             });
           }
         }
@@ -69,7 +69,7 @@ const DuplicateUrlCheckCommand: SlashCommand = {
       await interaction.reply({
         content:
           "paylasan olmamis gibi ama bir de ai ile bakayim az bekle 1dk falan beklersin max",
-        ephemeral: true,
+          flags: MessageFlags.Ephemeral,
       });
 
       const parsedUrl = await urlParserHelper.parse(url);

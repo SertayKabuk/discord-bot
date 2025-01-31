@@ -1,9 +1,15 @@
-import { ChannelType, GuildMember, SlashCommandBuilder } from "discord.js";
+import {
+  ChannelType,
+  GuildMember,
+  MessageFlags,
+  SlashCommandBuilder,
+} from "discord.js";
 import { SlashCommand } from "../../types.js";
 import {
   AudioPlayerStatus,
   createAudioPlayer,
   createAudioResource,
+  getVoiceConnection,
   joinVoiceChannel,
 } from "@discordjs/voice";
 import mqConnection from "../../rabbit_mq_conn.js";
@@ -24,7 +30,7 @@ const command: SlashCommand = {
   execute: async (interaction) => {
     if (interaction.guildId === null || interaction.guild === null) {
       await interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "Servedan dogru cagir beni!",
       });
       return;
@@ -33,7 +39,7 @@ const command: SlashCommand = {
     const input = String(interaction.options.get("input")?.value);
 
     if (input === null) {
-      await interaction.editReply("Bisiy yaz.");
+      await interaction.reply("Bisiy yaz.");
       return;
     }
 
@@ -41,7 +47,7 @@ const command: SlashCommand = {
     const member = interaction.member;
     if (!member) {
       await interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "Seni bulamadim!",
       });
       return;
@@ -55,23 +61,30 @@ const command: SlashCommand = {
       voiceChannel.type !== ChannelType.GuildVoice
     ) {
       await interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "Bir ses kanalinda olmalisin!",
       });
 
       return;
     }
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
-    const connection = joinVoiceChannel({
-      channelId: voiceChannel.id,
-      guildId: interaction.guildId,
-      adapterCreator: interaction.guild.voiceAdapterCreator,
-    });
+    let connection = getVoiceConnection(interaction.guildId);
+
+    if (!connection) {
+      connection = joinVoiceChannel({
+        channelId: voiceChannel.id,
+        guildId: interaction.guildId,
+        adapterCreator: interaction.guild.voiceAdapterCreator,
+      });
+    }
 
     try {
-      const base64Wav = await mqConnection.sendToQueue(QueueNames.TTS_INPUT, input);
+      const base64Wav = await mqConnection.sendToQueue(
+        QueueNames.TTS_INPUT,
+        input
+      );
 
       const binaryWav = Buffer.from(base64Wav, "base64");
 
@@ -81,7 +94,9 @@ const command: SlashCommand = {
       const player = createAudioPlayer();
 
       player.on(AudioPlayerStatus.Playing, () => {
-        console.log(`The audio player has started playing! ${interaction.user.displayName} : ${input}`);
+        console.log(
+          `The audio player has started playing! ${interaction.user.displayName} : ${input}`
+        );
       });
 
       player.on("error", (error) => {
@@ -97,13 +112,13 @@ const command: SlashCommand = {
         connection.destroy();
       });
 
-      await interaction.editReply({
+      await interaction.reply({
         content: "Sövdüm!",
       });
     } catch (error) {
       console.log(error);
       connection.destroy();
-      await interaction.editReply("soyleyemem");
+      await interaction.reply("soyleyemem");
     }
   },
   cooldown: 3,

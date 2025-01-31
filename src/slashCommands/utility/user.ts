@@ -1,4 +1,4 @@
-import { GuildMember, SlashCommandBuilder } from "discord.js"
+import { GuildMember, MessageFlags, SlashCommandBuilder } from "discord.js"
 import { SlashCommand } from "../../types.js";
 
 
@@ -9,7 +9,7 @@ const command: SlashCommand = {
 	execute: async (interaction) => {
 		// interaction.user is the object representing the User who ran the command
 		// interaction.member is the GuildMember object, which represents the user in the specific guild
-		await interaction.reply({ content: `This command was run by ${interaction.user.username}, who joined on ${(interaction?.member as GuildMember)?.joinedAt}.`, ephemeral: true });
+		await interaction.reply({ content: `This command was run by ${interaction.user.username}, who joined on ${(interaction?.member as GuildMember)?.joinedAt}.`, flags: MessageFlags.Ephemeral });
 	},
 	cooldown: 3,
 	category: "utility"

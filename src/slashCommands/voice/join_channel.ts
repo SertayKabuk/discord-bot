@@ -1,4 +1,4 @@
-import { ChannelType, GuildMember, SlashCommandBuilder } from "discord.js";
+import { ChannelType, GuildMember, MessageFlags, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types.js";
 import { joinVoiceChannel } from "@discordjs/voice";
 
@@ -9,7 +9,7 @@ const command: SlashCommand = {
   execute: async (interaction) => {
     if (interaction.guildId === null || interaction.guild === null) {
       await interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "Servedan dogru cagir beni!",
       });
       return;
@@ -19,7 +19,7 @@ const command: SlashCommand = {
     const member = interaction.member;
     if (!member) {
       await interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "Seni bulamadim!",
       });
       return;
@@ -33,7 +33,7 @@ const command: SlashCommand = {
       voiceChannel.type !== ChannelType.GuildVoice
     ) {
       await interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "Bir ses kanalinda olmalisin!",
       });
 

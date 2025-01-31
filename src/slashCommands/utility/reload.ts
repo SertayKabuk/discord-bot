@@ -1,4 +1,4 @@
-import { GuildMember, SlashCommandBuilder, PermissionFlagsBits } from "discord.js"
+import { GuildMember, SlashCommandBuilder, PermissionFlagsBits, MessageFlags } from "discord.js"
 import { SlashCommand } from "../../types.js";
 import path, { join } from "path";
 
@@ -32,7 +32,7 @@ const command: SlashCommand = {
 		}
 		catch (error) {
 			console.error(error);
-			await interaction.reply({ content: `There was an error while reloading a command \`${command.command.name}}\`:\n\`${error.message}\``, ephemeral: true });
+			await interaction.reply({ content: `There was an error while reloading a command \`${command.command.name}}\`:\n\`${error.message}\``, flags: MessageFlags.Ephemeral });
 		}
 	},
 	cooldown: 3,

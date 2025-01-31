@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { MessageFlags, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types.js";
 import {
   getVoiceConnection,
@@ -25,13 +25,13 @@ const command: SlashCommand = {
     const input = String(interaction.options.get("input")?.value);
 
     if (input === null) {
-      await interaction.editReply("Bisiy yaz.");
+      await interaction.reply("Bisiy yaz.");
       return;
     }
 
     if (interaction.guildId === null || interaction.guild === null) {
       await interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "Servedan dogru cagir beni!",
       });
       return;
@@ -41,17 +41,20 @@ const command: SlashCommand = {
 
     if (!connection) {
       await interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "Bot kanalda degil, kanala cagir!",
       });
       return;
     }
 
-    await interaction.deferReply({ ephemeral: true });
-    await interaction.editReply({ content: "hazirliyorum..." });
+    await interaction.deferReply();
+    await interaction.reply({ flags: MessageFlags.Ephemeral, content: "hazirliyorum..." });
 
     try {
-      const base64Wav = await mqConnection.sendToQueue(QueueNames.TTS_INPUT, input);
+      const base64Wav = await mqConnection.sendToQueue(
+        QueueNames.TTS_INPUT,
+        input
+      );
 
       const binaryWav = Buffer.from(base64Wav, "base64");
 
@@ -61,7 +64,9 @@ const command: SlashCommand = {
       const player = createAudioPlayer();
 
       player.on(AudioPlayerStatus.Playing, () => {
-        console.log(`The audio player has started playing! ${interaction.user.displayName} : ${input}`);
+        console.log(
+          `The audio player has started playing! ${interaction.user.displayName} : ${input}`
+        );
       });
 
       player.on("error", (error) => {
@@ -76,12 +81,12 @@ const command: SlashCommand = {
         subscription?.unsubscribe();
       });
 
-      await interaction.editReply({
+      await interaction.reply({
         content: "dedim",
       });
     } catch (error) {
       console.log(error);
-      await interaction.editReply("soyleyemem");
+      await interaction.reply("soyleyemem");
     }
   },
   cooldown: 3,

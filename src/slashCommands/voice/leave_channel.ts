@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { MessageFlags, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types.js";
 import { getVoiceConnection } from "@discordjs/voice";
 
@@ -9,7 +9,7 @@ const command: SlashCommand = {
   execute: async (interaction) => {
     if (interaction.guildId === null || interaction.guild === null) {
       await interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "Serverdan dogru cagir beni!",
       });
       return;
@@ -19,7 +19,7 @@ const command: SlashCommand = {
 
     if (!connection) {
       await interaction.reply({
-        ephemeral: true,
+        flags: MessageFlags.Ephemeral,
         content: "Bir ses kanalinda olmalisin!",
       });
       return;

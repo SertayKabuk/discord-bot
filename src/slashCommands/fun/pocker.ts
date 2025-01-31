@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, ComponentType, SlashCommandBuilder } from "discord.js"
+import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, ComponentType, MessageFlags, SlashCommandBuilder } from "discord.js"
 import { PokerGame } from "../../games/PokerGame.js";
 import { SlashCommand } from "../../types.js";
 
@@ -46,13 +46,13 @@ const command: SlashCommand = {
 			if ((i.component as ButtonComponent).customId === 'join') {
 				// already drawed cards
 				if (acceptedUsers.some(user => user.id === i.user.id)) {
-					await i.reply({ content: 'Zaten katilmissin az dur.', ephemeral: true });
+					await i.reply({ content: 'Zaten katilmissin az dur.', flags: MessageFlags.Ephemeral });
 				}
 				else {
 					acceptedUsers.push(i.user);
 					console.log(`Collected from ${i.user.tag}`);
 
-					await i.deferReply({ ephemeral: true });
+					await i.deferReply({ flags: MessageFlags.Ephemeral });
 
 					let replyMessage = '';
 

@@ -1,4 +1,4 @@
-import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
+import { MessageFlags, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types.js";
 import discordClient from "../../discord_client_helper.js";
 
@@ -26,7 +26,7 @@ const SendDmCommand: SlashCommand = {
         //send to me
         await discordClient.client.users.send(process.env.ADMIN_USER_ID, "fromUser:" + interaction.user.displayName + " toUserId:" + userId + " " + message);
 
-        await interaction.reply({ content: "Sent.", ephemeral: true });
+        await interaction.reply({ content: "Sent.", flags: MessageFlags.Ephemeral });
     },
     cooldown: 10,
     category: "utilty"
