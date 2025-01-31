@@ -137,6 +137,10 @@ const command: SlashCommand = {
         const chatReponse = await openai.chat(
           [
             {
+              role: "system",
+              content: "Türkçe olarak cevap ver. Cevabını sese dönüştüreceğim. O yüzden kısa ve net cevaplar ver.",
+            },
+            {
               role: "user",
               content: input,
             },
@@ -149,7 +153,7 @@ const command: SlashCommand = {
 
           const base64Wav = await mqConnection.sendToQueue(
             QueueNames.TTS_INPUT,
-            input
+            chatReponse
           );
 
           const binaryWav = Buffer.from(base64Wav, "base64");
@@ -186,10 +190,6 @@ const command: SlashCommand = {
           player.on(AudioPlayerStatus.Idle, () => {
             subscription?.unsubscribe();
             connection.destroy();
-          });
-
-          await interaction.editReply({
-            content: "Konuştum!",
           });
         }
       } catch (error) {
