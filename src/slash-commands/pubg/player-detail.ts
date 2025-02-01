@@ -78,7 +78,7 @@ const command: SlashCommand = {
             }
           }
         } catch (matchError) {
-          // If match detail fails, leave statsField as 'N/A'
+          console.error("Error fetching match details", matchError);
         }
       }
 
