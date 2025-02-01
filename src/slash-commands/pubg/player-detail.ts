@@ -23,11 +23,12 @@ const command: SlashCommand = {
       return;
     }
     try {
+      interaction.deferReply();
+
       const playerData = await getPlayerDetail(nickname);
       // Use the first player from the data array
       if (playerData.data.length === 0) {
         await interaction.reply({
-          flags: MessageFlags.Ephemeral,
           content: "No player found for that nickname.",
         });
         return;
@@ -65,7 +66,6 @@ const command: SlashCommand = {
           .setFooter({ text: "PUBG Player Details" })
           .setTimestamp();
         await interaction.reply({
-          flags: MessageFlags.Ephemeral,
           embeds: [embed],
         });
       } else {
