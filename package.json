@@ -36,7 +36,6 @@
     "dotenv": "^16.4.7",
     "express": "^5.0.0",
     "ffmpeg-static": "^5.2.0",
-    "fs": "^0.0.1-security",
     "langchain": "^0.3.14",
     "npm-check-updates": "^17.1.14",
     "openai": "^4.80.1",
