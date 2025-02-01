@@ -58,7 +58,7 @@ const command: SlashCommand = {
           // Find the participant whose stats.playerId equals the player's id
 
           for (const element of matchResponse.included) {
-            if (element.attributes.stats.playerId == player.id) {
+            if (element.attributes?.stats?.playerId === player.id) {
               const stats = element.attributes.stats;
               statsField = {
                 name: "Last Match Stats",
@@ -94,11 +94,6 @@ const command: SlashCommand = {
           {
             name: "Clan ID",
             value: player.attributes.clanId || "N/A",
-            inline: true,
-          },
-          {
-            name: "Patch Version",
-            value: player.attributes.patchVersion || "N/A",
             inline: true,
           },
           statsField,
