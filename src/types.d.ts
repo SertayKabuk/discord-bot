@@ -55,6 +55,7 @@ declare global {
             RABBITMQ_HOST: string,
             OPEN_ROUTER_URL: string,
             OPEN_ROUTER_API_KEY: string,
+            PUBG_API_TOKEN: string,
         }
     }
 
