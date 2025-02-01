@@ -1,6 +1,6 @@
 import { MessageFlags, PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types.js";
-import discordClient from "../../discord_client_helper.js";
+import discordClient from "../../discord-client-helper.js";
 
 const SendDmCommand: SlashCommand = {
     command: new SlashCommandBuilder()

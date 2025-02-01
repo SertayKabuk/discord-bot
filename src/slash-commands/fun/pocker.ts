@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonComponent, ButtonStyle, ComponentType, MessageFlags, SlashCommandBuilder } from "discord.js"
-import { PokerGame } from "../../games/PokerGame.js";
+import { PokerGame } from "../../games/poker-game.js";
 import { SlashCommand } from "../../types.js";
 
 const startingMoney = 100;
@@ -59,7 +59,7 @@ const command: SlashCommand = {
 					// draw 2 cards from deck for each user
 					let cards = await game.DrawCardsFromDeck(deckId, blindStartingMoney);
 
-					game.SetUser(i.user.id, i.user.globalName as string, cards, startingMoney);
+					game.SetUser(i.user.id, i.user.username, cards, startingMoney);
 
 					let imageUrls = game.GetCardImageUrl(cards);
 
@@ -83,7 +83,7 @@ const command: SlashCommand = {
 			let summation = '';
 
 			if (acceptedUsers.length > 0) {
-				summation = acceptedUsers.map(user => user.globalName).join('\n');
+				summation = acceptedUsers.map(user => user.username).join('\n');
 
 				const dealer = game.SetDealer();
 				game.StartGame(blindStartingMoney);

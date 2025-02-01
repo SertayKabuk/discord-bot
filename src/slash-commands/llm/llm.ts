@@ -5,49 +5,10 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { SlashCommand } from "../../types.js";
-import openai from "../../openai_helper.js";
+import openai from "../../openai-helper.js";
 import { concat } from "@langchain/core/utils/stream";
-import { httpClient } from "../../httpClient.js";
-import {
-  AudioPlayerStatus,
-  createAudioPlayer,
-  createAudioResource,
-  getVoiceConnection,
-  joinVoiceChannel,
-} from "@discordjs/voice";
-import mqConnection from "../../rabbit_mq_conn.js";
-import { Readable } from "stream";
-import { QueueNames } from "../../constants/queue-names.js";
-
-// Define interfaces for API response
-interface ApiResponse {
-  data: Model[];
-}
-
-interface Model {
-  id: string;
-  name: string;
-  created: number;
-  description: string;
-  context_length: number;
-  architecture: {
-    modality: string;
-    tokenizer: string;
-    instruct_type: string;
-  };
-  pricing: {
-    prompt: string;
-    completion: string;
-    image: string;
-    request: string;
-  };
-  top_provider: {
-    context_length: number;
-    max_completion_tokens: number;
-    is_moderated: boolean;
-  };
-  per_request_limits: any;
-}
+import { playTTS } from "../../tt-helper.js";
+import { fetchFilteredLLMModels } from "../../api/openrouter-helper.js";
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()
@@ -74,16 +35,7 @@ const command: SlashCommand = {
     })
     .setDescription("Chat with LLM!") as SlashCommandBuilder,
   autocomplete: async (interaction) => {
-    const response = await httpClient.Get<ApiResponse>(
-      process.env.OPEN_ROUTER_URL + "/models"
-    );
-
-    const filteredModels = response?.data.filter(
-      (model) =>
-        model.pricing.prompt === "0" &&
-        model.architecture.modality === "text->text"
-    );
-
+    const filteredModels = await fetchFilteredLLMModels();
     if (!filteredModels) return;
 
     interaction.respond(
@@ -94,13 +46,15 @@ const command: SlashCommand = {
     );
   },
   execute: async (interaction) => {
-    await interaction.deferReply();
     const input = interaction.options.getString("prompt");
     const selectedModel = interaction.options.getString("model");
     const talk = interaction.options.getBoolean("talk") ?? false;
 
     if (!input || input === null || input === "") {
-      await interaction.reply("Bisiy yaz.");
+      await interaction.reply({
+        flags: MessageFlags.Ephemeral,
+        content: "Bir seyler soylemem lazim!",
+      });
       return;
     }
 
@@ -139,6 +93,8 @@ const command: SlashCommand = {
       }
 
       try {
+        await interaction.deferReply();
+
         const chatReponse = await openai.chat(
           [
             {
@@ -152,53 +108,7 @@ const command: SlashCommand = {
 
         if (chatReponse) {
           await interaction.editReply(chatReponse);
-
-          const base64Wav = await mqConnection.sendToQueue(
-            QueueNames.TTS_INPUT,
-            chatReponse
-          );
-
-          const binaryWav = Buffer.from(base64Wav, "base64");
-
-          // Create readable stream from buffer
-          const audioStream = Readable.from(binaryWav);
-
-          let connection = getVoiceConnection(interaction.guildId);
-
-          let amIAlreadyInVoiceChannel = true;
-
-          if (!connection) {
-            amIAlreadyInVoiceChannel = false;
-
-            connection = joinVoiceChannel({
-              channelId: voiceChannel.id,
-              guildId: interaction.guildId,
-              adapterCreator: interaction.guild.voiceAdapterCreator,
-            });
-          }
-
-          const player = createAudioPlayer();
-
-          player.on(AudioPlayerStatus.Playing, () => {
-            console.log(
-              `The audio player has started playing! ${interaction.user.displayName} : ${input}`
-            );
-          });
-
-          player.on("error", (error) => {
-            console.error(`Error: ${error.message} with resource ${input}`);
-          });
-
-          const resource = createAudioResource(audioStream);
-          const subscription = connection.subscribe(player);
-          player.play(resource);
-
-          player.on(AudioPlayerStatus.Idle, () => {
-            subscription?.unsubscribe();
-            if (!amIAlreadyInVoiceChannel) {
-              connection.destroy();
-            }
-          });
+          await playTTS(interaction, voiceChannel.id, chatReponse);
         }
       } catch (error) {
         console.log(error);
@@ -206,6 +116,8 @@ const command: SlashCommand = {
       }
     } else {
       try {
+        await interaction.deferReply();
+
         const stream = openai.stream(
           [
             {

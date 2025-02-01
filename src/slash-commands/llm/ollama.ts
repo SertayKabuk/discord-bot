@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types.js";
-import ollama from "../../ollama_helper.js";
+import ollama from "../../ollama-helper.js";
 import { concat } from "@langchain/core/utils/stream";
 
 const command: SlashCommand = {

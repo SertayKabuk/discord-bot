@@ -1,8 +1,8 @@
 import { Message } from "discord.js";
 import { BotEvent } from "../types.js";
-import { checkDuplicateUrl } from "../behaviors/duplicateUrlBehavior.js";
-import { logDmMessage } from "../behaviors/dmMessageBehavior.js";
-import discordClient from "../discord_client_helper.js";
+import { checkDuplicateUrl } from "../behaviors/duplicate-url-behavior.js";
+import { logDmMessage } from "../behaviors/dm-message-behavior.js";
+import discordClient from "../discord-client-helper.js";
 
 
 const event: BotEvent = {

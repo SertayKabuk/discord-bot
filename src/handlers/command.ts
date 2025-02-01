@@ -14,7 +14,7 @@ export default async (client: Client) => {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = dirname(__filename);
 
-  let slashCommandsDir = path.join(__dirname, "../slashCommands");
+  let slashCommandsDir = path.join(__dirname, "../slash-commands");
   const slashCommandsFolder = readdirSync(slashCommandsDir);
   let commandsDir = path.join(__dirname, "../commands");
   const commandsFolder = readdirSync(commandsDir);
@@ -26,12 +26,15 @@ export default async (client: Client) => {
     );
 
     for (const file of commandFiles) {
-      if (!file.endsWith(".js")) return;
       const filePath = path.join(commandsPath, file);
-      const commandModule = await import(pathToFileURL(filePath).href);
-      let command: SlashCommand = commandModule.default;
-      slashCommands.push(command.command);
-      client.slashCommands.set(command.command.name, command);
+      try {
+        const commandModule = await import(pathToFileURL(filePath).href);
+        let command: SlashCommand = commandModule.default;
+        slashCommands.push(command.command);
+        client.slashCommands.set(command.command.name, command);
+      } catch (error) {
+        console.error(`Failed importing slash command ${file}:`, error);
+      }
     }
   }
 
@@ -42,12 +45,15 @@ export default async (client: Client) => {
     );
 
     for (const file of commandFiles) {
-      if (!file.endsWith(".js")) return;
       const filePath = path.join(commandsPath, file);
-      const commandModule = await import(pathToFileURL(filePath).href);
-      let command: Command = commandModule.default;
-      commands.push(command);
-      client.commands.set(command.name, command);
+      try {
+        const commandModule = await import(pathToFileURL(filePath).href);
+        let command: Command = commandModule.default;
+        commands.push(command);
+        client.commands.set(command.name, command);
+      } catch (error) {
+        console.error(`Failed importing command ${file}:`, error);
+      }
     }
   }
 
@@ -78,6 +84,6 @@ export default async (client: Client) => {
       );
     })
     .catch((e) => {
-      console.log(e);
+      console.error(e);
     });
 };

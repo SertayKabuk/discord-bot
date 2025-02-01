@@ -15,17 +15,21 @@ export default (client: Client) => {
   readdirSync(eventsDir).forEach(async (file) => {
     if (!file.endsWith(".js")) return;
     const modulePath = join(eventsDir, file);
-    const eventModule = await import(pathToFileURL(modulePath).href);
 
-    const event: BotEvent = eventModule.default;
-    event.once
-      ? client.once(event.name, (...args) => event.execute(...args))
-      : client.on(event.name, (...args) => event.execute(...args));
-    console.log(
-      color(
-        "text",
-        `🌠 Successfully loaded event ${color("variable", event.name)}`
-      )
-    );
+    try {
+      const eventModule = await import(pathToFileURL(modulePath).href);
+      const event: BotEvent = eventModule.default;
+      event.once
+        ? client.once(event.name, (...args) => event.execute(...args))
+        : client.on(event.name, (...args) => event.execute(...args));
+      console.log(
+        color(
+          "text",
+          `🌠 Successfully loaded event ${color("variable", event.name)}`
+        )
+      );
+    } catch (error) {
+      console.error(`Failed importing event ${file}:`, error);
+    }
   });
 };

@@ -1,11 +1,11 @@
 import "./env.js";
-import { HttpServer } from "./httpServer.js";
-import discordClient from "./discord_client_helper.js";
-import ollama from "./ollama_helper.js";
-import dbHelper from "./db_helper.js";
-import graphQLHelper from "./graphQL_helper.js";
-import vectorStoreHelper from "./vector_store_helper.js";
-import openai from "./openai_helper.js";
+import { HttpServer } from "./http-server.js";
+import discordClient from "./discord-client-helper.js";
+import ollama from "./ollama-helper.js";
+import dbHelper from "./db-helper.js";
+import vectorStoreHelper from "./vector-store-helper.js";
+import openai from "./openai-helper.js";
+import graphQLHelper from "./graphql-helper.js";
 
 async function main() {
     await vectorStoreHelper.init();
