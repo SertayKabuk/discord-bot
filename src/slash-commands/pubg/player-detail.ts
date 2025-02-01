@@ -36,50 +36,77 @@ const command: SlashCommand = {
 
       const player = playerData.data[0];
 
-      // Retrieve first match id from player's matches
-      const firstMatchId = player.relationships.matches.data[0]?.id;
-
-      let statsField = {
-        name: "Last Match Stats",
-        value: "N/A",
-        inline: false,
-      };
-      let gameMode = "N/A";
-      let mapName = "N/A";
-      let createdAt = "N/A"; // New variable for match creation date
-
-      if (firstMatchId) {
+      // Retrieve last 5 match details
+      const matchList = player.relationships.matches.data.slice(0, 5);
+      const matchDataList = [];
+      for (const matchObj of matchList) {
         try {
-          const matchResponse = await getMatchDetail(firstMatchId);
-          // Update gameMode, mapName, and createdAt from match details
-          gameMode = matchResponse.data.attributes.gameMode || "N/A";
-          mapName = matchResponse.data.attributes.mapName || "N/A";
-          createdAt = matchResponse.data.attributes.createdAt || "N/A";
-          // Find the participant whose stats.playerId equals the player's id
-
-          for (const element of matchResponse.included) {
-            if (element.attributes?.stats?.playerId === player.id) {
-              const stats = element.attributes.stats;
-              statsField = {
-                name: "Last Match Stats",
-                value: `Kills: ${stats.kills}
-                        Damage: ${stats.damageDealt}
-                        Survived: ${stats.timeSurvived}s
-                        Assists: ${stats.assists}
-                        Headshot Kills: ${stats.headshotKills}
-                        DBNOs: ${stats.DBNOs}
-                        WalkDistance: ${stats.walkDistance}
-                        EideDistance: ${stats.rideDistance}
-                        Revives: ${stats.revives}`,
-                inline: false,
-              };
-
-              break;
-            }
-          }
-        } catch (matchError) {
-          console.error("Error fetching match details", matchError);
+          const matchDetail = await getMatchDetail(matchObj.id);
+          matchDataList.push(matchDetail);
+        } catch (e) {
+          console.error(`Error fetching match ${matchObj.id}`, e);
         }
+      }
+
+      // Aggregate stats and collect match summaries
+      let totalKills = 0,
+        totalDamage = 0,
+        totalSurvived = 0,
+        totalAssists = 0,
+        totalHeadshotKills = 0,
+        totalDBNOs = 0,
+        totalWalkDistance = 0,
+        totalRideDistance = 0,
+        totalRevives = 0;
+      let countMatches = 0;
+      const matchSummaries: string[] = [];
+
+      for (const matchResponse of matchDataList) {
+        const matchId = matchResponse.data.id;
+        const participant = matchResponse.included.find(
+          (element: any) => element.attributes?.stats?.playerId === player.id
+        );
+        if (participant) {
+          const stats = participant.attributes.stats;
+          totalKills += stats.kills;
+          totalDamage += stats.damageDealt;
+          totalSurvived += stats.timeSurvived;
+          totalAssists += stats.assists;
+          totalHeadshotKills += stats.headshotKills;
+          totalDBNOs += stats.DBNOs;
+          totalWalkDistance += stats.walkDistance;
+          totalRideDistance += stats.rideDistance;
+          totalRevives += stats.revives;
+          countMatches++;
+          
+          // Retrieve additional match details
+          const gameMode = matchResponse.data.attributes.gameMode || "N/A";
+          const mapName = matchResponse.data.attributes.mapName || "N/A";
+          const createdAt = matchResponse.data.attributes.createdAt || "N/A";
+          
+          matchSummaries.push(
+            `Match ${matchId}: Kills ${stats.kills}, Damage ${stats.damageDealt}, Survived ${stats.timeSurvived}s, Game Mode ${gameMode}, Map ${mapName}, Created At ${createdAt}`
+          );
+        }
+      }
+
+      let avgStats = "N/A";
+      if (countMatches > 0) {
+        avgStats = `Kills: ${(totalKills / countMatches).toFixed(1)}
+                    Damage: ${(totalDamage / countMatches).toFixed(1)}
+                    Survived: ${(totalSurvived / countMatches).toFixed(1)}s
+                    Assists: ${(totalAssists / countMatches).toFixed(1)}
+                    Headshot Kills: ${(
+                      totalHeadshotKills / countMatches
+                    ).toFixed(1)}
+                    DBNOs: ${(totalDBNOs / countMatches).toFixed(1)}
+                    WalkDistance: ${(totalWalkDistance / countMatches).toFixed(
+                      1
+                    )}
+                    RideDistance: ${(totalRideDistance / countMatches).toFixed(
+                      1
+                    )}
+                    Revives: ${(totalRevives / countMatches).toFixed(1)}`;
       }
 
       const embed = new EmbedBuilder()
@@ -96,10 +123,17 @@ const command: SlashCommand = {
             value: player.attributes.clanId || "N/A",
             inline: true,
           },
-          statsField,
-          { name: "Game Mode", value: gameMode, inline: true },
-          { name: "Map Name", value: mapName, inline: true },
-          { name: "Match Created At", value: createdAt, inline: true } // New embed field for match creation date
+          // New embed fields for last 5 matches
+          {
+            name: "Last 5 Match Average Stats",
+            value: avgStats,
+            inline: false,
+          },
+          {
+            name: "Last 5 Match Details",
+            value: matchSummaries.length ? matchSummaries.join("\n") : "N/A",
+            inline: false,
+          }
         )
         .setFooter({ text: "PUBG Player Details" })
         .setTimestamp();
