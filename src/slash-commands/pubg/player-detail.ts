@@ -23,7 +23,7 @@ const command: SlashCommand = {
       return;
     }
     try {
-      interaction.deferReply();
+      await interaction.deferReply();
 
       const playerData = await getPlayerDetail(nickname);
       // Use the first player from the data array
