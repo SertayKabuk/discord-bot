@@ -72,7 +72,11 @@ const command: SlashCommand = {
 
     let connection = getVoiceConnection(interaction.guildId);
 
+    let amIAlreadyInVoiceChannel = true;
+
     if (!connection) {
+      amIAlreadyInVoiceChannel = false;
+
       connection = joinVoiceChannel({
         channelId: voiceChannel.id,
         guildId: interaction.guildId,
@@ -109,7 +113,9 @@ const command: SlashCommand = {
 
       player.on(AudioPlayerStatus.Idle, () => {
         subscription?.unsubscribe();
-        connection.destroy();
+        if (!amIAlreadyInVoiceChannel) {
+          connection.destroy();
+        }
       });
 
       await interaction.reply({

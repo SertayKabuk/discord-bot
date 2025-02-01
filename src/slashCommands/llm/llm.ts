@@ -1,4 +1,9 @@
-import { ChannelType, GuildMember, MessageFlags, SlashCommandBuilder } from "discord.js";
+import {
+  ChannelType,
+  GuildMember,
+  MessageFlags,
+  SlashCommandBuilder,
+} from "discord.js";
 import { SlashCommand } from "../../types.js";
 import openai from "../../openai_helper.js";
 import { concat } from "@langchain/core/utils/stream";
@@ -137,12 +142,9 @@ const command: SlashCommand = {
         const chatReponse = await openai.chat(
           [
             {
-              role: "system",
-              content: "Türkçe olarak cevap ver. Cevabını sese dönüştüreceğim. O yüzden kısa ve net cevaplar ver.",
-            },
-            {
               role: "user",
-              content: input,
+              content: `Detay: Türkçe olarak cevap ver. Cevabını sese dönüştüreceğim. O yüzden kısa ve net cevaplar ver.
+              Soru: ${input}`,
             },
           ],
           selectedModel ?? "gpt-3.5-turbo"
@@ -163,7 +165,11 @@ const command: SlashCommand = {
 
           let connection = getVoiceConnection(interaction.guildId);
 
+          let amIAlreadyInVoiceChannel = true;
+
           if (!connection) {
+            amIAlreadyInVoiceChannel = false;
+
             connection = joinVoiceChannel({
               channelId: voiceChannel.id,
               guildId: interaction.guildId,
@@ -189,7 +195,9 @@ const command: SlashCommand = {
 
           player.on(AudioPlayerStatus.Idle, () => {
             subscription?.unsubscribe();
-            connection.destroy();
+            if (!amIAlreadyInVoiceChannel) {
+              connection.destroy();
+            }
           });
         }
       } catch (error) {
