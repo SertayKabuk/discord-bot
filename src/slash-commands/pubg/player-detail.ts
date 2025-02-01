@@ -28,7 +28,7 @@ const command: SlashCommand = {
       const playerData = await getPlayerDetail(nickname);
       // Use the first player from the data array
       if (playerData.data.length === 0) {
-        await interaction.reply({
+        await interaction.editReply({
           content: "No player found for that nickname.",
         });
         return;
@@ -65,18 +65,16 @@ const command: SlashCommand = {
           )
           .setFooter({ text: "PUBG Player Details" })
           .setTimestamp();
-        await interaction.reply({
+        await interaction.editReply({
           embeds: [embed],
         });
       } else {
-        await interaction.reply({
-          flags: MessageFlags.Ephemeral,
+        await interaction.editReply({
           content: "No player found for that nickname.",
         });
       }
     } catch (error) {
-      await interaction.reply({
-        flags: MessageFlags.Ephemeral,
+      await interaction.editReply({
         content: "Failed to retrieve player details.",
       });
     }
