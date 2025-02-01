@@ -40,10 +40,15 @@ const command: SlashCommand = {
       const lastMatchId = player.relationships.matches.data.slice(-1)[0]?.id;
       
       let statsField = { name: "Last Match Stats", value: "N/A", inline: false };
+      let gameMode = "N/A";
+      let mapName = "N/A";
 
       if (lastMatchId) {
         try {
           const matchResponse = await getMatchDetail(lastMatchId);
+          // Update gameMode and mapName from match details
+          gameMode = matchResponse.data.attributes.gameMode || "N/A";
+          mapName = matchResponse.data.attributes.mapName || "N/A";
           // Find the participant whose stats.playerId equals the player's id
           const participant = matchResponse.included.find((item) => item.attributes.stats.playerId === player.id);
           if (participant) {
@@ -86,7 +91,9 @@ const command: SlashCommand = {
             value: player.attributes.patchVersion || "N/A",
             inline: true,
           },
-          statsField
+          statsField,
+          { name: "Game Mode", value: gameMode, inline: true },
+          { name: "Map Name", value: mapName, inline: true }
         )
         .setFooter({ text: "PUBG Player Details" })
         .setTimestamp();
