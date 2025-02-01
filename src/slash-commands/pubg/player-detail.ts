@@ -78,39 +78,42 @@ const command: SlashCommand = {
           totalRideDistance += stats.rideDistance;
           totalRevives += stats.revives;
           countMatches++;
-          
+
           // Retrieve additional match details
           const gameMode = matchResponse.data.attributes.gameMode || "N/A";
           const mapName = matchResponse.data.attributes.mapName || "N/A";
           const createdAt = matchResponse.data.attributes.createdAt || "N/A";
-          
+
           matchSummaries.push(
-            `Match ${matchId}: Kills ${stats.kills}, Damage ${stats.damageDealt}, Survived ${stats.timeSurvived}s, Game Mode ${gameMode}, Map ${mapName}, Created At ${createdAt}`
+            `Kills ${stats.kills}, Damage ${stats.damageDealt}, Survived ${stats.timeSurvived}s, Game Mode ${gameMode}, Map ${mapName}, Created At ${createdAt}`
           );
         }
       }
 
+      // Reformat average stats with bullet points for clarity
       let avgStats = "N/A";
       if (countMatches > 0) {
-        avgStats = `Kills: ${(totalKills / countMatches).toFixed(1)}
-                    Damage: ${(totalDamage / countMatches).toFixed(1)}
-                    Survived: ${(totalSurvived / countMatches).toFixed(1)}s
-                    Assists: ${(totalAssists / countMatches).toFixed(1)}
-                    Headshot Kills: ${(
+        avgStats = `• Kills: ${(totalKills / countMatches).toFixed(1)}
+                    • Damage: ${(totalDamage / countMatches).toFixed(1)}
+                    • Survived: ${(totalSurvived / countMatches).toFixed(1)}s
+                    • Assists: ${(totalAssists / countMatches).toFixed(1)}
+                    • Headshot Kills: ${(
                       totalHeadshotKills / countMatches
                     ).toFixed(1)}
-                    DBNOs: ${(totalDBNOs / countMatches).toFixed(1)}
-                    WalkDistance: ${(totalWalkDistance / countMatches).toFixed(
-                      1
-                    )}
-                    RideDistance: ${(totalRideDistance / countMatches).toFixed(
-                      1
-                    )}
-                    Revives: ${(totalRevives / countMatches).toFixed(1)}`;
+                    • DBNOs: ${(totalDBNOs / countMatches).toFixed(1)}
+                    • Walk Distance: ${(
+                      totalWalkDistance / countMatches
+                    ).toFixed(1)}
+                    • Ride Distance: ${(
+                      totalRideDistance / countMatches
+                    ).toFixed(1)}
+                    • Revives: ${(totalRevives / countMatches).toFixed(1)}`;
       }
 
       const embed = new EmbedBuilder()
+        .setColor(0x3498db) // set a cool blue color
         .setTitle(player.attributes.name)
+        .setThumbnail("https://wstatic-prod.pubg.com/web/live/static/favicons/android-icon-192x192.png") // add a thumbnail URL if desired
         .addFields(
           { name: "Player ID", value: player.id, inline: true },
           {
@@ -123,7 +126,6 @@ const command: SlashCommand = {
             value: player.attributes.clanId || "N/A",
             inline: true,
           },
-          // New embed fields for last 5 matches
           {
             name: "Last 5 Match Average Stats",
             value: avgStats,
