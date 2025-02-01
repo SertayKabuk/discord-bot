@@ -36,36 +36,46 @@ const command: SlashCommand = {
 
       const player = playerData.data[0];
 
-      // Retrieve last match id from player's matches
-      const lastMatchId = player.relationships.matches.data.slice(-1)[0]?.id;
-      
-      let statsField = { name: "Last Match Stats", value: "N/A", inline: false };
+      // Retrieve first match id from player's matches
+      const firstMatchId = player.relationships.matches.data[0]?.id;
+
+      let statsField = {
+        name: "Last Match Stats",
+        value: "N/A",
+        inline: false,
+      };
       let gameMode = "N/A";
       let mapName = "N/A";
+      let createdAt = "N/A"; // New variable for match creation date
 
-      if (lastMatchId) {
+      if (firstMatchId) {
         try {
-          const matchResponse = await getMatchDetail(lastMatchId);
-          // Update gameMode and mapName from match details
+          const matchResponse = await getMatchDetail(firstMatchId);
+          // Update gameMode, mapName, and createdAt from match details
           gameMode = matchResponse.data.attributes.gameMode || "N/A";
           mapName = matchResponse.data.attributes.mapName || "N/A";
+          createdAt = matchResponse.data.attributes.createdAt || "N/A";
           // Find the participant whose stats.playerId equals the player's id
-          const participant = matchResponse.included.find((item) => item.attributes.stats.playerId === player.id);
-          if (participant) {
-            const stats = participant.attributes.stats;
-            statsField = {
-              name: "Last Match Stats",
-              value: `Kills: ${stats.kills}
-                      Damage: ${stats.damageDealt}
-                      Survived: ${stats.timeSurvived}s
-                      Assists: ${stats.assists}
-                      Headshot Kills: ${stats.headshotKills}
-                      DBNOs: ${stats.DBNOs}
-                      WalkDistance: ${stats.walkDistance}
-                      EideDistance: ${stats.rideDistance}
-                      Revives: ${stats.revives}`,
-              inline: false,
-            };
+
+          for (const element of matchResponse.included) {
+            if (element.attributes.stats.playerId == player.id) {
+              const stats = element.attributes.stats;
+              statsField = {
+                name: "Last Match Stats",
+                value: `Kills: ${stats.kills}
+                        Damage: ${stats.damageDealt}
+                        Survived: ${stats.timeSurvived}s
+                        Assists: ${stats.assists}
+                        Headshot Kills: ${stats.headshotKills}
+                        DBNOs: ${stats.DBNOs}
+                        WalkDistance: ${stats.walkDistance}
+                        EideDistance: ${stats.rideDistance}
+                        Revives: ${stats.revives}`,
+                inline: false,
+              };
+
+              break;
+            }
           }
         } catch (matchError) {
           // If match detail fails, leave statsField as 'N/A'
@@ -93,11 +103,12 @@ const command: SlashCommand = {
           },
           statsField,
           { name: "Game Mode", value: gameMode, inline: true },
-          { name: "Map Name", value: mapName, inline: true }
+          { name: "Map Name", value: mapName, inline: true },
+          { name: "Match Created At", value: createdAt, inline: true } // New embed field for match creation date
         )
         .setFooter({ text: "PUBG Player Details" })
         .setTimestamp();
-      
+
       await interaction.editReply({
         embeds: [embed],
       });
