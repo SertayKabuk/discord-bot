@@ -112,9 +112,9 @@ const command: SlashCommand = {
       await interaction.editReply({
         embeds: [embed],
       });
-    } catch (error) {
+    } catch (error: any) {
       await interaction.editReply({
-        content: "Failed to retrieve player details.",
+        content: error instanceof Error ? error.message : String(error),
       });
     }
   },
