@@ -16,7 +16,7 @@ const command: SlashCommand = {
   execute: async (interaction) => {
     await interaction.deferReply();
     const input = interaction.options.getString("prompt");
- 
+
     if (input !== null) {
       try {
         const stream = await ollama.llm.stream([
@@ -28,7 +28,7 @@ const command: SlashCommand = {
         ]);
 
         let gathered: string | undefined = undefined;
-        
+
         for await (const chunk of stream) {
           if (gathered === undefined) {
             gathered = (chunk?.content ?? "").toString();
@@ -38,6 +38,7 @@ const command: SlashCommand = {
 
           if (gathered !== undefined)
             await interaction.editReply((gathered ?? "").toString());
+          else await interaction.editReply("Şu an cevap verecek mecalim yok.");
         }
       } catch (error) {
         console.log(error);

@@ -105,9 +105,11 @@ const command: SlashCommand = {
           selectedModel ?? "gpt-3.5-turbo"
         );
 
-        if (chatReponse) {
+        if (chatReponse && chatReponse.length > 0) {
           await interaction.editReply(chatReponse);
           await playTTS(interaction, voiceChannel.id, chatReponse);
+        } else {
+          await interaction.editReply("Şu an cevap verecek mecalim yok.");
         }
       } catch (error) {
         console.log(error);
@@ -138,6 +140,10 @@ const command: SlashCommand = {
 
           if (gathered !== null)
             await interaction.editReply((gathered ?? "").toString());
+        }
+
+        if (gathered === null) {
+          await interaction.editReply("Şu an cevap verecek mecalim yok.");
         }
       } catch (error) {
         console.log(error);
