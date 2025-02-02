@@ -24,29 +24,29 @@ const command: SlashCommand = {
         .setDescription("Pipisi büyük olanın nickname'i")
         .setRequired(true);
     })
-    .addStringOption((option) => {
-      return option
-        .setName("model")
-        .setDescription("Search llm model")
-        .setRequired(true)
-        .setAutocomplete(true);
-    })
+    // .addStringOption((option) => {
+    //   return option
+    //     .setName("model")
+    //     .setDescription("Search llm model")
+    //     .setRequired(true)
+    //     .setAutocomplete(true);
+    // })
     .setDescription("PUBG kim daha gay?") as SlashCommandBuilder,
-  autocomplete: async (interaction) => {
-    const filteredModels = await fetchFilteredLLMModels();
-    if (!filteredModels) return;
+  // autocomplete: async (interaction) => {
+  //   const filteredModels = await fetchFilteredLLMModels();
+  //   if (!filteredModels) return;
 
-    interaction.respond(
-      filteredModels.map((model) => ({
-        name: model.name,
-        value: model.id,
-      }))
-    );
-  },
+  //   interaction.respond(
+  //     filteredModels.map((model) => ({
+  //       name: model.name,
+  //       value: model.id,
+  //     }))
+  //   );
+  // },
   execute: async (interaction) => {
     const player1Nickname = interaction.options.getString("gay1");
     const player2Nickname = interaction.options.getString("gay2");
-    const selectedModel = interaction.options.getString("model");
+    // const selectedModel = interaction.options.getString("model");
 
     if (
       !player1Nickname ||
@@ -124,7 +124,7 @@ const command: SlashCommand = {
 
       try {
 
-        const stream = openai.stream(
+        const stream = openai.stream_google(
           [
             {
               role: "user",
@@ -138,8 +138,8 @@ const command: SlashCommand = {
               Oyuncu 2 Son 5 Maç Ortalaması: 
               ${detail2.matchSummaries}`,
             },
-          ],
-          selectedModel ?? "gpt-3.5-turbo"
+          ]
+          // , selectedModel ?? "gpt-3.5-turbo"
         );
 
         let gathered: string | null = null;

@@ -58,7 +58,7 @@ class OpenAIHelper {
       }
     } catch (error) {
       console.error("Error during chat completion:", error);
-      return this.stream_google(messages);
+      throw error;
     }
   }
 
@@ -76,10 +76,10 @@ class OpenAIHelper {
       return stream.choices[0].message.content;
     } catch (error) {
       console.error("Error during chat completion:", error);
-      return await this.chat_google(messages);
+      throw error;
     }
   }
-  private async *stream_google(messages: Message[]): AsyncGenerator<string> {
+  async *stream_google(messages: Message[]): AsyncGenerator<string> {
     if (!this.google_client) {
       throw new Error("Google OpenAI client not initialized. Call init() first");
     }
@@ -102,7 +102,7 @@ class OpenAIHelper {
     }
   }
 
-  private async chat_google(messages: Message[]): Promise<string | null> {
+  async chat_google(messages: Message[]): Promise<string | null> {
     if (!this.google_client) {
       throw new Error("Google OpenAI client not initialized. Call init() first");
     }
