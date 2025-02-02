@@ -128,7 +128,7 @@ const command: SlashCommand = {
           [
             {
               role: "user",
-              content: `Senin görevin aşağıda verilen iki PUBG oyuncusunun verilerini karşılaştırmak ve hangisinin daha iyi olduğunu belirlemek. Türkçe cevap ver. Espirili ve kinayeli cevaplar ver. Dalga geçebilirsin. En iyi olanın pipisi büyüktür ve gay dir.
+              content: `Senin görevin aşağıda verilen iki PUBG oyuncusunun verilerini karşılaştırmak ve hangisinin daha iyi olduğunu belirlemek. Türkçe cevap ver. Espirili ve kinayeli cevaplar ver. Dalga geçebilirsin. En iyi olanın pipisi daha büyüktür ve daha gay birisidir.
               
               Oyuncu 1 Adı: ${player1Nickname}
               Oyuncu 1 Son 5 Maç Ortalaması: 
