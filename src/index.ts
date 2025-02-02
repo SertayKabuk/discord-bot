@@ -2,7 +2,7 @@ import "./env.js";
 import { HttpServer } from "./http-server.js";
 import discordClient from "./discord-client-helper.js";
 import ollama from "./ollama-helper.js";
-import dbHelper from "./db-helper.js";
+import dbHelper from "./db/db-helper.js";
 import vectorStoreHelper from "./vector-store-helper.js";
 import openai from "./openai-helper.js";
 import graphQLHelper from "./graphql-helper.js";

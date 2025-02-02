@@ -2,7 +2,7 @@ import { ChannelType, Message, userMention } from "discord.js";
 import { ChannelMessage } from "../db/entities/ChannelMessage.entity.js";
 import { ChannelMessageUrl } from "../db/entities/ChannelMessageUrl.entity.js";
 import { extractUrls } from "../functions.js";
-import dbHelper from "../db-helper.js";
+import dbHelper from "../db/db-helper.js";
 import discordClient from "../discord-client-helper.js";
 import urlParserHelper from "../url-parser-helper.js";
 import vectorStoreHelper from "../vector-store-helper.js";

@@ -1,3 +1,6 @@
+import { get } from "http";
+import mongoHelper from "../db/mongo-helper.js";
+
 // Define response model interfaces
 interface Match {
   type: string;
@@ -101,38 +104,144 @@ export interface ParticipantIncluded {
   };
 }
 
-export async function getPlayerDetail(nickname: string): Promise<PubgPlayerResponse> {
-  // Replace <YOUR_API_TOKEN> with your actual PUBG API token or source it from an environment variable.
+const playerCollection = "players";
+const matchCollection = "matches";
+
+export async function getPlayerDetail(
+  nickname: string
+): Promise<PubgPlayerResponse> {
   const token = process.env.PUBG_API_TOKEN;
-  const url = `https://api.pubg.com/shards/steam/players?filter[playerNames]=${encodeURIComponent(nickname)}`;
-  
+  const url = `https://api.pubg.com/shards/steam/players?filter[playerNames]=${encodeURIComponent(
+    nickname
+  )}`;
+
   const response = await fetch(url, {
     headers: {
-      "accept": "application/vnd.api+json",
-      "Authorization": `Bearer ${token}`,
+      accept: "application/vnd.api+json",
+      Authorization: `Bearer ${token}`,
     },
   });
-  
+
   if (!response.ok) {
     throw new Error(`API error: ${response.statusText}`);
   }
 
-  return await response.json();
+  const result = await response.json();
+
+  try {
+    if (result.data && result.data.length > 0) {
+      // Passing the id from result.data[0].id as parameter.
+      mongoHelper.insertOne(playerCollection, result.data[0].id, result);
+    }
+  } catch (e) {
+    console.error("Error inserting player data", e);
+  }
+
+  return result;
 }
 
-export async function getMatchDetail(matchId: string): Promise<PubgMatchResponse> {
-  // Replace <YOUR_API_TOKEN> with your actual PUBG API token or source it from an environment variable.
-  const url = `https://api.pubg.com/shards/steam/matches/${encodeURIComponent(matchId)}`;
-  
+export async function getMatchDetail(
+  matchId: string
+): Promise<PubgMatchResponse> {
+  // Check if match details already exist in MongoDB
+  const cached = await mongoHelper.findOne(matchCollection, { id: matchId });
+  if (cached) {
+    return cached;
+  }
+
+  const url = `https://api.pubg.com/shards/steam/matches/${encodeURIComponent(
+    matchId
+  )}`;
+
   const response = await fetch(url, {
     headers: {
-      "accept": "application/vnd.api+json",
-    }
+      accept: "application/vnd.api+json",
+    },
   });
-  
+
   if (!response.ok) {
     throw new Error(`API error: ${response.statusText}`);
   }
-  
-  return await response.json();
+
+  const result = await response.json();
+
+  try {
+    if (result.data) {
+      // Passing the id from result.data.id as parameter.
+      mongoHelper.insertOne(matchCollection, result.data.id, result);
+    }
+  } catch (e) {
+    console.error("Error inserting match data", e);
+  }
+
+  return result;
+}
+
+export function summarizeMatchDetails(
+  playerId: string,
+  matchDataList: PubgMatchResponse[]
+) {
+  // Aggregate stats and collect match summaries
+  let totalKills = 0,
+    totalDamage = 0,
+    totalSurvived = 0,
+    totalAssists = 0,
+    totalHeadshotKills = 0,
+    totalDBNOs = 0,
+    totalWalkDistance = 0,
+    totalRideDistance = 0,
+    totalRevives = 0,
+    totalWinPlace = 0;
+
+  let countMatches = 0;
+  const matchSummaries: string[] = [];
+
+  for (const matchResponse of matchDataList) {
+    const participant = matchResponse.included.find(
+      (element: any) => element.attributes?.stats?.playerId === playerId
+    );
+    if (participant) {
+      const stats = participant.attributes.stats;
+      totalKills += stats.kills;
+      totalDamage += stats.damageDealt;
+      totalSurvived += stats.timeSurvived;
+      totalAssists += stats.assists;
+      totalHeadshotKills += stats.headshotKills;
+      totalDBNOs += stats.DBNOs;
+      totalWalkDistance += stats.walkDistance;
+      totalRideDistance += stats.rideDistance;
+      totalRevives += stats.revives;
+      totalWinPlace += stats.winPlace;
+      countMatches++;
+
+      // Retrieve additional match details
+      const gameMode = matchResponse.data.attributes.gameMode || "N/A";
+      const mapName = matchResponse.data.attributes.mapName || "N/A";
+      const createdAt = matchResponse.data.attributes.createdAt || "N/A";
+
+      matchSummaries.push(
+        `• ${createdAt}, Kills ${
+          stats.kills
+        }, Damage ${stats.damageDealt.toFixed(0)}, Survived ${
+          stats.timeSurvived
+        }s, Game Mode ${gameMode}, Map ${mapName}, Place ${stats.winPlace}`
+      );
+    }
+  }
+
+  let avgStats = "N/A";
+  if (countMatches > 0) {
+    avgStats = `• Kills: ${(totalKills / countMatches).toFixed(1)}
+ • Damage: ${(totalDamage / countMatches).toFixed(1)}
+ • Survived: ${(totalSurvived / countMatches).toFixed(1)}s
+ • Assists: ${(totalAssists / countMatches).toFixed(1)}
+ • Headshot Kills: ${(totalHeadshotKills / countMatches).toFixed(1)}
+ • DBNOs: ${(totalDBNOs / countMatches).toFixed(1)}
+ • Walk Distance: ${(totalWalkDistance / countMatches).toFixed(1)}
+ • Ride Distance: ${(totalRideDistance / countMatches).toFixed(1)}
+ • Revives: ${(totalRevives / countMatches).toFixed(1)}
+ • WinPlace: ${(totalWinPlace / countMatches).toFixed(1)}`;
+  }
+
+  return { avgStats, matchSummaries };
 }

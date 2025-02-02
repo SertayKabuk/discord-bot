@@ -1,5 +1,5 @@
 import { EntityManager } from "@mikro-orm/core";
-import ormConfig from './mikro-orm.config.js';
+import ormConfig from '../mikro-orm.config.js';
 import { PostgreSqlDriver, MikroORM } from '@mikro-orm/postgresql';
 
 class DbHelper {

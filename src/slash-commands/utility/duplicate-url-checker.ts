@@ -1,7 +1,7 @@
 import { ChannelType, MessageFlags, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types.js";
 import { ChannelMessage } from "../../db/entities/ChannelMessage.entity.js";
-import dbHelper from "../../db-helper.js";
+import dbHelper from "../../db/db-helper.js";
 import discordClient from "../../discord-client-helper.js";
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
 import { ChatPromptTemplate } from "@langchain/core/prompts";

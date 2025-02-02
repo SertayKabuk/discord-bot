@@ -1,5 +1,9 @@
 import { MessageFlags, SlashCommandBuilder, EmbedBuilder } from "discord.js";
-import { getPlayerDetail, getMatchDetail } from "../../api/pubg-helper.js";
+import {
+  getPlayerDetail,
+  getMatchDetail,
+  summarizeMatchDetails,
+} from "../../api/pubg-helper.js";
 import { SlashCommand } from "../../types.js";
 
 const command: SlashCommand = {
@@ -14,6 +18,7 @@ const command: SlashCommand = {
     .setDescription("PUBG hilecilerini incelemek icin.") as SlashCommandBuilder,
   execute: async (interaction) => {
     const nickname = interaction.options.getString("nickname");
+    const otherNickname = interaction.options.getString("other-nickname");
 
     if (!nickname || nickname === null || nickname === "") {
       await interaction.reply({
@@ -48,67 +53,10 @@ const command: SlashCommand = {
         }
       }
 
-      // Aggregate stats and collect match summaries
-      let totalKills = 0,
-        totalDamage = 0,
-        totalSurvived = 0,
-        totalAssists = 0,
-        totalHeadshotKills = 0,
-        totalDBNOs = 0,
-        totalWalkDistance = 0,
-        totalRideDistance = 0,
-        totalRevives = 0,
-        totalWinPlace = 0;
-
-      let countMatches = 0;
-      const matchSummaries: string[] = [];
-
-      for (const matchResponse of matchDataList) {
-        const participant = matchResponse.included.find(
-          (element: any) => element.attributes?.stats?.playerId === player.id
-        );
-        if (participant) {
-          const stats = participant.attributes.stats;
-          totalKills += stats.kills;
-          totalDamage += stats.damageDealt;
-          totalSurvived += stats.timeSurvived;
-          totalAssists += stats.assists;
-          totalHeadshotKills += stats.headshotKills;
-          totalDBNOs += stats.DBNOs;
-          totalWalkDistance += stats.walkDistance;
-          totalRideDistance += stats.rideDistance;
-          totalRevives += stats.revives;
-          totalWinPlace += stats.winPlace;
-          countMatches++;
-
-          // Retrieve additional match details
-          const gameMode = matchResponse.data.attributes.gameMode || "N/A";
-          const mapName = matchResponse.data.attributes.mapName || "N/A";
-          const createdAt = matchResponse.data.attributes.createdAt || "N/A";
-
-          matchSummaries.push(
-            `• ${createdAt}, Kills ${
-              stats.kills
-            }, Damage ${stats.damageDealt.toFixed(0)}, Survived ${
-              stats.timeSurvived
-            }s, Game Mode ${gameMode}, Map ${mapName}, Place ${stats.winPlace}`
-          );
-        }
-      }
-
-      let avgStats = "N/A";
-      if (countMatches > 0) {
-        avgStats = `• Kills: ${(totalKills / countMatches).toFixed(1)}
-• Damage: ${(totalDamage / countMatches).toFixed(1)}
-• Survived: ${(totalSurvived / countMatches).toFixed(1)}s
-• Assists: ${(totalAssists / countMatches).toFixed(1)}
-• Headshot Kills: ${(totalHeadshotKills / countMatches).toFixed(1)}
-• DBNOs: ${(totalDBNOs / countMatches).toFixed(1)}
-• Walk Distance: ${(totalWalkDistance / countMatches).toFixed(1)}
-• Ride Distance: ${(totalRideDistance / countMatches).toFixed(1)}
-• Revives: ${(totalRevives / countMatches).toFixed(1)}
-• WinPlace: ${(totalWinPlace / countMatches).toFixed(1)}`;
-      }
+      const { avgStats, matchSummaries } = summarizeMatchDetails(
+        player.id,
+        matchDataList
+      );
 
       const embed = new EmbedBuilder()
         .setColor(0xffa500)
@@ -145,6 +93,24 @@ const command: SlashCommand = {
       await interaction.editReply({
         embeds: [embed],
       });
+
+      // *** Background process: fetch and insert all match details ***
+      // This async process will retrieve all matches without affecting the reply.
+      setTimeout(() => {
+        if (player.relationships.matches?.data?.length) {
+          Promise.allSettled(
+            player.relationships.matches.data.map((matchObj) =>
+              getMatchDetail(matchObj.id)
+            )
+          )
+            .then(() =>
+              console.log("Background fetching of all match details complete")
+            )
+            .catch((err) =>
+              console.error("Error in background fetching match details", err)
+            );
+        }
+      }, 0);
     } catch (error: any) {
       await interaction.editReply({
         content: error instanceof Error ? error.message : String(error),

@@ -20,12 +20,11 @@ const command: SlashCommand = {
         .setRequired(true);
     })
     .addStringOption((option) => {
-      option
+      return option
         .setName("model")
         .setDescription("Search llm model")
         .setRequired(true)
         .setAutocomplete(true);
-      return option;
     })
     .addBooleanOption((option) => {
       return option

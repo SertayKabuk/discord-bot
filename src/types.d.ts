@@ -56,6 +56,8 @@ declare global {
             OPEN_ROUTER_URL: string,
             OPEN_ROUTER_API_KEY: string,
             PUBG_API_TOKEN: string,
+            MONGO_URL: string,
+            MONGO_DB_NAME: string,
         }
     }
 
