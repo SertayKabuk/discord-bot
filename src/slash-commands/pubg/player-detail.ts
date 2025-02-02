@@ -57,7 +57,9 @@ const command: SlashCommand = {
         totalDBNOs = 0,
         totalWalkDistance = 0,
         totalRideDistance = 0,
-        totalRevives = 0;
+        totalRevives = 0,
+        totalWinPlace = 0;
+
       let countMatches = 0;
       const matchSummaries: string[] = [];
 
@@ -76,6 +78,7 @@ const command: SlashCommand = {
           totalWalkDistance += stats.walkDistance;
           totalRideDistance += stats.rideDistance;
           totalRevives += stats.revives;
+          totalWinPlace += stats.winPlace;
           countMatches++;
 
           // Retrieve additional match details
@@ -84,33 +87,31 @@ const command: SlashCommand = {
           const createdAt = matchResponse.data.attributes.createdAt || "N/A";
 
           matchSummaries.push(
-            `• Created At ${createdAt}, Game Mode ${gameMode}, Map ${mapName}, Kills ${stats.kills}, Damage ${stats.damageDealt.toFixed(0)}, Survived ${stats.timeSurvived}s`
+            `• ${createdAt}, Kills ${
+              stats.kills
+            }, Damage ${stats.damageDealt.toFixed(0)}, Survived ${
+              stats.timeSurvived
+            }s, Game Mode ${gameMode}, Map ${mapName}, Place ${stats.winPlace}`
           );
         }
       }
 
-      // Reformat average stats with bullet points for clarity
       let avgStats = "N/A";
       if (countMatches > 0) {
         avgStats = `• Kills: ${(totalKills / countMatches).toFixed(1)}
-                    • Damage: ${(totalDamage / countMatches).toFixed(1)}
-                    • Survived: ${(totalSurvived / countMatches).toFixed(1)}s
-                    • Assists: ${(totalAssists / countMatches).toFixed(1)}
-                    • Headshot Kills: ${(
-                      totalHeadshotKills / countMatches
-                    ).toFixed(1)}
-                    • DBNOs: ${(totalDBNOs / countMatches).toFixed(1)}
-                    • Walk Distance: ${(
-                      totalWalkDistance / countMatches
-                    ).toFixed(1)}
-                    • Ride Distance: ${(
-                      totalRideDistance / countMatches
-                    ).toFixed(1)}
-                    • Revives: ${(totalRevives / countMatches).toFixed(1)}`;
+• Damage: ${(totalDamage / countMatches).toFixed(1)}
+• Survived: ${(totalSurvived / countMatches).toFixed(1)}s
+• Assists: ${(totalAssists / countMatches).toFixed(1)}
+• Headshot Kills: ${(totalHeadshotKills / countMatches).toFixed(1)}
+• DBNOs: ${(totalDBNOs / countMatches).toFixed(1)}
+• Walk Distance: ${(totalWalkDistance / countMatches).toFixed(1)}
+• Ride Distance: ${(totalRideDistance / countMatches).toFixed(1)}
+• Revives: ${(totalRevives / countMatches).toFixed(1)}
+• WinPlace: ${(totalWinPlace / countMatches).toFixed(1)}`;
       }
 
       const embed = new EmbedBuilder()
-        .setColor(0xFFA500)
+        .setColor(0xffa500)
         .setTitle(player.attributes.name)
         .setThumbnail(
           "https://wstatic-prod.pubg.com/web/live/static/favicons/android-icon-192x192.png"
