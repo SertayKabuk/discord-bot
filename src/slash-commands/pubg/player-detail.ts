@@ -37,7 +37,7 @@ const command: SlashCommand = {
       const player = playerData.data[0];
 
       // Retrieve last 5 match details
-      const matchList = player.relationships.matches?.data?.slice(-5) || [];
+      const matchList = player.relationships.matches?.data?.slice(0, 5) || [];
       const matchDataList = [];
       for (const matchObj of matchList) {
         try {
@@ -112,7 +112,9 @@ const command: SlashCommand = {
       const embed = new EmbedBuilder()
         .setColor(0x3498db) // set a cool blue color
         .setTitle(player.attributes.name)
-        .setThumbnail("https://wstatic-prod.pubg.com/web/live/static/favicons/android-icon-192x192.png") // add a thumbnail URL if desired
+        .setThumbnail(
+          "https://wstatic-prod.pubg.com/web/live/static/favicons/android-icon-192x192.png"
+        )
         .addFields(
           { name: "Player ID", value: player.id, inline: true },
           {
