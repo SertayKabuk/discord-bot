@@ -37,7 +37,7 @@ const command: SlashCommand = {
       const player = playerData.data[0];
 
       // Retrieve last 5 match details
-      const matchList = player.relationships.matches.data.slice(0, 5);
+      const matchList = player.relationships.matches?.data?.slice(-5) || [];
       const matchDataList = [];
       for (const matchObj of matchList) {
         try {
@@ -62,7 +62,6 @@ const command: SlashCommand = {
       const matchSummaries: string[] = [];
 
       for (const matchResponse of matchDataList) {
-        const matchId = matchResponse.data.id;
         const participant = matchResponse.included.find(
           (element: any) => element.attributes?.stats?.playerId === player.id
         );
@@ -85,7 +84,7 @@ const command: SlashCommand = {
           const createdAt = matchResponse.data.attributes.createdAt || "N/A";
 
           matchSummaries.push(
-            `Kills ${stats.kills}, Damage ${stats.damageDealt}, Survived ${stats.timeSurvived}s, Game Mode ${gameMode}, Map ${mapName}, Created At ${createdAt}`
+            `• Kills ${stats.kills}, Damage ${stats.damageDealt}, Survived ${stats.timeSurvived}s, Game Mode ${gameMode}, Map ${mapName}, Created At ${createdAt}`
           );
         }
       }
