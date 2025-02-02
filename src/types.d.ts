@@ -58,6 +58,9 @@ declare global {
             PUBG_API_TOKEN: string,
             MONGO_URL: string,
             MONGO_DB_NAME: string,
+            GOOGLE_API_KEY: string,
+            GOOGLE_API_URL: string,
+            GOOGLE_LLM_MODEL: string,
         }
     }
 

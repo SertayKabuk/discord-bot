@@ -13,7 +13,7 @@ async function main() {
     await dbHelper.init(); 
     ollama.init(process.env.OLLAMA_MODEL, process.env.OLLAMA_URL);
     await discordClient.init();
-    openai.init(process.env.OPEN_ROUTER_URL, process.env.OPEN_ROUTER_API_KEY);
+    openai.init(process.env.OPEN_ROUTER_URL, process.env.OPEN_ROUTER_API_KEY, process.env.GOOGLE_API_URL, process.env.GOOGLE_API_KEY);
 
     const server = new HttpServer(process.env.API_PORT);
     server.CreateServer();
