@@ -123,12 +123,11 @@ const command: SlashCommand = {
       const detail2 = summarizeMatchDetails(player2.id, matchDataList2);
 
       try {
-
         const stream = openai.stream_google(
           [
             {
               role: "user",
-              content: `Senin görevin aşağıda verilen iki PUBG oyuncusunun verilerini karşılaştırmak ve hangisinin daha iyi olduğunu belirlemek. Türkçe cevap ver. Espirili ve kinayeli cevaplar ver. Dalga geçebilirsin. En iyi olanın pipisi daha büyüktür ve daha gay birisidir.
+              content: `Senin görevin aşağıda verilen iki PUBG oyuncusunun verilerini karşılaştırmak ve hangisinin daha iyi olduğunu belirlemek. Türkçe cevap ver. Cevap verirken 2000 karakteri geçmemelisin. Espirili ve kinayeli cevaplar ver. Dalga geçebilirsin. En iyi olanın pipisi daha büyüktür ve daha gay birisidir.
               
               Oyuncu 1 Adı: ${player1Nickname}
               Oyuncu 1 Son 5 Maç Ortalaması: 
@@ -151,8 +150,9 @@ const command: SlashCommand = {
             gathered = concat(gathered, chunk);
           }
 
-          if (gathered !== null)
+          if (gathered !== null && gathered.length < 2000) {
             await interaction.editReply((gathered ?? "").toString());
+          }
         }
       } catch (error) {
         console.log(error);
