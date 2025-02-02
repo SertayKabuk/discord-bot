@@ -84,7 +84,7 @@ const command: SlashCommand = {
           const createdAt = matchResponse.data.attributes.createdAt || "N/A";
 
           matchSummaries.push(
-            `• Kills ${stats.kills}, Damage ${stats.damageDealt}, Survived ${stats.timeSurvived}s, Game Mode ${gameMode}, Map ${mapName}, Created At ${createdAt}`
+            `• Created At ${createdAt}, Game Mode ${gameMode}, Map ${mapName}, Kills ${stats.kills}, Damage ${stats.damageDealt.toFixed(0)}, Survived ${stats.timeSurvived}s`
           );
         }
       }
@@ -110,7 +110,7 @@ const command: SlashCommand = {
       }
 
       const embed = new EmbedBuilder()
-        .setColor(0x3498db) // set a cool blue color
+        .setColor(0xFFA500)
         .setTitle(player.attributes.name)
         .setThumbnail(
           "https://wstatic-prod.pubg.com/web/live/static/favicons/android-icon-192x192.png"
