@@ -4,7 +4,7 @@ import {
   Collection,
   Partials,
 } from "discord.js";
-import { Command, SlashCommand } from "./types.js";
+import { Command, SlashCommand } from "../types.js";
 import { join } from "path";
 import { readdirSync } from "fs";
 import { fileURLToPath } from "url";

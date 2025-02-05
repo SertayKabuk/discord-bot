@@ -1,6 +1,6 @@
 import { ActivityType, Client } from "discord.js";
 import { BotEvent } from "../types.js";
-import { color } from "../functions.js";
+import { color } from "../utils/functions.js";
 
 const event : BotEvent = {
     name: "ready",

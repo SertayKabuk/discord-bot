@@ -1,5 +1,5 @@
-import { get } from "http";
 import mongoHelper from "../db/mongo-helper.js";
+import { httpClient } from "../utils/http-client.js";
 
 // Define response model interfaces
 interface Match {
@@ -115,18 +115,13 @@ export async function getPlayerDetail(
     nickname
   )}`;
 
-  const response = await fetch(url, {
-    headers: {
-      accept: "application/vnd.api+json",
-      Authorization: `Bearer ${token}`,
-    },
+  const result = await httpClient.Get<PubgPlayerResponse>(url, {
+    accept: "application/vnd.api+json",
+    Authorization: `Bearer ${token}`,
   });
-
-  if (!response.ok) {
-    throw new Error(`API error: ${response.statusText}`);
+  if (!result) {
+    throw new Error("API error: Failed to fetch player details.");
   }
-
-  const result = await response.json();
 
   try {
     if (result.data && result.data.length > 0) {
@@ -153,17 +148,12 @@ export async function getMatchDetail(
     matchId
   )}`;
 
-  const response = await fetch(url, {
-    headers: {
-      accept: "application/vnd.api+json",
-    },
+  const result = await httpClient.Get<PubgMatchResponse>(url, {
+    accept: "application/vnd.api+json",
   });
-
-  if (!response.ok) {
-    throw new Error(`API error: ${response.statusText}`);
+  if (!result) {
+    throw new Error("API error: Failed to fetch match details.");
   }
-
-  const result = await response.json();
 
   try {
     if (result.data) {

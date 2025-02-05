@@ -1,7 +1,7 @@
 import { MessageFlags, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types.js";
 import { getVoiceConnection } from "@discordjs/voice";
-import { playTTS } from "../../tt-helper.js";
+import { playTTS } from "../../utils/tt-helper.js";
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()

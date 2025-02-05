@@ -7,9 +7,9 @@ import {
   getVoiceConnection,
   joinVoiceChannel,
 } from "@discordjs/voice";
-import mqConnection from "./rabbitmq-helper.js";
-import { QueueNames } from "./constants/queue-names.js";
+import mqConnection from "../utils/rabbitmq-helper.js";
 import { ChatInputCommandInteraction } from "discord.js";
+import { QueueNames } from "../constants/queue-names.js";
 
 // Expose the playTTS function to generate and play TTS audio.
 export async function playTTS(

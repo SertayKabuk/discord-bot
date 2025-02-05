@@ -5,7 +5,7 @@ import {
   SlashCommandBuilder,
 } from "discord.js";
 import { SlashCommand } from "../../types.js";
-import { playTTS } from "../../tt-helper.js";
+import { playTTS } from "../../utils/tt-helper.js";
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()

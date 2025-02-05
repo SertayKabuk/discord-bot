@@ -1,4 +1,4 @@
-import { httpClient } from "../http-client.js";
+import { httpClient } from "../utils/http-client.js";
 
 export interface Model {
   id: string;

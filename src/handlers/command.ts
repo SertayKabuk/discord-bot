@@ -2,7 +2,7 @@ import { Client, Routes, SlashCommandBuilder } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { readdirSync } from "fs";
 import * as path from "path";
-import { color } from "../functions.js";
+import { color } from "../utils/functions.js";
 import { Command, SlashCommand } from "../types.js";
 import { fileURLToPath, pathToFileURL } from "url";
 import { dirname } from "path";

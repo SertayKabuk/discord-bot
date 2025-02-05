@@ -1,8 +1,8 @@
 import { CardDeck, DrawedCard, Card } from "../types.js";
-import { httpClient } from "../http-client.js";
+import { httpClient } from "../utils/http-client.js";
 import { Guid } from "typescript-guid";
 import { Channel, ChannelType } from "discord.js";
-import discordClient from "../discord-client-helper.js";
+import discordClient from "../utils/discord-client-helper.js";
 
 export class PokerGame {
   gameId: Guid;
@@ -11,7 +11,7 @@ export class PokerGame {
   userHands: UserHand[] = [];
   communityCards: Card[] = []; // new property for community cards
 
-  private static SavedGames: SavedGame[]; 
+  private static SavedGames: SavedGame[];
   private baseUrl = "https://deckofcardsapi.com/api/";
 
   constructor(channelId: string, gameId: Guid = Guid.create()) {
@@ -48,7 +48,9 @@ export class PokerGame {
 
     let deckId = "";
 
-    if (response !== null) deckId = response.deck_id;
+    if (response !== null && response !== undefined) {
+      deckId = response.deck_id;
+    }
 
     return deckId;
   }

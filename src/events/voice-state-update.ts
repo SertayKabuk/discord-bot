@@ -5,7 +5,7 @@ import {
   createAudioPlayer,
   createAudioResource,
 } from "@discordjs/voice";
-import mqConnection from "../rabbitmq-helper.js";
+import mqConnection from "../utils/rabbitmq-helper.js";
 import { Readable } from "stream";
 import { QueueNames } from "../constants/queue-names.js";
 

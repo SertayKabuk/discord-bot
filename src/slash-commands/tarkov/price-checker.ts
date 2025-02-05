@@ -1,7 +1,7 @@
 import { APIEmbedField, EmbedBuilder, SlashCommandBuilder } from "discord.js"
 import { SlashCommand } from "../../types.js";
 import { GameMode, Query, LanguageCode, QueryItemsArgs } from "../../__generated__/graphql.js";
-import graphQLHelper from "../../graphql-helper.js";
+import graphQLHelper from "../../utils/graphql-helper.js";
 
 const command: SlashCommand = {
     command: new SlashCommandBuilder()
