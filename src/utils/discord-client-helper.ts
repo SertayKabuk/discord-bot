@@ -52,11 +52,11 @@ class DiscordClientHelper {
     this.client.commands = new Collection<string, Command>();
     this.client.cooldowns = new Collection<string, number>();
 
-    const handlersDir = join(__dirname, "./handlers");
+    const handlersDir = join(__dirname, "../handlers");
 
     readdirSync(handlersDir).forEach(async (handler) => {
       if (!handler.endsWith(".js")) return;
-      const module = await import(`./handlers/${handler}`);
+      const module = await import(`../handlers/${handler}`);
       module.default(this.client);
     });
   }
