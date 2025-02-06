@@ -55,13 +55,7 @@ const command: SlashCommand = {
 
       const cookies = process.env.YOUTUBE_COOKIES ? JSON.parse(process.env.YOUTUBE_COOKIES) : [];
 
-      const agentOptions = {
-        pipelining: 5,
-        maxRedirections: 0,
-        localAddress: "127.0.0.1",
-      };
-
-      const agent = ytdl.createAgent(cookies, agentOptions);
+      const agent = ytdl.createAgent(cookies);
 
       const stream = ytdl(url, { filter: "audioonly", agent: agent });
 
