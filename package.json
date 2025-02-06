@@ -16,6 +16,7 @@
   "type": "module",
   "dependencies": {
     "@discordjs/voice": "^0.18.0",
+    "@distube/ytdl-core": "^4.16.0",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@langchain/community": "^0.3.28",
     "@langchain/core": "^0.3.37",
@@ -44,8 +45,7 @@
     "puppeteer": "^24.1.1",
     "typescript-guid": "^1.0.3",
     "uuid": "^11.0.5",
-    "wav": "^1.0.2",
-    "ytdl-core": "^4.11.5"
+    "wav": "^1.0.2"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.4",
