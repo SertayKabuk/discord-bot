@@ -44,7 +44,8 @@
     "puppeteer": "^24.1.1",
     "typescript-guid": "^1.0.3",
     "uuid": "^11.0.5",
-    "wav": "^1.0.2"
+    "wav": "^1.0.2",
+    "ytdl-core": "^4.11.5"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.4",
