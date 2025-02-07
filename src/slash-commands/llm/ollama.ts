@@ -27,18 +27,53 @@ const command: SlashCommand = {
           ["human", input],
         ]);
 
-        let gathered: string | undefined = undefined;
+        let gathered: string | undefined = '';
+        let messages: string[] = [''];
 
         for await (const chunk of stream) {
-          if (gathered === undefined) {
-            gathered = (chunk?.content ?? "").toString();
+          if (gathered === null) {
+            gathered = (chunk.content ?? '').toString();
           } else {
-            gathered = concat(gathered, (chunk?.content ?? "").toString());
+            gathered = concat(gathered, (chunk.content ?? '').toString())
           }
 
-          if (gathered !== undefined)
-            await interaction.editReply((gathered ?? "").toString());
-          else await interaction.editReply("Şu an cevap verecek mecalim yok.");
+          if (gathered !== null) {
+            const content = gathered.toString();
+
+            // Split content into parts if it exceeds Discord's limit
+            if (content.length > 2000) {
+              messages = [];
+              let remainingContent = content;
+              while (remainingContent.length > 0) {
+                // Try to split at a natural break point
+                let splitPoint = 1999;
+                if (remainingContent.length > 2000) {
+                  // Look for last sentence end or space before the limit
+                  const lastPeriod = remainingContent.slice(0, 1999).lastIndexOf('.');
+                  const lastSpace = remainingContent.slice(0, 1999).lastIndexOf(' ');
+                  splitPoint = lastPeriod > 0 ? lastPeriod + 1 : (lastSpace > 0 ? lastSpace : 1999);
+                }
+
+                messages.push(remainingContent.slice(0, splitPoint));
+                remainingContent = remainingContent.slice(splitPoint);
+              }
+
+              // Update all messages except the last one
+              for (let i = 0; i < messages.length - 1; i++) {
+                if (i === 0) {
+                  await interaction.editReply(messages[i]);
+                } else {
+                  await interaction.followUp(messages[i]);
+                }
+              }
+
+              // Keep streaming the last part
+              await interaction.followUp(messages[messages.length - 1]);
+            } else {
+              // If content is under 2000 characters, just update normally
+              await interaction.editReply(content);
+            }
+          }
         }
       } catch (error) {
         console.log(error);
