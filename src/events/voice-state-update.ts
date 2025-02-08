@@ -13,17 +13,19 @@ const event: BotEvent = {
   name: "voiceStateUpdate",
   execute: async (oldState: VoiceState, newState: VoiceState) => {
     try {
+
+      const datetime = new Date();
+      console.log(`${datetime.toISOString()} | ${newState.member?.displayName} | ${oldState.guild?.name}:${oldState.channel?.name} ==> ${newState.guild?.name}:${newState.channel?.name}`);
+
       // Check if user joined a voice channel
       if (!oldState.channelId && newState.channelId) {
         const connection = getVoiceConnection(newState.guild.id);
 
         if (!connection) {
-          console.log("No voice connection found");
           return;
         }
 
         if (connection.joinConfig.channelId !== newState.channelId) {
-          console.log("User joined different channel");
           return;
         }
 
@@ -59,7 +61,7 @@ const event: BotEvent = {
 };
 
 const getWelcomeMessage = (newState: VoiceState): string => {
-  
+
   const welcomeMessages = [
     "Hoş geldin değerli arkadaşım {name}. Nasılsın?",
     "Vay vay vay kimler gelmiş! {name} hoş geldin!",

@@ -30,6 +30,7 @@ const command: SlashCommand = {
         let gathered: string | undefined = '';
         let messages: string[] = [''];
         let followUpMessages: Message[] = [];
+        let didIStartSecondMessage = false;
 
         for await (const chunk of stream) {
           if (gathered === null) {
@@ -62,7 +63,13 @@ const command: SlashCommand = {
               // Update or create messages as needed
               if (messages.length > 0) {
                 // Update first message
-                await interaction.editReply(messages[0]);
+                if (!didIStartSecondMessage) {
+                  await interaction.editReply(messages[0]);
+                }
+
+                if (messages.length > 1 && !didIStartSecondMessage) {
+                  didIStartSecondMessage = true;
+                }
 
                 // Handle subsequent messages
                 for (let i = 1; i < messages.length; i++) {
