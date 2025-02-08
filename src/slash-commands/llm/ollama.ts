@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import { Message, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types.js";
 import ollama from "../../utils/ollama-helper.js";
 import { concat } from "@langchain/core/utils/stream";
@@ -29,6 +29,7 @@ const command: SlashCommand = {
 
         let gathered: string | undefined = '';
         let messages: string[] = [''];
+        let followUpMessages: Message[] = [];
 
         for await (const chunk of stream) {
           if (gathered === null) {
@@ -58,17 +59,23 @@ const command: SlashCommand = {
                 remainingContent = remainingContent.slice(splitPoint);
               }
 
-              // Update all messages except the last one
-              for (let i = 0; i < messages.length - 1; i++) {
-                if (i === 0) {
-                  await interaction.editReply(messages[i]);
-                } else {
-                  await interaction.followUp(messages[i]);
+              // Update or create messages as needed
+              if (messages.length > 0) {
+                // Update first message
+                await interaction.editReply(messages[0]);
+
+                // Handle subsequent messages
+                for (let i = 1; i < messages.length; i++) {
+                  if (i - 1 < followUpMessages.length) {
+                    // Update existing followUp message
+                    await followUpMessages[i - 1].edit(messages[i]);
+                  } else {
+                    // Create new followUp message
+                    const newMessage = await interaction.followUp(messages[i]);
+                    followUpMessages.push(newMessage);
+                  }
                 }
               }
-
-              // Keep streaming the last part
-              await interaction.followUp(messages[messages.length - 1]);
             } else {
               // If content is under 2000 characters, just update normally
               await interaction.editReply(content);
