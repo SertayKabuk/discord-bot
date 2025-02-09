@@ -16,8 +16,25 @@ export class APIServer {
         const app: Express = express();
         const router = express.Router();
 
-        const swaggerDocs = swaggerjsdoc(swaggerOptions)
-        app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
+        const swaggerDocs = swaggerjsdoc(swaggerOptions);
+        
+        // Configure Swagger UI with proper base path npm run handling
+        const swaggerUiOptions = {
+            explorer: true,
+            swaggerOptions: {
+                url: 'api/v1/api-docs/swagger.json',
+                baseUrl: '/api/v1'
+            }
+        };
+
+        // Serve Swagger JSON at a specific endpoint
+        router.get('/api-docs/swagger.json', (_req, res) => {
+            res.json(swaggerDocs);
+        });
+
+        // Mount Swagger UI under the API router
+        app.use('/api-docs', swaggerUi.serve);
+        app.get('/api-docs', swaggerUi.setup(swaggerDocs, swaggerUiOptions));
 
         // CORS middleware
         router.use((_req, res, next) => {
@@ -35,7 +52,7 @@ export class APIServer {
 
         app.listen(this.port, () => {
             console.log(`[server]: Server is running at http://localhost:${this.port}`);
-            console.log(`[server]: API documentation available at http://localhost:${this.port}/api-docs`);
+            console.log(`[server]: API documentation available at /api-docs`);
         });
     }
 }
