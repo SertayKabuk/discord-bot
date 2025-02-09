@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM --platform=linux/arm64 node:22-alpine AS build
+FROM node:22-alpine AS build
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -16,7 +16,7 @@ RUN npm run build
 RUN npm prune --production
 
 # Stage 2: Create the production image
-FROM --platform=linux/arm64 node:22-alpine
+FROM node:22-alpine
 
 WORKDIR /usr/src/app
 
