@@ -31,6 +31,10 @@ const router = Router();
  *         id:
  *           type: string
  *           description: Discord channel ID
+ *         parentId:
+ *           type: string
+ *           nullable: true
+ *           description: ID of the parent category channel, null if channel is not in a category
  *         name:
  *           type: string
  *           description: Channel name
@@ -131,6 +135,7 @@ router.get('/guilds', validateApiKey, async (_req: Request, res: Response) => {
 
                 return {
                     id: channel.id,
+                    parentId: channel.parentId,
                     name: channel.name,
                     type: ChannelType[channel.type],
                     users
@@ -163,6 +168,7 @@ interface User {
 
 interface Channel {
     id: string;
+    parentId: string | null;
     name: string;
     type: string;
     users: User[];
