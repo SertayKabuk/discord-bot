@@ -33,8 +33,8 @@ export class APIServer {
         });
 
         // Mount Swagger UI under the API router
-        app.use('/api-docs', swaggerUi.serve);
-        app.get('/api-docs', swaggerUi.setup(swaggerDocs, swaggerUiOptions));
+        router.use('/api-docs', swaggerUi.serve);
+        router.get('/api-docs', swaggerUi.setup(swaggerDocs, swaggerUiOptions));
 
         // CORS middleware
         router.use((_req, res, next) => {
