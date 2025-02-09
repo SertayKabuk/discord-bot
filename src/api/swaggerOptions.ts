@@ -1,4 +1,4 @@
-const PORT = process.env.API_PORT;
+const PORT = process.env.SWAGGER_PORT;
 const HOST = process.env.API_HOST;
 const PROTOCOL = process.env.API_PROTOCOL;
 
