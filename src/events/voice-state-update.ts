@@ -15,7 +15,7 @@ const event: BotEvent = {
     try {
 
       const datetime = new Date();
-      console.log(`${datetime.toISOString()} | ${oldState.member?.displayName} | ${oldState.guild?.name}:${oldState.channel?.name} ==> ${newState.guild?.name}:${newState.channel?.name}`);
+      console.log(`${datetime.toISOString()} | ${oldState.member?.user.globalName} | ${oldState.guild?.name}:${oldState.channel?.name} ==> ${newState.guild?.name}:${newState.channel?.name}`);
 
       // Check if user joined a voice channel
       if (!oldState.channelId && newState.channelId) {

@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { validateApiKey } from '../middleware/auth.js';
 import discordClient from "../../utils/discord-client-helper.js";
-import { ChannelType, GuildMember } from 'discord.js';
+import { ChannelType, GuildMember, PermissionsBitField } from 'discord.js';
 
 const router = Router();
 
@@ -119,7 +119,7 @@ router.get('/guilds', validateApiKey, async (_req: Request, res: Response) => {
                         // For text channels, get members who can view the channel
                         const members = Array.from(channel.members?.values() || []);
                         users = members
-                            .filter(member => channel.permissionsFor(member)?.has('ViewChannel'))
+                            .filter(member => channel.permissionsFor(member)?.has(PermissionsBitField.Flags.ViewChannel))
                             .map(member => ({
                                 id: member.user.id,
                                 username: member.user.username,
