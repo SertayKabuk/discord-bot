@@ -1,5 +1,5 @@
 import mongoHelper from "../db/mongo-helper.js";
-import { httpClient } from "../utils/http-client.js";
+import { httpClient } from "./http-client.js";
 
 // Define response model interfaces
 interface Match {

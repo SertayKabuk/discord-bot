@@ -47,6 +47,8 @@ declare global {
             DB_USER: string,
             DB_PASSWORD: string,
             API_PORT: number,
+            API_HOST: string,
+            API_PROTOCOL: string,
             TARKOV_GRAPHQL_CLIENT: string,
             LANGCHAIN_TRACING_V2: string,
             LANGCHAIN_API_KEY: string,
@@ -61,6 +63,7 @@ declare global {
             GOOGLE_API_KEY: string,
             GOOGLE_API_URL: string,
             GOOGLE_LLM_MODEL: string,
+            API_KEY: string,
         }
     }
 

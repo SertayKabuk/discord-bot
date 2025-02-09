@@ -34,6 +34,7 @@ class DiscordClientHelper {
       GuildMembers,
       DirectMessages,
       GuildVoiceStates,
+      GuildPresences
     } = GatewayIntentBits;
 
     this.client = new DiscordClient({
@@ -44,6 +45,7 @@ class DiscordClientHelper {
         GuildMembers,
         DirectMessages,
         GuildVoiceStates,
+        GuildPresences
       ],
       partials: [Partials.Channel],
     });

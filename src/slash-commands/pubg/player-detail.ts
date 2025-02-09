@@ -3,7 +3,7 @@ import {
   getPlayerDetail,
   getMatchDetail,
   summarizeMatchDetails,
-} from "../../api/pubg-helper.js";
+} from "../../utils/pubg-helper.js";
 import { SlashCommand } from "../../types.js";
 
 const command: SlashCommand = {

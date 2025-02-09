@@ -9,7 +9,7 @@ import { SlashCommand } from "../../types.js";
 import openai from "../../utils/openai-helper.js";
 import { concat } from "@langchain/core/utils/stream";
 import { playTTS } from "../../utils/tt-helper.js";
-import { fetchFilteredLLMModels } from "../../api/openrouter-helper.js";
+import { fetchFilteredLLMModels } from "../../utils/openrouter-helper.js";
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()

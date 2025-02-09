@@ -3,9 +3,9 @@ import {
   getPlayerDetail,
   getMatchDetail,
   summarizeMatchDetails,
-} from "../../api/pubg-helper.js";
+} from "../../utils/pubg-helper.js";
 import { SlashCommand } from "../../types.js";
-import { fetchFilteredLLMModels } from "../../api/openrouter-helper.js";
+import { fetchFilteredLLMModels } from "../../utils/openrouter-helper.js";
 import openai from "../../utils/openai-helper.js";
 import { concat } from "@langchain/core/utils/stream";
 
