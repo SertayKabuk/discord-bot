@@ -54,6 +54,14 @@ const router = Router();
  *         name:
  *           type: string
  *           description: Guild name
+ *         iconURL:
+ *           type: string
+ *           nullable: true
+ *           description: URL to the guild's icon
+ *         description:
+ *           type: string
+ *           nullable: true
+ *           description: Guild description
  *         channels:
  *           type: array
  *           items:
@@ -144,6 +152,8 @@ router.get('/guilds', validateApiKey, async (_req: Request, res: Response) => {
 
             return {
                 id: guild.id,
+                iconURL: guild.iconURL(),
+                description: guild.description,
                 name: guild.name,
                 channels
             };
@@ -177,6 +187,7 @@ interface Channel {
 interface Guild {
     id: string;
     name: string;
+    iconURL : string | null;
     channels: Channel[];
 }
 
