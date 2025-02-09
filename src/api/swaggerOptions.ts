@@ -1,6 +1,6 @@
-const PORT = process.env.SWAGGER_PORT;
-const HOST = process.env.API_HOST;
-const PROTOCOL = process.env.API_PROTOCOL;
+const SWAGGER_PORT = process.env.SWAGGER_PORT;
+const SWAGGER_HOST = process.env.API_HOST;
+const SWAGGER_PROTOCOL = process.env.API_PROTOCOL;
 
 export const swaggerOptions = {
     swaggerDefinition: {
@@ -12,7 +12,7 @@ export const swaggerOptions = {
         },
         servers: [
             {
-                url: `${PROTOCOL}://${HOST}:${PORT}/api/v1`,
+                url: `${SWAGGER_PROTOCOL}://${SWAGGER_HOST}:${SWAGGER_PORT}/api/v1`,
                 description: 'API Server'
             }
         ],
