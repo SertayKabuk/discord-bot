@@ -4,7 +4,6 @@ import { ChannelMessageUrl } from "../db/entities/ChannelMessageUrl.entity.js";
 import { extractUrls } from "../utils/functions.js";
 import dbHelper from "../db/db-helper.js";
 import discordClient from "../utils/discord-client-helper.js";
-import urlParserHelper from "../utils/url-parser-helper.js";
 import vectorStoreHelper from "../utils/vector-store-helper.js";
 import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
 import { v4 as uuidv4 } from "uuid";
@@ -83,38 +82,38 @@ export const checkDuplicateUrl = async (message: Message) => {
           await dbHelper.em.persist(dbMessage).flush();
         }
 
-        try {
-          for (let index = 0; index < urls.length; index++) {
-            const parsedUrl = await urlParserHelper.parse(urls[index]);
+        // try {
+        //   for (let index = 0; index < urls.length; index++) {
+        //     const parsedUrl = await urlParserHelper.parse(urls[index]);
 
-            const parsedContentString = urlParserHelper.toString(parsedUrl);
+        //     const parsedContentString = urlParserHelper.toString(parsedUrl);
 
-            if (parsedContentString === null) {
-              continue;
-            }
+        //     if (parsedContentString === null) {
+        //       continue;
+        //     }
 
-            let vectorStore: PGVectorStore | null = null;
+        //     let vectorStore: PGVectorStore | null = null;
 
-            if (parsedUrl !== null) {
-              if ("title" in parsedUrl) {
-                vectorStore = vectorStoreHelper.youtube_vectorStore;
-              } else if ("tweetBody" in parsedUrl) {
-                vectorStore = vectorStoreHelper.x_vectorStore;
-              }
+        //     if (parsedUrl !== null) {
+        //       if ("title" in parsedUrl) {
+        //         vectorStore = vectorStoreHelper.youtube_vectorStore;
+        //       } else if ("tweetBody" in parsedUrl) {
+        //         vectorStore = vectorStoreHelper.x_vectorStore;
+        //       }
 
-              const uuid = uuidv4();
+        //       const uuid = uuidv4();
 
-              await vectorStoreHelper.addDocument(
-                uuid,
-                message.id,
-                parsedContentString,
-                urls[index]
-              );
-            }
-          }
-        } catch (error) {
-          console.error("Error: ", error);
-        }
+        //       await vectorStoreHelper.addDocument(
+        //         uuid,
+        //         message.id,
+        //         parsedContentString,
+        //         urls[index]
+        //       );
+        //     }
+        //   }
+        // } catch (error) {
+        //   console.error("Error: ", error);
+        // }
       }
     }
   }

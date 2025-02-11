@@ -42,7 +42,6 @@
     "npm-check-updates": "^17.1.14",
     "openai": "^4.83.0",
     "pg": "^8.13.1",
-    "puppeteer": "^24.2.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "typescript-guid": "^1.0.3",
