@@ -1,4 +1,4 @@
-import { VoiceState } from "discord.js";
+import { Events, VoiceState } from "discord.js";
 import { BotEvent } from "../types.js";
 import {
   getVoiceConnection,
@@ -11,7 +11,7 @@ import { Readable } from "stream";
 import { QueueNames } from "../constants/queue-names.js";
 
 const event: BotEvent = {
-  name: "voiceStateUpdate",
+  name: Events.VoiceStateUpdate,
   execute: async (oldState: VoiceState, newState: VoiceState) => {
 
     try {

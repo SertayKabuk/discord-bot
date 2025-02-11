@@ -1,4 +1,4 @@
-import { Message } from "discord.js";
+import { Events, Message } from "discord.js";
 import { BotEvent } from "../types.js";
 import { checkDuplicateUrl } from "../behaviors/duplicate-url-behavior.js";
 import { logDmMessage } from "../behaviors/dm-message-behavior.js";
@@ -6,7 +6,7 @@ import discordClient from "../utils/discord-client-helper.js";
 
 
 const event: BotEvent = {
-    name: "messageCreate",
+    name: Events.MessageCreate,
     execute: async (message: Message) => {
         // Ignore all bots
         if (message.author.bot) {
