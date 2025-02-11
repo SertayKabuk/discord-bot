@@ -25,6 +25,11 @@ const router = Router();
  *           type: string
  *           description: User's connection status
  *           enum: [connected, online, offline, idle, dnd]
+ *        activity:
+ *          type: string
+ *         nullable: true
+ *        description: User's current activity
+ *        example: "🎮 PLAYING Valorant"
  *     Channel:
  *       type: object
  *       properties:
@@ -136,7 +141,8 @@ router.get('/guilds', validateApiKey, async (_req: Request, res: Response) => {
                                 id: member.user.id,
                                 username: member.user.username,
                                 displayName: member.displayName,
-                                status: member.presence?.status || 'offline'
+                                status: member.presence?.status || 'offline',
+                                activity: `${member.presence?.activities[0]?.emoji || ''} ${member.presence?.activities[0]?.type || ''} ${member.presence?.activities[0]?.name || ''} ${member.presence?.activities[0]?.details || ''} ${member.presence?.activities[0]?.state || ''}`,
                             }));
                     }
                 }
