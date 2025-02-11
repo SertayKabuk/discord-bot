@@ -36,7 +36,7 @@ export const checkDuplicateUrl = async (message: Message) => {
           let excluded = false;
           const element = foundRecords[index];
 
-          element.urls.forEach((urlItem) => {
+          element.urls.forEach((urlItem: { url: string }) => {
             excludedUrls.forEach((excludedUrl) => {
               if (urlItem.url.includes(excludedUrl)) {
                 excluded = true;
