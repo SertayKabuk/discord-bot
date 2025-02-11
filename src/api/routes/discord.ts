@@ -28,6 +28,7 @@ const router = Router();
  *         activity:
  *           type: string
  *           description: User's current activity
+ *           nullable: true
  *           example: "🎮 PLAYING Valorant"
  *     Channel:
  *       type: object

@@ -4,6 +4,7 @@ import {
   getVoiceConnection,
   createAudioPlayer,
   createAudioResource,
+  VoiceConnectionStatus,
 } from "@discordjs/voice";
 import mqConnection from "../utils/rabbitmq-helper.js";
 import { Readable } from "stream";
@@ -16,17 +17,19 @@ const event: BotEvent = {
     try {
 
       const datetime = new Date();
-      console.log(`${datetime.toISOString()} | ${oldState.member?.user.globalName} | ${oldState.guild?.name}:${oldState.channel?.name} ==> ${newState.guild?.name}:${newState.channel?.name}`);
+
+      if (!oldState.streaming && newState.streaming) {
+        console.log(`${datetime.toISOString()} | ${newState.member?.user.globalName} | started streaming | ${newState.guild?.name}:${newState.channel?.name}`);
+      }
+      else if (oldState.streaming && !newState.streaming) {
+        console.log(`${datetime.toISOString()} | ${newState.member?.user.globalName} | stopped streaming | ${newState.guild?.name}:${newState.channel?.name}`);
+      }
+      else {
+        console.log(`${datetime.toISOString()} | ${oldState.member?.user.globalName} | ${oldState.guild?.name}:${oldState.channel?.name} ==> ${newState.guild?.name}:${newState.channel?.name}`);
+      }
 
       // Check if user joined a voice channel
       if (!oldState.channelId && newState.channelId) {
-
-        if (!oldState.streaming && newState.streaming) {
-          console.log(`${datetime.toISOString()} | ${newState.member?.user.globalName} | started streaming | ${newState.guild?.name}:${newState.channel?.name}`);
-        }
-        else if (oldState.streaming && !newState.streaming) {
-          console.log(`${datetime.toISOString()} | ${newState.member?.user.globalName} | stopped streaming | ${newState.guild?.name}:${newState.channel?.name}`);
-        }
 
         const connection = getVoiceConnection(newState.guild.id);
 
@@ -38,7 +41,7 @@ const event: BotEvent = {
           return;
         }
 
-        if (connection.state.status !== "ready") {
+        if (connection.state.status !== VoiceConnectionStatus.Ready) {
           console.log("Voice connection not ready");
           return;
         }
@@ -77,6 +80,16 @@ const getWelcomeMessage = (newState: VoiceState): string => {
     "Oh oh! {name} gelmiş, sefalar getirdin!",
     "Selam {name}! Seni görmek ne güzel.",
     "Hey {name}! Hoş geldin aramıza!",
+    "Buyur buyur {name}, gel otur şöyle!",
+    "Aaa {name} gelmiş! Hoş geldin canım benim.",
+    "Sonunda geldin {name}! Biz de seni bekliyorduk.",
+    "Hoşgeldin {name} kardeşim, sefa getirdin!",
+    "Ooo {name} aramıza katıldı, parti başlayabilir!",
+    "Şeref verdin {name}, hoş geldin!",
+    "Bak bak bak, kim gelmiş? {name} hoş geldin!",
+    "Efendim, hoş geldiniz sayın {name}!",
+    "Keyifler nasıl {name}? Hoş geldin aramıza!",
+    "Nihayet {name} geldi, takım tamamlandı!"
   ];
 
   // Replace static input with random message
