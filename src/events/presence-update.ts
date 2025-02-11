@@ -11,7 +11,7 @@ const event: BotEvent = {
             const oldActivity = `${oldPresence?.activities[0]?.type !== undefined ? ActivityType[oldPresence?.activities[0]?.type] : ''} ${oldPresence?.activities[0]?.name || ''} ${oldPresence?.activities[0]?.details || ''} ${oldPresence?.activities[0]?.state || ''}`;
             const newActivity = `${newPresence.activities[0]?.type !== undefined ? ActivityType[newPresence?.activities[0]?.type] : ''} ${newPresence?.activities[0]?.name || ''} ${newPresence?.activities[0]?.details || ''} ${newPresence?.activities[0]?.state || ''}`;
 
-            console.log(`${datetime.toISOString()} | ${newPresence.member?.user.globalName} | ${oldPresence?.status} ==> ${newPresence.status} | ${oldActivity} ==> ${newActivity} | ${status}`);
+            console.log(`${datetime.toISOString()} | ${newPresence.guild?.name} | ${newPresence.member?.user.globalName} | ${oldPresence?.status} ==> ${newPresence.status} | ${oldActivity} ==> ${newActivity} | ${status}`);
 
         } catch (error) {
             console.error("Error in presenceUpdate:", error);
