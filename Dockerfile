@@ -10,6 +10,11 @@ RUN npm ci
 
 # Copy all files and build the application
 COPY . .
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Build the application
 RUN npm run build
 
 # Remove dev dependencies so that only production deps remain
@@ -20,9 +25,10 @@ FROM node:22-alpine
 
 WORKDIR /usr/src/app
 
-# Copy built application and pruned node_modules from build stage
+# Copy built application, pruned node_modules, and generated prisma client from build stage
 COPY --from=build /usr/src/app/build ./build
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/package*.json ./
+COPY --from=build /usr/src/app/node_modules/.prisma ./node_modules/.prisma
 
 CMD [ "npm", "start" ]
