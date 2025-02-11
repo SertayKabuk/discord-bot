@@ -4,9 +4,6 @@ import { ChannelMessageUrl } from "../db/entities/ChannelMessageUrl.entity.js";
 import { extractUrls } from "../utils/functions.js";
 import dbHelper from "../db/db-helper.js";
 import discordClient from "../utils/discord-client-helper.js";
-import vectorStoreHelper from "../utils/vector-store-helper.js";
-import { PGVectorStore } from "@langchain/community/vectorstores/pgvector";
-import { v4 as uuidv4 } from "uuid";
 
 export const checkDuplicateUrl = async (message: Message) => {
   if (message.guildId !== null) {
