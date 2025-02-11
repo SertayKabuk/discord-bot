@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { validateApiKey } from '../middleware/auth.js';
 import discordClient from "../../utils/discord-client-helper.js";
-import { ChannelType, GuildMember, PermissionsBitField } from 'discord.js';
+import { ActivityType, ChannelType, GuildMember, PermissionsBitField } from 'discord.js';
 
 const router = Router();
 
@@ -121,7 +121,7 @@ router.get('/guilds', validateApiKey, async (_req: Request, res: Response) => {
         const guilds = await Promise.all(discordClient.client.guilds.cache.map(async guild => {
             const channels = await Promise.all(guild.channels.cache.map(async channel => {
                 let users: User[] = [];
-                
+
                 // Only fetch users for voice and text channels
                 if (channel.type === ChannelType.GuildVoice || channel.type === ChannelType.GuildText) {
                     if (channel.type === ChannelType.GuildVoice) {
@@ -130,7 +130,8 @@ router.get('/guilds', validateApiKey, async (_req: Request, res: Response) => {
                             id: member.user.id,
                             username: member.user.username,
                             displayName: member.displayName,
-                            status: 'connected'
+                            status: 'connected',
+                            activity: `${member.presence?.activities[0]?.emoji || ''} ${member.presence?.activities[0]?.type !== undefined ? ActivityType[member.presence?.activities[0]?.type] : ''} ${member.presence?.activities[0]?.name || ''} ${member.presence?.activities[0]?.details || ''} ${member.presence?.activities[0]?.state || ''}`,
                         }));
                     } else if (channel.type === ChannelType.GuildText) {
                         // For text channels, get members who can view the channel
@@ -142,7 +143,7 @@ router.get('/guilds', validateApiKey, async (_req: Request, res: Response) => {
                                 username: member.user.username,
                                 displayName: member.displayName,
                                 status: member.presence?.status || 'offline',
-                                activity: `${member.presence?.activities[0]?.emoji || ''} ${member.presence?.activities[0]?.type || ''} ${member.presence?.activities[0]?.name || ''} ${member.presence?.activities[0]?.details || ''} ${member.presence?.activities[0]?.state || ''}`,
+                                activity: `${member.presence?.activities[0]?.emoji || ''} ${member.presence?.activities[0]?.type !== undefined ? ActivityType[member.presence?.activities[0]?.type] : ''} ${member.presence?.activities[0]?.name || ''} ${member.presence?.activities[0]?.details || ''} ${member.presence?.activities[0]?.state || ''}`,
                             }));
                     }
                 }
@@ -180,6 +181,7 @@ interface User {
     username: string;
     displayName: string;
     status: string;
+    activity: string;
 }
 
 interface Channel {
@@ -193,7 +195,7 @@ interface Channel {
 interface Guild {
     id: string;
     name: string;
-    iconURL : string | null;
+    iconURL: string | null;
     channels: Channel[];
 }
 
