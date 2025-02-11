@@ -12,6 +12,7 @@ import { QueueNames } from "../constants/queue-names.js";
 const event: BotEvent = {
   name: "voiceStateUpdate",
   execute: async (oldState: VoiceState, newState: VoiceState) => {
+
     try {
 
       const datetime = new Date();
@@ -19,6 +20,14 @@ const event: BotEvent = {
 
       // Check if user joined a voice channel
       if (!oldState.channelId && newState.channelId) {
+
+        if (!oldState.streaming && newState.streaming) {
+          console.log(`${datetime.toISOString()} | ${newState.member?.user.globalName} | started streaming | ${newState.guild?.name}:${newState.channel?.name}`);
+        }
+        else if (oldState.streaming && !newState.streaming) {
+          console.log(`${datetime.toISOString()} | ${newState.member?.user.globalName} | stopped streaming | ${newState.guild?.name}:${newState.channel?.name}`);
+        }
+
         const connection = getVoiceConnection(newState.guild.id);
 
         if (!connection) {

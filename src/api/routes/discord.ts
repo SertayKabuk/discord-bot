@@ -25,11 +25,10 @@ const router = Router();
  *           type: string
  *           description: User's connection status
  *           enum: [connected, online, offline, idle, dnd]
- *        activity:
- *          type: string
- *         nullable: true
- *        description: User's current activity
- *        example: "🎮 PLAYING Valorant"
+ *         activity:
+ *           type: string
+ *           description: User's current activity
+ *           example: "🎮 PLAYING Valorant"
  *     Channel:
  *       type: object
  *       properties:
@@ -131,7 +130,7 @@ router.get('/guilds', validateApiKey, async (_req: Request, res: Response) => {
                             username: member.user.username,
                             displayName: member.displayName,
                             status: 'connected',
-                            activity: `${member.presence?.activities[0]?.emoji || ''} ${member.presence?.activities[0]?.type !== undefined ? ActivityType[member.presence?.activities[0]?.type] : ''} ${member.presence?.activities[0]?.name || ''} ${member.presence?.activities[0]?.details || ''} ${member.presence?.activities[0]?.state || ''}`,
+                            activity: `${member.presence?.activities[0]?.type !== undefined ? ActivityType[member.presence?.activities[0]?.type] : ''} ${member.presence?.activities[0]?.name || ''} ${member.presence?.activities[0]?.details || ''} ${member.presence?.activities[0]?.state || ''}`,
                         }));
                     } else if (channel.type === ChannelType.GuildText) {
                         // For text channels, get members who can view the channel
@@ -143,7 +142,7 @@ router.get('/guilds', validateApiKey, async (_req: Request, res: Response) => {
                                 username: member.user.username,
                                 displayName: member.displayName,
                                 status: member.presence?.status || 'offline',
-                                activity: `${member.presence?.activities[0]?.emoji || ''} ${member.presence?.activities[0]?.type !== undefined ? ActivityType[member.presence?.activities[0]?.type] : ''} ${member.presence?.activities[0]?.name || ''} ${member.presence?.activities[0]?.details || ''} ${member.presence?.activities[0]?.state || ''}`,
+                                activity: `${member.presence?.activities[0]?.type !== undefined ? ActivityType[member.presence?.activities[0]?.type] : ''} ${member.presence?.activities[0]?.name || ''} ${member.presence?.activities[0]?.details || ''} ${member.presence?.activities[0]?.state || ''}`,
                             }));
                     }
                 }
