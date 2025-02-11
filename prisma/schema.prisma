@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model channel_messages {
+  id         BigInt                @id @default(autoincrement())
+  guild_id   String                @db.Char(20)
+  channel_id String                @db.Char(20)
+  message_id String                @db.Char(20)
+  user_id    String                @db.Char(20)
+  username   String                @db.VarChar(255)
+  created_at DateTime              @db.Timestamptz(6)
+  urls       channel_message_urls[]
+
+  @@index([guild_id], map: "channel_messages_guild_id_index")
+}
+
+model channel_message_urls {
+  id         BigInt           @id @default(autoincrement())
+  url        String          @db.VarChar(255)
+  message_id BigInt
+  message    channel_messages @relation(fields: [message_id], references: [id], onDelete: NoAction, map: "channel_message_urls_message_id_foreign")
+
+  @@index([url], map: "channel_message_urls_url_index")
+  @@index([message_id], map: "channel_message_urls_message_id_index")
+  @@index([url, message_id], map: "channel_message_urls_url_message_id_index")
+}
+
+model presence_logs {
+  id            BigInt   @id @default(autoincrement())
+  guild_id      String   @db.Char(20)
+  user_id       String   @db.Char(20)
+  username      String?
+  old_status    String?
+  new_status    String?
+  old_activity  String?
+  new_activity  String?
+  client_status String?
+  created_at    DateTime @default(now())
+}

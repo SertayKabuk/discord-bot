@@ -1,6 +1,4 @@
-import { ChannelMessage } from "../db/entities/ChannelMessage.entity.js";
-import { ChannelMessageUrl } from "../db/entities/ChannelMessageUrl.entity.js";
-import { ChannelType } from "discord.js";
+import { ChannelType, Collection, Message } from "discord.js";
 import discordClient from "../utils/discord-client-helper.js";
 import dbHelper from "../db/db-helper.js";
 import { extractUrls } from "../utils/functions.js";
@@ -13,10 +11,10 @@ export const importAllMessages = async () => {
   const excludedUrls = [".gif", "tenor.com"];
 
   if (channel && channel.type == ChannelType.GuildText) {
-    let lastMessageId;
+    let lastMessageId: string | undefined;
 
     while (true) {
-      let messages = await channel.messages.fetch({
+      const messages: Collection<string, Message> = await channel.messages.fetch({
         limit: 100,
         cache: false,
         before: lastMessageId,
@@ -24,49 +22,44 @@ export const importAllMessages = async () => {
 
       if (messages.size == 0) break;
 
-      messages.forEach(async (message) => {
-        let lastId = message.id;
-
+      for (const message of messages.values()) {
         let urls = extractUrls(message.content);
 
         if (urls) {
-          const dbMessage = new ChannelMessage();
-          dbMessage.guildId = message.guildId;
-          dbMessage.channelId = message.channel.id;
-          dbMessage.messageId = message.id;
-          dbMessage.createdAt = message.createdAt;
-          dbMessage.userId = message.author.id;
-          dbMessage.username = message.author.username;
-
-          urls.forEach((url) => {
+          const validUrls = urls.filter(url => {
             let excluded = false;
-
             excludedUrls.forEach((excludedUrl) => {
               if (url.includes(excludedUrl)) {
                 excluded = true;
               }
             });
-
-            if (excluded) return;
-
-            const urlMessage = new ChannelMessageUrl();
-            urlMessage.url = url;
-
-            if (url.length < 256) {
-              dbMessage.urls.add(urlMessage);
-            }
+            return !excluded && url.length < 256;
           });
 
-          if (dbMessage.urls.length > 0) {
-            await dbHelper.em.persist(dbMessage).flush();
+          if (validUrls.length > 0) {
+            await dbHelper.prisma.channel_messages.create({
+              data: {
+                guild_id: message.guildId!,
+                channel_id: message.channel.id,
+                message_id: message.id,
+                created_at: message.createdAt,
+                user_id: message.author.id,
+                username: message.author.username,
+                urls: {
+                  create: validUrls.map(url => ({
+                    url: url
+                  }))
+                }
+              }
+            });
           }
         }
-        lastMessageId = lastId;
-      });
+        lastMessageId = message.id;
+      }
 
       console.log("last:" + lastMessageId);
-
-      await dbHelper.em.flush();
     }
+
+    console.log("done");
   }
 };

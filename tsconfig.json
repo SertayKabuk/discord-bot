@@ -100,6 +100,6 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
 },
-"include":["./src/**/*", "./src/**/*.ts", "mikro-orm.config.ts"],
+"include":["./src/**/*", "./src/**/*.ts"],
 "exclude":["node_modules"]
 }  
