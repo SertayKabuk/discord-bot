@@ -47,6 +47,10 @@ export const swaggerOptions = {
                             type: 'string',
                             description: 'User\'s connection status',
                             enum: ['connected', 'online', 'offline', 'idle', 'dnd']
+                        },
+                        activity: {
+                            type: 'string',
+                            description: 'User\'s current activity',
                         }
                     }
                 },
