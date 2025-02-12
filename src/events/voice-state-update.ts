@@ -111,7 +111,7 @@ const getWelcomeMessage = (newState: VoiceState): string => {
 };
 
 const noOneLeft = (oldState: VoiceState): boolean => {
-  return oldState.channel?.members.size === 0;
+  return oldState.channel?.members.size === 1;
 };
 
 export default event;
