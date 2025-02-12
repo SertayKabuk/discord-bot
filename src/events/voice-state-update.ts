@@ -28,10 +28,16 @@ const event: BotEvent = {
         console.log(`${datetime.toISOString()} | ${oldState.member?.user.globalName} | ${oldState.guild?.name}:${oldState.channel?.name} ==> ${newState.guild?.name}:${newState.channel?.name}`);
       }
 
+      const connection = getVoiceConnection(newState.guild.id);
+
+      if (connection && noOneLeft(newState)) {
+        connection.destroy();
+        console.log(`No one left in the channel. ${newState.guild?.name}:${newState.channel?.name}`);
+      }
+
       // Check if user joined a voice channel
       if (!oldState.channelId && newState.channelId) {
 
-        const connection = getVoiceConnection(newState.guild.id);
 
         if (!connection) {
           return;
@@ -102,6 +108,10 @@ const getWelcomeMessage = (newState: VoiceState): string => {
   );
 
   return input;
+};
+
+const noOneLeft = (newState: VoiceState): boolean => {
+  return newState.channel?.members.size === 0;
 };
 
 export default event;
