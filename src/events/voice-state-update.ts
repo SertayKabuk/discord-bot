@@ -30,7 +30,7 @@ const event: BotEvent = {
 
       const connection = getVoiceConnection(newState.guild.id);
 
-      if (connection && noOneLeft(newState)) {
+      if (connection && noOneLeft(oldState)) {
         connection.destroy();
         console.log(`No one left in the channel. ${newState.guild?.name}:${newState.channel?.name}`);
       }
@@ -110,8 +110,8 @@ const getWelcomeMessage = (newState: VoiceState): string => {
   return input;
 };
 
-const noOneLeft = (newState: VoiceState): boolean => {
-  return newState.channel?.members.size === 0;
+const noOneLeft = (oldState: VoiceState): boolean => {
+  return oldState.channel?.members.size === 0;
 };
 
 export default event;
