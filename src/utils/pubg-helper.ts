@@ -205,7 +205,6 @@ export function summarizeMatchDetails(
       countMatches++;
 
       // Retrieve additional match details
-      const gameMode = matchResponse.data.attributes.gameMode || "N/A";
       const mapName = matchResponse.data.attributes.mapName || "N/A";
       const createdAt = matchResponse.data.attributes.createdAt || "N/A";
 
@@ -214,7 +213,7 @@ export function summarizeMatchDetails(
           stats.kills
         }, Damage ${stats.damageDealt.toFixed(0)}, Survived ${
           stats.timeSurvived
-        }s, Game Mode ${gameMode}, Map ${mapName}, Place ${stats.winPlace}`
+        }s, Assists ${stats.assists}, Map ${mapName}, Place ${stats.winPlace}`
       );
     }
   }

@@ -58,36 +58,63 @@ const command: SlashCommand = {
         matchDataList
       );
 
+      // Format average stats with emojis and better organization
+      const formattedAvgStats = avgStats.replace(/•/g, '➤')
+        .replace('Kills:', '🎯 Kills:')
+        .replace('Damage:', '💥 Damage:')
+        .replace('Survived:', '⏱️ Survived:')
+        .replace('Assists:', '🤝 Assists:')
+        .replace('Headshot Kills:', '🎯 Headshot Kills:')
+        .replace('DBNOs:', '🔫 DBNOs:')
+        .replace('Walk Distance:', '👣 Walk Distance:')
+        .replace('Ride Distance:', '🚗 Ride Distance:')
+        .replace('Revives:', '❤️ Revives:')
+        .replace('WinPlace:', '🏆 Average Place:');
+
+      // Format match summaries with emojis and better organization
+      const formattedMatchSummaries = matchSummaries.map((summary, index) => {
+        const [dateTime, ...details] = summary.split(', ');
+        return `**Match ${index + 1}** | ${dateTime}\n` +
+          details.join('\n').replace('Kills', '🎯 Kills')
+            .replace('Damage', '💥 Damage')
+            .replace('Survived', '⏱️ Survived')
+            .replace('Assists', '🤝 Assists')
+            .replace('Map', '🗺️ Map')
+            .replace('Place', '🏆 Place');
+      });
+
       const embed = new EmbedBuilder()
-        .setColor(0xffa500)
-        .setTitle(player.attributes.name)
+        .setColor(0x2f3136) // Discord dark theme color for better visibility
+        .setTitle(`📊 PUBG Player Stats: ${player.attributes.name}`)
+        .setDescription(`Detailed statistics for the last 5 matches`)
         .setThumbnail(
           "https://wstatic-prod.pubg.com/web/live/static/favicons/android-icon-192x192.png"
         )
         .addFields(
-          { name: "Player ID", value: player.id, inline: true },
           {
-            name: "Ban Type",
-            value: player.attributes.banType,
-            inline: true,
+            name: "👤 Player Information",
+            value: [
+              `**ID:** ${player.id}`,
+              `**Ban Status:** ${player.attributes.banType || 'None'}`,
+              `**Clan:** ${player.attributes.clanId || 'Not in a clan'}`
+            ].join('\n'),
+            inline: false
           },
           {
-            name: "Clan ID",
-            value: player.attributes.clanId || "N/A",
-            inline: true,
+            name: "📈 Average Performance",
+            value: formattedAvgStats,
+            inline: false
           },
           {
-            name: "Last 5 Match Average Stats",
-            value: avgStats,
-            inline: false,
-          },
-          {
-            name: "Last 5 Match Details",
-            value: matchSummaries.length ? matchSummaries.join("\n") : "N/A",
-            inline: false,
+            name: "🎮 Recent Matches",
+            value: formattedMatchSummaries.length ? formattedMatchSummaries.join('\n\n') : "No recent matches found",
+            inline: false
           }
         )
-        .setFooter({ text: "PUBG Player Details" })
+        .setFooter({ 
+          text: `Data refreshed ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
+          iconURL: "https://wstatic-prod.pubg.com/web/live/static/favicons/favicon-16x16.png"
+        })
         .setTimestamp();
 
       await interaction.editReply({
