@@ -22,6 +22,73 @@ export const swaggerOptions = {
                 description: 'Discord-related endpoints for managing guilds, channels, users, and presence data'
             }
         ],
+        paths: {
+            '/discord/guilds': {
+                get: {
+                    tags: ['Discord'],
+                    summary: 'Get all Discord guilds, their channels and users',
+                    description: 'Retrieves a list of all Discord guilds, their channels and current users in each channel',
+                    security: [{ ApiKeyAuth: [] }],
+                    responses: {
+                        '200': {
+                            description: 'Successful operation',
+                            content: {
+                                'application/json': {
+                                    schema: {
+                                        $ref: '#/components/schemas/GuildsResponseDto'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            '/discord/presence-history/filter/startDate/{startDate}/endDate/{endDate}': {
+                get: {
+                    tags: ['Discord'],
+                    summary: 'Get presence history between two dates',
+                    description: 'Retrieves presence logs between the specified start and end dates',
+                    parameters: [
+                        {
+                            name: 'startDate',
+                            in: 'path',
+                            required: true,
+                            schema: {
+                                type: 'string',
+                                format: 'date-time'
+                            },
+                            description: 'Start date in ISO format'
+                        },
+                        {
+                            name: 'endDate',
+                            in: 'path',
+                            required: true,
+                            schema: {
+                                type: 'string',
+                                format: 'date-time'
+                            },
+                            description: 'End date in ISO format'
+                        }
+                    ],
+                    security: [{ ApiKeyAuth: [] }],
+                    responses: {
+                        '200': {
+                            description: 'Successful operation',
+                            content: {
+                                'application/json': {
+                                    schema: {
+                                        type: 'array',
+                                        items: {
+                                            $ref: '#/components/schemas/PresenceHistoryDto'
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         components: {
             schemas: {
                 UserDto: {
@@ -229,5 +296,5 @@ export const swaggerOptions = {
             ApiKeyAuth: []
         }]
     },
-    apis: ['./build/api/routes/*.js'],
+    apis: ['./build/api/routes/*.js']
 };

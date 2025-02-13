@@ -24,32 +24,19 @@ const router = Router();
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 guilds:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Guild'
+ *               $ref: '#/components/schemas/GuildsResponseDto'
  *       401:
  *         description: Unauthorized - Invalid or missing API key
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Unauthorized"
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Server error
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "Failed to fetch guild information"
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/guilds', validateApiKey, async (_req: Request, res: Response) => {
     try {
@@ -124,12 +111,14 @@ router.get('/guilds', validateApiKey, async (_req: Request, res: Response) => {
  *         description: Start date in ISO format (e.g. 2025-02-13T18:01:27.495Z)
  *         schema:
  *           type: string
+ *           format: date-time
  *       - in: path
  *         name: endDate
  *         required: true
  *         description: End date in ISO format (e.g. 2025-02-13T18:01:27.495Z)
  *         schema:
  *           type: string
+ *           format: date-time
  *     security:
  *       - ApiKeyAuth: []
  *     responses:
@@ -143,8 +132,16 @@ router.get('/guilds', validateApiKey, async (_req: Request, res: Response) => {
  *                 $ref: '#/components/schemas/PresenceHistoryDto'
  *       400:
  *         description: Invalid date format
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  *       500:
  *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.get('/presence-history/filter/startDate/:startDate/endDate/:endDate', validateApiKey, async (req: Request, res: Response) => {
     const { startDate, endDate } = req.params;

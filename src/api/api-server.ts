@@ -16,30 +16,35 @@ export class APIServer {
         const app: Express = express();
         const router = express.Router();
 
-        const swaggerDocs = swaggerjsdoc(swaggerOptions);
+        const swaggerDocs = swaggerjsdoc({
+            ...swaggerOptions,
+            apis: ['./src/api/routes/*.ts', './build/api/routes/*.js'] // Include both TS and JS files
+        });
         
-        // Configure Swagger UI with proper base path npm run handling
+        // Configure Swagger UI
         const swaggerUiOptions = {
             explorer: true,
             swaggerOptions: {
-                url: 'api/v1/api-docs/swagger.json',
-                baseUrl: '/api/v1'
+                url: '/api/v1/api-docs/swagger.json',
+                persistAuthorization: true
             }
         };
 
-        // Serve Swagger JSON at a specific endpoint
+        // Serve Swagger JSON
         router.get('/api-docs/swagger.json', (_req, res) => {
-            res.json(swaggerDocs);
+            res.setHeader('Content-Type', 'application/json');
+            res.send(swaggerDocs);
         });
 
-        // Mount Swagger UI under the API router
+        // Mount Swagger UI
         router.use('/api-docs', swaggerUi.serve);
         router.get('/api-docs', swaggerUi.setup(swaggerDocs, swaggerUiOptions));
 
         // CORS middleware
         router.use((_req, res, next) => {
+            res.header('Access-Control-Allow-Origin', '*');
             res.header('Access-Control-Allow-Methods', 'GET');
-            res.header('Access-Control-Allow-Headers', 'X-API-Key');
+            res.header('Access-Control-Allow-Headers', 'X-API-Key, Content-Type');
             next();
         });
 
@@ -52,7 +57,7 @@ export class APIServer {
 
         app.listen(this.port, () => {
             console.log(`[server]: Server is running at http://localhost:${this.port}`);
-            console.log(`[server]: API documentation available at /api-docs`);
+            console.log(`[server]: API documentation available at http://localhost:${this.port}/api/v1/api-docs`);
         });
     }
 }
