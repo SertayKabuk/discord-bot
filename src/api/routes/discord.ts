@@ -166,9 +166,18 @@ router.get('/presence-history/filter/startDate/:startDate/endDate/:endDate', val
                     lte: new Date(endDate)
                 }
             }
-        }) as PresenceHistoryDto[];
+        });
         
-        res.status(200).json(data);
+        // Convert BigInt values to strings before sending response
+        const serializedData = data.map(record => ({
+            ...record,
+            // Convert any BigInt fields to strings
+            id: record.id.toString(),
+            user_id: record.user_id.toString(),
+            guild_id: record.guild_id.toString()
+        }));
+        
+        res.status(200).json(serializedData);
     } catch (error) {
         console.error('Error fetching presence history:', error);
         res.status(500).json({ error: 'Failed to fetch presence history' });
