@@ -7,7 +7,7 @@ export const swaggerOptions = {
         openapi: '3.0.0',
         info: {
             title: 'Discord Bot API',
-            description: 'API documentation for Discord Bot',
+            description: 'API documentation for Discord Bot. Provides endpoints for managing guild information, user presence, and channel statuses.',
             version: '1.0.0'
         },
         servers: [
@@ -19,80 +19,199 @@ export const swaggerOptions = {
         tags: [
             {
                 name: 'Discord',
-                description: 'Discord-related endpoints'
-            },
-            {
-                name: 'System',
-                description: 'System endpoints'
+                description: 'Discord-related endpoints for managing guilds, channels, users, and presence data'
             }
         ],
         components: {
             schemas: {
-                User: {
+                UserDto: {
                     type: 'object',
+                    required: ['id', 'username', 'displayName', 'status'],
                     properties: {
                         id: {
                             type: 'string',
-                            description: 'Discord user ID'
+                            description: 'Discord user ID (Snowflake)',
+                            example: '123456789012345678'
                         },
                         username: {
                             type: 'string',
-                            description: 'Discord username'
+                            description: 'Discord username',
+                            example: 'username#1234'
                         },
                         displayName: {
                             type: 'string',
-                            description: 'User\'s display name in the guild'
+                            description: 'User\'s display name (nickname) in the guild',
+                            example: 'Cool Nickname'
                         },
                         status: {
                             type: 'string',
-                            description: 'User\'s connection status',
-                            enum: ['connected', 'online', 'offline', 'idle', 'dnd']
+                            description: 'User\'s connection status in Discord',
+                            enum: ['connected', 'online', 'offline', 'idle', 'dnd'],
+                            example: 'online'
                         },
                         activity: {
                             type: 'string',
-                            description: 'User\'s current activity',
+                            description: 'User\'s current Discord activity (game, streaming, etc.)',
+                            nullable: true,
+                            example: 'Playing Minecraft'
                         }
                     }
                 },
-                Channel: {
+                ChannelDto: {
                     type: 'object',
+                    required: ['id', 'name', 'type'],
                     properties: {
                         id: {
                             type: 'string',
-                            description: 'Discord channel ID'
+                            description: 'Discord channel ID (Snowflake)',
+                            example: '123456789012345678'
+                        },
+                        parentId: {
+                            type: 'string',
+                            description: 'Parent category channel ID (Snowflake)',
+                            nullable: true,
+                            example: '987654321098765432'
                         },
                         name: {
                             type: 'string',
-                            description: 'Channel name'
+                            description: 'Channel name as shown in Discord',
+                            example: 'general'
                         },
                         type: {
                             type: 'string',
-                            description: 'Channel type'
+                            description: 'Discord channel type (GuildText, GuildVoice, etc.)',
+                            enum: ['GuildText', 'GuildVoice', 'GuildCategory', 'GuildNews', 'GuildStore'],
+                            example: 'GuildText'
                         },
                         users: {
                             type: 'array',
                             items: {
-                                $ref: '#/components/schemas/User'
-                            }
+                                $ref: '#/components/schemas/UserDto'
+                            },
+                            description: 'List of users currently in the channel'
                         }
                     }
                 },
-                Guild: {
+                GuildDto: {
                     type: 'object',
+                    required: ['id', 'name'],
                     properties: {
                         id: {
                             type: 'string',
-                            description: 'Discord guild ID'
+                            description: 'Discord guild ID (Snowflake)',
+                            example: '123456789012345678'
                         },
                         name: {
                             type: 'string',
-                            description: 'Guild name'
+                            description: 'Guild name as shown in Discord',
+                            example: 'My Discord Server'
+                        },
+                        iconURL: {
+                            type: 'string',
+                            description: 'URL of the guild\'s icon image',
+                            nullable: true,
+                            example: 'https://cdn.discordapp.com/icons/...'
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Guild description if set',
+                            nullable: true,
+                            example: 'A friendly community server'
                         },
                         channels: {
                             type: 'array',
                             items: {
-                                $ref: '#/components/schemas/Channel'
-                            }
+                                $ref: '#/components/schemas/ChannelDto'
+                            },
+                            description: 'List of channels in the guild'
+                        }
+                    }
+                },
+                GuildsResponseDto: {
+                    type: 'object',
+                    required: ['guilds'],
+                    properties: {
+                        guilds: {
+                            type: 'array',
+                            items: {
+                                $ref: '#/components/schemas/GuildDto'
+                            },
+                            description: 'List of Discord guilds with their channels and users'
+                        }
+                    }
+                },
+                PresenceHistoryDto: {
+                    type: 'object',
+                    required: ['id', 'guild_id', 'user_id', 'created_at'],
+                    properties: {
+                        id: {
+                            type: 'string',
+                            format: 'int64',
+                            description: 'Unique identifier for the presence log entry',
+                            example: '123'
+                        },
+                        guild_id: {
+                            type: 'string',
+                            description: 'Discord guild ID where the presence change occurred',
+                            example: '123456789012345678'
+                        },
+                        user_id: {
+                            type: 'string',
+                            description: 'Discord user ID whose presence changed',
+                            example: '123456789012345678'
+                        },
+                        username: {
+                            type: 'string',
+                            nullable: true,
+                            description: 'Discord username at the time of presence change',
+                            example: 'username#1234'
+                        },
+                        old_status: {
+                            type: 'string',
+                            nullable: true,
+                            description: 'Previous Discord status (online, offline, idle, dnd)',
+                            example: 'online'
+                        },
+                        new_status: {
+                            type: 'string',
+                            nullable: true,
+                            description: 'New Discord status (online, offline, idle, dnd)',
+                            example: 'idle'
+                        },
+                        old_activity: {
+                            type: 'string',
+                            nullable: true,
+                            description: 'Previous Discord activity',
+                            example: 'Playing Minecraft'
+                        },
+                        new_activity: {
+                            type: 'string',
+                            nullable: true,
+                            description: 'New Discord activity',
+                            example: 'Playing Valorant'
+                        },
+                        client_status: {
+                            type: 'string',
+                            nullable: true,
+                            description: 'Discord client platform status (web, desktop, mobile)',
+                            example: 'desktop'
+                        },
+                        created_at: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'ISO timestamp of when the presence change was logged',
+                            example: '2025-02-13T18:01:27.495Z'
+                        }
+                    }
+                },
+                ErrorResponse: {
+                    type: 'object',
+                    required: ['error'],
+                    properties: {
+                        error: {
+                            type: 'string',
+                            description: 'Error message describing what went wrong',
+                            example: 'Invalid date format'
                         }
                     }
                 }
