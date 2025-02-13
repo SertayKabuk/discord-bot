@@ -18,7 +18,7 @@ export class APIServer {
 
         const swaggerDocs = swaggerjsdoc({
             ...swaggerOptions,
-            apis: ['./src/api/routes/*.ts', './build/api/routes/*.js'] // Include both TS and JS files
+            apis: ['./build/api/routes/*.js'] // Only need compiled JS files since we don't use annotations
         });
         
         // Configure Swagger UI

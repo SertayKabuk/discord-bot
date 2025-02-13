@@ -8,36 +8,6 @@ import { GuildsResponseDto, UserDto } from '../dto/guilds.dto.js';
 
 const router = Router();
 
-/**
- * @swagger
- * /discord/guilds:
- *   get:
- *     tags:
- *       - Discord
- *     summary: Get all Discord guilds, their channels and users
- *     description: Retrieves a list of all Discord guilds, their channels and current users in each channel
- *     security:
- *       - ApiKeyAuth: []
- *     responses:
- *       200:
- *         description: Successful operation
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/GuildsResponseDto'
- *       401:
- *         description: Unauthorized - Invalid or missing API key
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- */
 router.get('/guilds', validateApiKey, async (_req: Request, res: Response) => {
     try {
         const guilds = await Promise.all(discordClient.client.guilds.cache.map(async guild => {
@@ -96,85 +66,44 @@ router.get('/guilds', validateApiKey, async (_req: Request, res: Response) => {
     }
 });
 
-/**
- * @swagger
- * /discord/presence-history/filter/startDate/{startDate}/endDate/{endDate}:
- *   get:
- *     tags:
- *       - Discord
- *     summary: Get presence history between two dates
- *     description: Retrieves presence logs between the specified start and end dates
- *     parameters:
- *       - in: path
- *         name: startDate
- *         required: true
- *         description: Start date in ISO format (e.g. 2025-02-13T18:01:27.495Z)
- *         schema:
- *           type: string
- *           format: date-time
- *       - in: path
- *         name: endDate
- *         required: true
- *         description: End date in ISO format (e.g. 2025-02-13T18:01:27.495Z)
- *         schema:
- *           type: string
- *           format: date-time
- *     security:
- *       - ApiKeyAuth: []
- *     responses:
- *       200:
- *         description: Successful operation
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/PresenceHistoryDto'
- *       400:
- *         description: Invalid date format
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- */
-router.get('/presence-history/filter/startDate/:startDate/endDate/:endDate', validateApiKey, async (req: Request, res: Response) => {
-    const { startDate, endDate } = req.params;
-    
+router.get('/presence-history/filter/guildId/:guildId/startDate/:startDate/endDate/:endDate', validateApiKey, async (req: Request, res: Response) => {
+    const { guildId, startDate, endDate } = req.params;
+
     // Validate date format
     const dateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
     if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
-        res.status(400).json({ 
-            error: 'Invalid date format. Expected format: YYYY-MM-DDThh:mm:ss.sssZ (e.g. 2025-02-13T18:01:27.495Z)' 
+        res.status(400).json({
+            error: 'Invalid date format. Expected format: YYYY-MM-DDThh:mm:ss.sssZ (e.g. 2025-02-13T18:01:27.495Z)'
         });
         return;
     }
 
     try {
-        const data = await dbHelper.prisma.presence_logs.findMany({
-            where: {
-                created_at: {
-                    gte: new Date(startDate),
-                    lte: new Date(endDate)
-                }
+        const where = {
+            guild_id: guildId,
+            created_at: {
+                gte: new Date(startDate),
+                lte: new Date(endDate)
             }
-        });
-        
-        // Convert BigInt values to strings before sending response
-        const serializedData = data.map(record => ({
-            ...record,
-            // Convert any BigInt fields to strings
+        };
+
+        const data = await dbHelper.prisma.presence_logs.findMany({ where });
+
+        // Map database records to PresenceHistoryDto
+        const response: PresenceHistoryDto[] = data.map(record => ({
             id: record.id.toString(),
+            guild_id: record.guild_id.toString(),
             user_id: record.user_id.toString(),
-            guild_id: record.guild_id.toString()
+            username: record.username,
+            old_status: record.old_status,
+            new_status: record.new_status,
+            old_activity: record.old_activity,
+            new_activity: record.new_activity,
+            client_status: record.client_status,
+            created_at: record.created_at
         }));
-        
-        res.status(200).json(serializedData);
+
+        res.status(200).json(response);
     } catch (error) {
         console.error('Error fetching presence history:', error);
         res.status(500).json({ error: 'Failed to fetch presence history' });

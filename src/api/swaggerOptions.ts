@@ -43,12 +43,21 @@ export const swaggerOptions = {
                     }
                 }
             },
-            '/discord/presence-history/filter/startDate/{startDate}/endDate/{endDate}': {
+            '/discord/presence-history/filter/guildId/{guildId}/startDate/{startDate}/endDate/{endDate}': {
                 get: {
                     tags: ['Discord'],
-                    summary: 'Get presence history between two dates',
-                    description: 'Retrieves presence logs between the specified start and end dates',
+                    summary: 'Get presence history between two dates for a specific guild',
+                    description: 'Retrieves presence logs between the specified start and end dates for the given guild ID',
                     parameters: [
+                        {
+                            name: 'guildId',
+                            in: 'path',
+                            required: true,
+                            schema: {
+                                type: 'string'
+                            },
+                            description: 'Discord guild ID (Snowflake)'
+                        },
                         {
                             name: 'startDate',
                             in: 'path',
