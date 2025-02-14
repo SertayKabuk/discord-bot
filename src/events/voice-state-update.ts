@@ -9,24 +9,105 @@ import {
 import mqConnection from "../utils/rabbitmq-helper.js";
 import { Readable } from "stream";
 import { QueueNames } from "../constants/queue-names.js";
+import dbHelper from "../db/db-helper.js";
+import { VoiceStateEventType } from "../constants/voice-state-types.js";
+
+const logVoiceStateToDb = async (oldState: VoiceState, newState: VoiceState, eventType: VoiceStateEventType) => {
+  try {
+    await dbHelper.prisma.voice_state_logs.create({
+      data: {
+        user_id: newState.member?.user.id || oldState.member?.user.id || "unknown",
+        username: newState.member?.user.globalName || oldState.member?.user.globalName || "Unknown User",
+        from_guild_id: oldState.guild?.id || "unknown",
+        from_guild_name: oldState.guild?.name || "unknown",
+        to_guild_id: newState.guild?.id || "unknown",
+        to_guild_name: newState.guild?.name || "unknown",
+        from_channel_id: oldState.channelId || "none",
+        from_channel_name: oldState.channel?.name || "none",
+        to_channel_id: newState.channelId || "none",
+        to_channel_name: newState.channel?.name || "none",
+        event_type: VoiceStateEventType[eventType]
+      }
+    });
+  } catch (error) {
+    console.error("Error logging voice state to database:", error);
+  }
+};
+
+const logVoiceStateChanges = async (oldState: VoiceState, newState: VoiceState): Promise<void> => {
+  let eventType: VoiceStateEventType | null = null;
+
+  // Channel change
+  if (oldState.channelId !== newState.channelId) {
+    if (!oldState.channelId) {
+      eventType = VoiceStateEventType.JOIN;
+    } else if (!newState.channelId) {
+      eventType = VoiceStateEventType.LEAVE;
+    } else {
+      eventType = VoiceStateEventType.MOVE;
+    }
+  }
+
+  // Streaming state
+  if (!oldState.streaming && newState.streaming) {
+    eventType = VoiceStateEventType.STREAM_START;
+  } else if (oldState.streaming && !newState.streaming) {
+    eventType = VoiceStateEventType.STREAM_STOP;
+  }
+
+  // Self mute state
+  if (!oldState.selfMute && newState.selfMute) {
+    eventType = VoiceStateEventType.SELF_MUTE;
+  } else if (oldState.selfMute && !newState.selfMute) {
+    eventType = VoiceStateEventType.SELF_UNMUTE;
+  }
+
+  // Self deaf state
+  if (!oldState.selfDeaf && newState.selfDeaf) {
+    eventType = VoiceStateEventType.SELF_DEAF;
+  } else if (oldState.selfDeaf && !newState.selfDeaf) {
+    eventType = VoiceStateEventType.SELF_UNDEAF;
+  }
+
+  // Server mute state
+  if (!oldState.serverMute && newState.serverMute) {
+    eventType = VoiceStateEventType.SERVER_MUTE;
+  } else if (oldState.serverMute && !newState.serverMute) {
+    eventType = VoiceStateEventType.SERVER_UNMUTE;
+  }
+
+  // Server deaf state
+  if (!oldState.serverDeaf && newState.serverDeaf) {
+    eventType = VoiceStateEventType.SERVER_DEAF;
+  } else if (oldState.serverDeaf && !newState.serverDeaf) {
+    eventType = VoiceStateEventType.SERVER_UNDEAF;
+  }
+
+  // Video state
+  if (!oldState.selfVideo && newState.selfVideo) {
+    eventType = VoiceStateEventType.VIDEO_START;
+  } else if (oldState.selfVideo && !newState.selfVideo) {
+    eventType = VoiceStateEventType.VIDEO_STOP;
+  }
+
+  // Suppress state
+  if (!oldState.suppress && newState.suppress) {
+    eventType = VoiceStateEventType.SUPPRESS;
+  } else if (oldState.suppress && !newState.suppress) {
+    eventType = VoiceStateEventType.UNSUPPRESS;
+  }
+
+  if (eventType !== null) {
+    await logVoiceStateToDb(oldState, newState, eventType);
+  }
+};
 
 const event: BotEvent = {
   name: Events.VoiceStateUpdate,
   execute: async (oldState: VoiceState, newState: VoiceState) => {
-
     try {
-
-      const datetime = new Date();
-
-      if (!oldState.streaming && newState.streaming) {
-        console.log(`${datetime.toISOString()} | ${newState.member?.user.globalName} | started streaming | ${newState.guild?.name}:${newState.channel?.name}`);
-      }
-      else if (oldState.streaming && !newState.streaming) {
-        console.log(`${datetime.toISOString()} | ${newState.member?.user.globalName} | stopped streaming | ${newState.guild?.name}:${newState.channel?.name}`);
-      }
-      else {
-        console.log(`${datetime.toISOString()} | ${oldState.member?.user.globalName} | ${oldState.guild?.name}:${oldState.channel?.name} ==> ${newState.guild?.name}:${newState.channel?.name}`);
-      }
+      // Log all voice state changes
+      await logVoiceStateChanges(oldState, newState);
 
       const connection = getVoiceConnection(newState.guild.id);
 
@@ -37,8 +118,6 @@ const event: BotEvent = {
 
       // Check if user joined a voice channel
       if (!oldState.channelId && newState.channelId) {
-
-
         if (!connection) {
           return;
         }

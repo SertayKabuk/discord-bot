@@ -96,6 +96,60 @@ export const swaggerOptions = {
                         }
                     }
                 }
+            },
+            '/discord/voice-state-history/userId/{userId}/startDate/{startDate}/endDate/{endDate}': {
+                get: {
+                    tags: ['Discord'],
+                    summary: 'Get voice state history for a specific user',
+                    description: 'Retrieves voice state logs for the specified user ID',
+                    parameters: [
+                        {
+                            name: 'userId',
+                            in: 'path',
+                            required: true,
+                            schema: {
+                                type: 'string'
+                            },
+                            description: 'Discord user ID (Snowflake)'
+                        },
+                        {
+                            name: 'startDate',
+                            in: 'path',
+                            required: true,
+                            schema: {
+                                type: 'string',
+                                format: 'date-time'
+                            },
+                            description: 'Start date in ISO format'
+                        },
+                        {
+                            name: 'endDate',
+                            in: 'path',
+                            required: true,
+                            schema: {
+                                type: 'string',
+                                format: 'date-time'
+                            },
+                            description: 'End date in ISO format'
+                        }
+                    ],
+                    security: [{ ApiKeyAuth: [] }],
+                    responses: {
+                        '200': {
+                            description: 'Successful operation',
+                            content: {
+                                'application/json': {
+                                    schema: {
+                                        type: 'array',
+                                        items: {
+                                            $ref: '#/components/schemas/VoiceStateHistoryDto'
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         components: {
@@ -276,6 +330,82 @@ export const swaggerOptions = {
                             type: 'string',
                             format: 'date-time',
                             description: 'ISO timestamp of when the presence change was logged',
+                            example: '2025-02-13T18:01:27.495Z'
+                        }
+                    }
+                },
+                VoiceStateHistoryDto: {
+                    type: 'object',
+                    required: ['id', 'user_id', 'from_guild_id', 'from_guild_name', 'to_guild_id', 'to_guild_name', 
+                              'from_channel_id', 'from_channel_name', 'to_channel_id', 'to_channel_name', 'created_at'],
+                    properties: {
+                        id: {
+                            type: 'string',
+                            format: 'int64',
+                            description: 'Unique identifier for the voice state log entry',
+                            example: '123'
+                        },
+                        user_id: {
+                            type: 'string',
+                            description: 'Discord user ID',
+                            example: '123456789012345678'
+                        },
+                        from_guild_id: {
+                            type: 'string',
+                            description: 'Source Discord guild ID',
+                            example: '123456789012345678'
+                        },
+                        from_guild_name: {
+                            type: 'string',
+                            description: 'Source Discord guild name',
+                            example: 'My Server'
+                        },
+                        to_guild_id: {
+                            type: 'string',
+                            description: 'Destination Discord guild ID',
+                            example: '123456789012345678'
+                        },
+                        to_guild_name: {
+                            type: 'string',
+                            description: 'Destination Discord guild name',
+                            example: 'My Server'
+                        },
+                        from_channel_id: {
+                            type: 'string',
+                            description: 'Source channel ID',
+                            example: '123456789012345678'
+                        },
+                        from_channel_name: {
+                            type: 'string',
+                            description: 'Source channel name',
+                            example: 'General'
+                        },
+                        to_channel_id: {
+                            type: 'string',
+                            description: 'Destination channel ID',
+                            example: '123456789012345678'
+                        },
+                        to_channel_name: {
+                            type: 'string',
+                            description: 'Destination channel name',
+                            example: 'Gaming'
+                        },
+                        username: {
+                            type: 'string',
+                            nullable: true,
+                            description: 'Discord username at the time of voice state change',
+                            example: 'username#1234'
+                        },
+                        event_type: {
+                            type: 'string',
+                            nullable: true,
+                            description: 'Type of voice state event (JOIN, LEAVE, MOVE, etc.)',
+                            example: 'JOIN'
+                        },
+                        created_at: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'ISO timestamp of when the voice state change was logged',
                             example: '2025-02-13T18:01:27.495Z'
                         }
                     }

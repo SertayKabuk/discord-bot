@@ -35,11 +35,31 @@ model presence_logs {
   id            BigInt   @id @default(autoincrement())
   guild_id      String   @db.VarChar(20)
   user_id       String   @db.VarChar(20)
-  username      String?
-  old_status    String?
-  new_status    String?
+  username      String?  @db.VarChar(255)
+  old_status    String?  @db.VarChar(20)
+  new_status    String?  @db.VarChar(20)
   old_activity  String?
   new_activity  String?
-  client_status String?
+  client_status String?  @db.VarChar(200)
   created_at    DateTime @default(now())
+
+  @@index([guild_id, created_at], map: "presence_logs_guild_date_index")
+}
+
+model voice_state_logs {
+  id                BigInt   @id @default(autoincrement())
+  user_id           String   @db.VarChar(20)
+  from_guild_id     String   @db.VarChar(20)
+  from_guild_name   String   @db.VarChar(200)
+  to_guild_id       String   @db.VarChar(20)
+  to_guild_name     String   @db.VarChar(200)
+  from_channel_id   String   @db.VarChar(20)
+  from_channel_name String   @db.VarChar(100)
+  to_channel_id     String   @db.VarChar(20)
+  to_channel_name   String   @db.VarChar(100)
+  username          String?  @db.VarChar(255)
+  event_type        String?  @db.VarChar(20)
+  created_at        DateTime @default(now())
+
+  @@index([user_id, created_at], map: "voice_state_logs_user_date_index")
 }

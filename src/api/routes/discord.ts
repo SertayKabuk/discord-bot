@@ -5,6 +5,7 @@ import { ActivityType, ChannelType, GuildMember, PermissionsBitField } from 'dis
 import dbHelper from '../../db/db-helper.js';
 import { PresenceHistoryDto } from '../dto/presence-history.dto.js';
 import { GuildsResponseDto, UserDto } from '../dto/guilds.dto.js';
+import { VoiceStateHistoryDto } from '../dto/voice-state-history.dto.js';
 
 const router = Router();
 
@@ -107,6 +108,47 @@ router.get('/presence-history/filter/guildId/:guildId/startDate/:startDate/endDa
     } catch (error) {
         console.error('Error fetching presence history:', error);
         res.status(500).json({ error: 'Failed to fetch presence history' });
+    }
+});
+
+router.get('/voice-state-history/userId/:userId/startDate/:startDate/endDate/:endDate', validateApiKey, async (req: Request, res: Response) => {
+    const { userId, startDate, endDate } = req.params;
+
+    try {
+        const data = await dbHelper.prisma.voice_state_logs.findMany({
+            where: {
+                user_id: userId,
+                created_at: {
+                    gte: new Date(startDate),
+                    lte: new Date(endDate)
+                }
+            },
+            orderBy: {
+                created_at: 'desc'
+            }
+        });
+
+        // Map database records to VoiceStateHistoryDto
+        const response: VoiceStateHistoryDto[] = data.map(record => ({
+            id: record.id.toString(),
+            user_id: record.user_id,
+            from_guild_id: record.from_guild_id,
+            from_guild_name: record.from_guild_name,
+            to_guild_id: record.to_guild_id,
+            to_guild_name: record.to_guild_name,
+            from_channel_id: record.from_channel_id,
+            from_channel_name: record.from_channel_name,
+            to_channel_id: record.to_channel_id,
+            to_channel_name: record.to_channel_name,
+            username: record.username,
+            event_type: record.event_type,
+            created_at: record.created_at
+        }));
+
+        res.status(200).json(response);
+    } catch (error) {
+        console.error('Error fetching voice state history:', error);
+        res.status(500).json({ error: 'Failed to fetch voice state history' });
     }
 });
 
