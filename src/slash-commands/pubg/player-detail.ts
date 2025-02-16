@@ -71,7 +71,11 @@ const command: SlashCommand = {
         },
         {
           limit: 5,
-          sort: { "data.attributes.createdAt": -1 }
+          sort: { "data.attributes.createdAt": -1 },
+          projection: {
+            "data": 1,
+            "included.$": 1  // This will only return the matched element in the included array
+        }
         }
       );
 

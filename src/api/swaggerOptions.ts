@@ -502,7 +502,7 @@ export const swaggerOptions = {
                                         titleId: { type: 'string' },
                                         shardId: { type: 'string' },
                                         mapName: { type: 'string' },
-                                        createdAt: { type: 'string', format: 'date-time' },
+                                        createdAt: { type: 'string', format: 'date-time', example: '2025-02-16T01:31:19Z' },
                                         isCustomMatch: { type: 'boolean' },
                                         seasonState: { type: 'string' }
                                     }
