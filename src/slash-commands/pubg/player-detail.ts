@@ -57,13 +57,15 @@ const command: SlashCommand = {
         }
       }
 
+      const minSurvivalTimeInSeconds = 120; // 120 seconds = 2 minutes
+
       // Retrieve last 5 matches details
       const last5Matches = mongoHelper.find(MongoCollectionNames.MATCH_COLLECTION,
         {
           "included": {
             $elemMatch: {
               "attributes.stats.playerId": player.id,
-              "attributes.stats.timeSurvived": { $gt: 120 }
+              "attributes.stats.timeSurvived": { $gt: minSurvivalTimeInSeconds }
             }
           }
         },
@@ -112,7 +114,7 @@ const command: SlashCommand = {
       const embed = new EmbedBuilder()
         .setColor(0x2f3136) // Discord dark theme color for better visibility
         .setTitle(`📊 PUBG Player Stats: ${player.attributes.name}`)
-        .setDescription(`Detailed statistics for the last 5 matches`)
+        .setDescription(`Statistics for the last 5 matches (${minSurvivalTimeInSeconds} seconds or more survival time)`)
         .setThumbnail(
           "https://wstatic-prod.pubg.com/web/live/static/favicons/android-icon-192x192.png"
         )
