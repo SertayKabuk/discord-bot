@@ -2,6 +2,7 @@ import express, { Express } from 'express';
 import swaggerUi from 'swagger-ui-express';
 import healthRoutes from './routes/health.js';
 import discordRoutes from './routes/discord.js';
+import pubgRoutes from './routes/pubg.js';
 import swaggerjsdoc from 'swagger-jsdoc';
 import { swaggerOptions } from './swaggerOptions.js';
 
@@ -51,6 +52,7 @@ export class APIServer {
         // Mount routes
         router.use('/health', healthRoutes);
         router.use('/discord', discordRoutes);
+        router.use('/pubg', pubgRoutes);
 
         // Apply base path
         app.use('/api/v1', router);

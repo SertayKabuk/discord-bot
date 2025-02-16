@@ -114,6 +114,15 @@ router.get('/presence-history/filter/guildId/:guildId/startDate/:startDate/endDa
 router.get('/voice-state-history/userId/:userId/startDate/:startDate/endDate/:endDate', validateApiKey, async (req: Request, res: Response) => {
     const { userId, startDate, endDate } = req.params;
 
+    // Validate date format
+    const dateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+    if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
+        res.status(400).json({
+            error: 'Invalid date format. Expected format: YYYY-MM-DDThh:mm:ss.sssZ (e.g. 2025-02-13T18:01:27.495Z)'
+        });
+        return;
+    }
+
     try {
         const data = await dbHelper.prisma.voice_state_logs.findMany({
             where: {

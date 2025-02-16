@@ -89,8 +89,6 @@ const command: SlashCommand = {
                     .setTitle(item?.name ?? "")
                     .setURL(item?.wikiLink ?? "")
                     .setAuthor({ name: item?.name ?? "", iconURL: item?.inspectImageLink ?? "", url: item?.wikiLink ?? "" })
-                    // .setDescription(item?.description ?? "")
-                    // .setThumbnail(item?.inspectImageLink ?? "")
                     .addFields(
                         { name: '\u200B', value: '\u200B' },
                         { name: 'Last Low Price', value: formatter.format(item?.lastLowPrice ?? 0).toString() },

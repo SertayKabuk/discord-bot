@@ -20,6 +20,10 @@ export const swaggerOptions = {
             {
                 name: 'Discord',
                 description: 'Discord-related endpoints for managing guilds, channels, users, and presence data'
+            },
+            {
+                name: 'PUBG',
+                description: 'PUBG-related endpoints for retrieving match details and player statistics'
             }
         ],
         paths: {
@@ -144,6 +148,70 @@ export const swaggerOptions = {
                                         items: {
                                             $ref: '#/components/schemas/VoiceStateHistoryDto'
                                         }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            '/pubg/match-details/filter/playerName/{playerName}/startDate/{startDate}/endDate/{endDate}': {
+                get: {
+                    tags: ['PUBG'],
+                    summary: 'Get PUBG match details by player name and date range',
+                    description: 'Retrieves a list of PUBG matches where the specified player participated within the date range',
+                    parameters: [
+                        {
+                            name: 'playerName',
+                            in: 'path',
+                            required: true,
+                            schema: {
+                                type: 'string'
+                            },
+                            description: 'PUBG player name'
+                        },
+                        {
+                            name: 'startDate',
+                            in: 'path',
+                            required: true,
+                            schema: {
+                                type: 'string',
+                                format: 'date-time'
+                            },
+                            description: 'Start date in ISO format'
+                        },
+                        {
+                            name: 'endDate',
+                            in: 'path',
+                            required: true,
+                            schema: {
+                                type: 'string',
+                                format: 'date-time'
+                            },
+                            description: 'End date in ISO format'
+                        }
+                    ],
+                    security: [{ ApiKeyAuth: [] }],
+                    responses: {
+                        '200': {
+                            description: 'Successful operation',
+                            content: {
+                                'application/json': {
+                                    schema: {
+                                        type: 'array',
+                                        items: {
+                                            $ref: '#/components/schemas/PubgMatchResponse'
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        '500': {
+                            description: 'Server error',
+                            content: {
+                                'application/json': {
+                                    schema: {
+                                        $ref: '#/components/schemas/ErrorResponse'
                                     }
                                 }
                             }
@@ -408,6 +476,100 @@ export const swaggerOptions = {
                             description: 'ISO timestamp of when the voice state change was logged',
                             example: '2025-02-13T18:01:27.495Z'
                         }
+                    }
+                },
+                PubgMatchResponse: {
+                    type: 'object',
+                    required: ['data', 'included', 'links', 'meta'],
+                    properties: {
+                        data: {
+                            type: 'object',
+                            properties: {
+                                type: {
+                                    type: 'string',
+                                    example: 'match'
+                                },
+                                id: {
+                                    type: 'string',
+                                    example: 'a6d8d8f7-a5e5-4f0d-b353-d4b0e668a7ee'
+                                },
+                                attributes: {
+                                    type: 'object',
+                                    properties: {
+                                        matchType: { type: 'string' },
+                                        duration: { type: 'number' },
+                                        gameMode: { type: 'string' },
+                                        titleId: { type: 'string' },
+                                        shardId: { type: 'string' },
+                                        mapName: { type: 'string' },
+                                        createdAt: { type: 'string', format: 'date-time' },
+                                        isCustomMatch: { type: 'boolean' },
+                                        seasonState: { type: 'string' }
+                                    }
+                                }
+                            }
+                        },
+                        included: {
+                            type: 'array',
+                            items: {
+                                $ref: '#/components/schemas/ParticipantIncluded'
+                            }
+                        },
+                        links: {
+                            type: 'object',
+                            properties: {
+                                self: { type: 'string' }
+                            }
+                        },
+                        meta: {
+                            type: 'object'
+                        }
+                    }
+                },
+                ParticipantIncluded: {
+                    type: 'object',
+                    required: ['type', 'id', 'attributes'],
+                    properties: {
+                        type: { type: 'string' },
+                        id: { type: 'string' },
+                        attributes: {
+                            type: 'object',
+                            properties: {
+                                stats: {
+                                    $ref: '#/components/schemas/ParticipantStats'
+                                },
+                                actor: { type: 'string' },
+                                shardId: { type: 'string' }
+                            }
+                        }
+                    }
+                },
+                ParticipantStats: {
+                    type: 'object',
+                    properties: {
+                        DBNOs: { type: 'number' },
+                        assists: { type: 'number' },
+                        boosts: { type: 'number' },
+                        damageDealt: { type: 'number' },
+                        deathType: { type: 'string' },
+                        headshotKills: { type: 'number' },
+                        heals: { type: 'number' },
+                        killPlace: { type: 'number' },
+                        killStreaks: { type: 'number' },
+                        kills: { type: 'number' },
+                        longestKill: { type: 'number' },
+                        name: { type: 'string' },
+                        playerId: { type: 'string' },
+                        revives: { type: 'number' },
+                        rideDistance: { type: 'number' },
+                        roadKills: { type: 'number' },
+                        swimDistance: { type: 'number' },
+                        teamKills: { type: 'number' },
+                        timeSurvived: { type: 'number' },
+                        vehicleDestroys: { type: 'number' },
+                        walkDistance: { type: 'number' },
+                        weaponsAcquired: { type: 'number' },
+                        winPlace: { type: 'number' }
                     }
                 },
                 ErrorResponse: {

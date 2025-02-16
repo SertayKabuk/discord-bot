@@ -114,7 +114,7 @@ const command: SlashCommand = {
       const embed = new EmbedBuilder()
         .setColor(0x2f3136) // Discord dark theme color for better visibility
         .setTitle(`📊 PUBG Player Stats: ${player.attributes.name}`)
-        .setDescription(`Statistics for the last 5 matches (${minSurvivalTimeInSeconds} seconds or more survival time)`)
+        .setDescription(`Last 5 matches (${minSurvivalTimeInSeconds} seconds or more survival time)`)
         .setThumbnail(
           "https://wstatic-prod.pubg.com/web/live/static/favicons/android-icon-192x192.png"
         )
