@@ -3,8 +3,11 @@ import {
   getPlayerDetail,
   getMatchDetail,
   summarizeMatchDetails,
+  PubgMatchResponse,
 } from "../../utils/pubg-helper.js";
 import { SlashCommand } from "../../types.js";
+import mongoHelper from "../../db/mongo-helper.js";
+import { MongoCollectionNames } from "../../constants/mongo-collection-names.js";
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()
@@ -18,7 +21,6 @@ const command: SlashCommand = {
     .setDescription("PUBG hilecilerini incelemek icin.") as SlashCommandBuilder,
   execute: async (interaction) => {
     const nickname = interaction.options.getString("nickname");
-    const otherNickname = interaction.options.getString("other-nickname");
 
     if (!nickname || nickname === null || nickname === "") {
       await interaction.reply({
@@ -41,16 +43,40 @@ const command: SlashCommand = {
 
       const player = playerData.data[0];
 
-      // Retrieve last 5 match details
-      const matchList = player.relationships.matches?.data?.slice(0, 5) || [];
-      const matchDataList = [];
-      for (const matchObj of matchList) {
+      if (player.relationships.matches?.data?.length) {
+
         try {
-          const matchDetail = await getMatchDetail(matchObj.id);
-          matchDataList.push(matchDetail);
-        } catch (e) {
-          console.error(`Error fetching match ${matchObj.id}`, e);
+          await Promise.allSettled(
+            player.relationships.matches.data.map((matchObj) =>
+              getMatchDetail(matchObj.id)
+            )
+          );
         }
+        catch (err) {
+          console.error("Error in background fetching match details", err);
+        }
+      }
+
+      // Retrieve last 5 matches details
+      const last5Matches = mongoHelper.find(MongoCollectionNames.MATCH_COLLECTION,
+        {
+          "included": {
+            $elemMatch: {
+              "attributes.stats.playerId": player.id,
+              "attributes.stats.timeSurvived": { $gt: 120 }
+            }
+          }
+        },
+        {
+          limit: 5,
+          sort: { "data.attributes.createdAt": -1 }
+        }
+      );
+
+      const matchDataList = [];
+
+      for await (const match of last5Matches) {
+        matchDataList.push(match);
       }
 
       const { avgStats, matchSummaries } = summarizeMatchDetails(
@@ -111,7 +137,7 @@ const command: SlashCommand = {
             inline: false
           }
         )
-        .setFooter({ 
+        .setFooter({
           text: `Data refreshed ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
           iconURL: "https://wstatic-prod.pubg.com/web/live/static/favicons/favicon-16x16.png"
         })
@@ -121,23 +147,7 @@ const command: SlashCommand = {
         embeds: [embed],
       });
 
-      // *** Background process: fetch and insert all match details ***
-      // This async process will retrieve all matches without affecting the reply.
-      setTimeout(() => {
-        if (player.relationships.matches?.data?.length) {
-          Promise.allSettled(
-            player.relationships.matches.data.map((matchObj) =>
-              getMatchDetail(matchObj.id)
-            )
-          )
-            .then(() =>
-              console.log("Background fetching of all match details complete")
-            )
-            .catch((err) =>
-              console.error("Error in background fetching match details", err)
-            );
-        }
-      }, 0);
+
     } catch (error: any) {
       await interaction.editReply({
         content: error instanceof Error ? error.message : String(error),

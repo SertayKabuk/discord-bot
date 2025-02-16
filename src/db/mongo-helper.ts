@@ -52,12 +52,24 @@ class MongoHelper {
       );
   }
 
-  async findOne(collectionName: string, query: any): Promise<any> {
+  async findOne(collectionName: string, query: mongoDB.Filter<mongoDB.BSON.Document>, options?: mongoDB.FindOptions): Promise<any> {
     await this.ensureConnected();
     return await this.client
       .db(this.dbName)
       .collection(collectionName)
-      .findOne(query);
+      .findOne(query, options);
+  }
+
+  async *find(collectionName: string, query: mongoDB.Filter<mongoDB.BSON.Document>, options?: mongoDB.FindOptions): AsyncGenerator<any> {
+    await this.ensureConnected();
+    const cursor = this.client
+      .db(this.dbName)
+      .collection(collectionName)
+      .find(query, options);
+
+    for await (const doc of cursor) {
+      yield doc;
+    }
   }
 
   // Updated to accept an idField indicating which property to use for filtering.

@@ -1,3 +1,4 @@
+import { MongoCollectionNames } from "../constants/mongo-collection-names.js";
 import mongoHelper from "../db/mongo-helper.js";
 import { httpClient } from "./http-client.js";
 
@@ -104,8 +105,6 @@ export interface ParticipantIncluded {
   };
 }
 
-const playerCollection = "players";
-const matchCollection = "matches";
 
 export async function getPlayerDetail(
   nickname: string
@@ -126,7 +125,7 @@ export async function getPlayerDetail(
   try {
     if (result.data && result.data.length > 0) {
       // Passing the id from result.data[0].id as parameter.
-      mongoHelper.insertOne(playerCollection, result.data[0].id, result);
+      mongoHelper.insertOne(MongoCollectionNames.PLAYER_COLLECTION, result.data[0].id, result);
     }
   } catch (e) {
     console.error("Error inserting player data", e);
@@ -139,7 +138,7 @@ export async function getMatchDetail(
   matchId: string
 ): Promise<PubgMatchResponse> {
   // Check if match details already exist in MongoDB
-  const cached = await mongoHelper.findOne(matchCollection, { id: matchId });
+  const cached = await mongoHelper.findOne(MongoCollectionNames.MATCH_COLLECTION, { id: matchId });
   if (cached) {
     return cached;
   }
@@ -158,7 +157,7 @@ export async function getMatchDetail(
   try {
     if (result.data) {
       // Passing the id from result.data.id as parameter.
-      mongoHelper.insertOne(matchCollection, result.data.id, result);
+      mongoHelper.insertOne(MongoCollectionNames.MATCH_COLLECTION, result.data.id, result);
     }
   } catch (e) {
     console.error("Error inserting match data", e);
