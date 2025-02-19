@@ -155,6 +155,57 @@ export const swaggerOptions = {
                     }
                 }
             },
+            '/pubg/match-details/filter/matchId/{matchId}': {
+                get: {
+                    tags: ['PUBG'],
+                    summary: 'Get PUBG match details by match ID',
+                    description: 'Retrieves detailed information about a specific PUBG match',
+                    parameters: [
+                        {
+                            name: 'matchId',
+                            in: 'path',
+                            required: true,
+                            schema: {
+                                type: 'string'
+                            },
+                            description: 'PUBG match ID'
+                        }
+                    ],
+                    security: [{ ApiKeyAuth: [] }],
+                    responses: {
+                        '200': {
+                            description: 'Successful operation',
+                            content: {
+                                'application/json': {
+                                    schema: {
+                                        $ref: '#/components/schemas/PubgMatchResponse'
+                                    }
+                                }
+                            }
+                        },
+                        '400': {
+                            description: 'Bad request - matchId is required',
+                            content: {
+                                'application/json': {
+                                    schema: {
+                                        $ref: '#/components/schemas/ErrorResponse'
+                                    }
+                                }
+                            }
+                        },
+                        '500': {
+                            description: 'Server error',
+                            content: {
+                                'application/json': {
+                                    schema: {
+                                        $ref: '#/components/schemas/ErrorResponse'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             '/pubg/match-details/filter/playerName/{playerName}/startDate/{startDate}/endDate/{endDate}': {
                 get: {
                     tags: ['PUBG'],

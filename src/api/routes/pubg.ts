@@ -6,6 +6,25 @@ import { PubgMatchResponse } from '../../utils/pubg-helper.js';
 
 const router = Router();
 
+router.get('/match-details/filter/matchId/:matchId', validateApiKey, async (req: Request, res: Response) => {
+    const { matchId } = req.params;
+
+    if (!matchId) {
+        res.status(400).json({ error: 'matchId is required' });
+        return;
+    }
+
+    try {
+        // Query MongoDB for matches with the specified matchId
+        const match : PubgMatchResponse = await mongoHelper.findOne(MongoCollectionNames.MATCH_COLLECTION, { id: matchId });
+
+        res.status(200).json(match);
+    } catch (error) {
+        console.error('Error fetching PUBG match details:', error);
+        res.status(500).json({ error: 'Failed to fetch PUBG match details' });
+    }
+});
+
 router.get('/match-details/filter/playerName/:playerName/startDate/:startDate/endDate/:endDate', validateApiKey, async (req: Request, res: Response) => {
     const { playerName, startDate, endDate } = req.params;
 
