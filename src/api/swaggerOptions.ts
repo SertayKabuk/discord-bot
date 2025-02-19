@@ -485,14 +485,8 @@ export const swaggerOptions = {
                         data: {
                             type: 'object',
                             properties: {
-                                type: {
-                                    type: 'string',
-                                    example: 'match'
-                                },
-                                id: {
-                                    type: 'string',
-                                    example: 'a6d8d8f7-a5e5-4f0d-b353-d4b0e668a7ee'
-                                },
+                                type: { type: 'string', example: 'match' },
+                                id: { type: 'string', example: 'a6d8d8f7-a5e5-4f0d-b353-d4b0e668a7ee' },
                                 attributes: {
                                     type: 'object',
                                     properties: {
@@ -502,9 +496,44 @@ export const swaggerOptions = {
                                         titleId: { type: 'string' },
                                         shardId: { type: 'string' },
                                         mapName: { type: 'string' },
-                                        createdAt: { type: 'string', format: 'date-time', example: '2025-02-16T01:31:19Z' },
+                                        createdAt: { type: 'string', format: 'date-time' },
                                         isCustomMatch: { type: 'boolean' },
                                         seasonState: { type: 'string' }
+                                    }
+                                },
+                                relationships: {
+                                    type: 'object',
+                                    properties: {
+                                        rosters: {
+                                            type: 'object',
+                                            properties: {
+                                                data: {
+                                                    type: 'array',
+                                                    items: {
+                                                        type: 'object',
+                                                        properties: {
+                                                            type: { type: 'string' },
+                                                            id: { type: 'string' }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        assets: {
+                                            type: 'object',
+                                            properties: {
+                                                data: {
+                                                    type: 'array',
+                                                    items: {
+                                                        type: 'object',
+                                                        properties: {
+                                                            type: { type: 'string' },
+                                                            id: { type: 'string' }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -512,7 +541,11 @@ export const swaggerOptions = {
                         included: {
                             type: 'array',
                             items: {
-                                $ref: '#/components/schemas/ParticipantIncluded'
+                                oneOf: [
+                                    { $ref: '#/components/schemas/Asset' },
+                                    { $ref: '#/components/schemas/Participant' },
+                                    { $ref: '#/components/schemas/Roster' }
+                                ]
                             }
                         },
                         links: {
@@ -526,18 +559,33 @@ export const swaggerOptions = {
                         }
                     }
                 },
-                ParticipantIncluded: {
+                Asset: {
                     type: 'object',
                     required: ['type', 'id', 'attributes'],
                     properties: {
-                        type: { type: 'string' },
+                        type: { type: 'string', enum: ['asset'] },
                         id: { type: 'string' },
                         attributes: {
                             type: 'object',
                             properties: {
-                                stats: {
-                                    $ref: '#/components/schemas/ParticipantStats'
-                                },
+                                name: { type: 'string' },
+                                description: { type: 'string' },
+                                createdAt: { type: 'string', format: 'date-time' },
+                                URL: { type: 'string' }
+                            }
+                        }
+                    }
+                },
+                Participant: {
+                    type: 'object',
+                    required: ['type', 'id', 'attributes'],
+                    properties: {
+                        type: { type: 'string', enum: ['participant'] },
+                        id: { type: 'string' },
+                        attributes: {
+                            type: 'object',
+                            properties: {
+                                stats: { $ref: '#/components/schemas/ParticipantStats' },
                                 actor: { type: 'string' },
                                 shardId: { type: 'string' }
                             }
@@ -570,6 +618,54 @@ export const swaggerOptions = {
                         walkDistance: { type: 'number' },
                         weaponsAcquired: { type: 'number' },
                         winPlace: { type: 'number' }
+                    }
+                },
+                Roster: {
+                    type: 'object',
+                    required: ['type', 'id', 'attributes'],
+                    properties: {
+                        type: { type: 'string', enum: ['roster'] },
+                        id: { type: 'string' },
+                        attributes: {
+                            type: 'object',
+                            properties: {
+                                stats: {
+                                    type: 'object',
+                                    properties: {
+                                        rank: { type: 'number' },
+                                        teamId: { type: 'number' }
+                                    }
+                                },
+                                won: { type: 'string' },
+                                shardId: { type: 'string' }
+                            }
+                        },
+                        relationships: {
+                            type: 'object',
+                            properties: {
+                                team: {
+                                    type: 'object',
+                                    properties: {
+                                        data: { type: 'null' }
+                                    }
+                                },
+                                participants: {
+                                    type: 'object',
+                                    properties: {
+                                        data: {
+                                            type: 'array',
+                                            items: {
+                                                type: 'object',
+                                                properties: {
+                                                    type: { type: 'string', enum: ['participant'] },
+                                                    id: { type: 'string' }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
                 ErrorResponse: {

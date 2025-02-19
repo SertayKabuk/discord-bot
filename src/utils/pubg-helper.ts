@@ -37,36 +37,21 @@ export interface PubgPlayerResponse {
   meta: Record<string, any>;
 }
 
-// New interface for match details response (minimal typing)
-export interface PubgMatchResponse {
-  data: {
-    type: string;
-    id: string;
-    attributes: {
-      matchType: string;
-      duration: number;
-      stats: any;
-      gameMode: string;
-      titleId: string;
-      shardId: string;
-      tags: any;
-      mapName: string;
-      createdAt: string;
-      isCustomMatch: boolean;
-      seasonState: string;
-    };
-    relationships: {
-      rosters: { data: { type: string; id: string }[] };
-      assets: { data: { type: string; id: string }[] };
-    };
-    links: { self: string; schema: string };
-  };
-  included: ParticipantIncluded[];
-  links: { self: string };
-  meta: Record<string, any>;
+// Asset type definition
+export interface AssetAttributes {
+  name: string;
+  description: string;
+  createdAt: string;
+  URL: string;
 }
 
-// New interface for detailed participant stats
+export interface Asset {
+  type: 'asset';
+  id: string;
+  attributes: AssetAttributes;
+}
+
+// Participant type definition
 export interface ParticipantStats {
   DBNOs: number;
   assists: number;
@@ -93,18 +78,75 @@ export interface ParticipantStats {
   winPlace: number;
 }
 
-// New interface for participant included objects in match response
-export interface ParticipantIncluded {
-  type: string;
+export interface Participant {
+  type: 'participant';
   id: string;
   attributes: {
     stats: ParticipantStats;
     actor: string;
     shardId: string;
-    // ...other possible fields...
   };
 }
 
+// Roster type definition
+export interface RosterStats {
+  rank: number;
+  teamId: number;
+}
+
+export interface RosterParticipant {
+  type: 'participant';
+  id: string;
+}
+
+export interface Roster {
+  type: 'roster';
+  id: string;
+  attributes: {
+    stats: RosterStats;
+    won: string;
+    shardId: string;
+  };
+  relationships: {
+    team: {
+      data: null;
+    };
+    participants: {
+      data: RosterParticipant[];
+    };
+  };
+}
+
+export type IncludedType = Asset | Participant | Roster;
+
+// Update PubgMatchResponse to use the new types
+export interface PubgMatchResponse {
+  data: {
+    type: string;
+    id: string;
+    attributes: {
+      matchType: string;
+      duration: number;
+      stats: any;
+      gameMode: string;
+      titleId: string;
+      shardId: string;
+      tags: any;
+      mapName: string;
+      createdAt: string;
+      isCustomMatch: boolean;
+      seasonState: string;
+    };
+    relationships: {
+      rosters: { data: { type: string; id: string }[] };
+      assets: { data: { type: string; id: string }[] };
+    };
+    links: { self: string; schema: string };
+  };
+  included: IncludedType[];
+  links: { self: string };
+  meta: Record<string, any>;
+}
 
 export async function getPlayerDetail(
   nickname: string
@@ -170,7 +212,6 @@ export function summarizeMatchDetails(
   playerId: string,
   matchDataList: PubgMatchResponse[]
 ) {
-  // Aggregate stats and collect match summaries
   let totalKills = 0,
     totalDamage = 0,
     totalSurvived = 0,
@@ -187,8 +228,11 @@ export function summarizeMatchDetails(
 
   for (const matchResponse of matchDataList) {
     const participant = matchResponse.included.find(
-      (element: any) => element.attributes?.stats?.playerId === playerId
+      (element): element is Participant => 
+        element.type === 'participant' && 
+        (element as Participant).attributes.stats.playerId === playerId
     );
+
     if (participant) {
       const stats = participant.attributes.stats;
       totalKills += stats.kills;
@@ -203,7 +247,6 @@ export function summarizeMatchDetails(
       totalWinPlace += stats.winPlace;
       countMatches++;
 
-      // Retrieve additional match details
       const mapName = matchResponse.data.attributes.mapName || "N/A";
       const createdAt = matchResponse.data.attributes.createdAt || "N/A";
 
