@@ -155,7 +155,7 @@ export const swaggerOptions = {
                     }
                 }
             },
-            '/pubg/match-details/filter/matchId/{matchId}': {
+            '/pubg/match-detail/filter/matchId/{matchId}': {
                 get: {
                     tags: ['PUBG'],
                     summary: 'Get PUBG match details by match ID',
@@ -206,10 +206,10 @@ export const swaggerOptions = {
                     }
                 }
             },
-            '/pubg/match-details/filter/playerName/{playerName}/startDate/{startDate}/endDate/{endDate}': {
+            '/pubg/matches/filter/playerName/{playerName}/startDate/{startDate}/endDate/{endDate}': {
                 get: {
                     tags: ['PUBG'],
-                    summary: 'Get PUBG match details by player name and date range',
+                    summary: 'Get PUBG matches by player name and date range',
                     description: 'Retrieves a list of PUBG matches where the specified player participated within the date range',
                     parameters: [
                         {

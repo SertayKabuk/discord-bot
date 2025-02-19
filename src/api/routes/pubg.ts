@@ -6,7 +6,7 @@ import { PubgMatchResponse } from '../../utils/pubg-helper.js';
 
 const router = Router();
 
-router.get('/match-details/filter/matchId/:matchId', validateApiKey, async (req: Request, res: Response) => {
+router.get('/match-detail/filter/matchId/:matchId', validateApiKey, async (req: Request, res: Response) => {
     const { matchId } = req.params;
 
     if (!matchId) {
@@ -25,7 +25,7 @@ router.get('/match-details/filter/matchId/:matchId', validateApiKey, async (req:
     }
 });
 
-router.get('/match-details/filter/playerName/:playerName/startDate/:startDate/endDate/:endDate', validateApiKey, async (req: Request, res: Response) => {
+router.get('/matches/filter/playerName/:playerName/startDate/:startDate/endDate/:endDate', validateApiKey, async (req: Request, res: Response) => {
     const { playerName, startDate, endDate } = req.params;
 
     // Validate date format

@@ -119,7 +119,6 @@ export interface Roster {
 
 export type IncludedType = Asset | Participant | Roster;
 
-// Update PubgMatchResponse to use the new types
 export interface PubgMatchResponse {
   data: {
     type: string;
