@@ -106,7 +106,7 @@ const command: SlashCommand = {
       // Format match summaries with emojis and better organization
       const formattedMatchSummaries = matchSummaries.map((matchData, index) => {
         const [dateTime, ...details] = matchData.summary.split(', ');
-        return `[**Match ${index + 1}** | ${dateTime}](${process.env.UI_BASE_URL}/matches/${matchData.matchId})\n` +
+        return `[**Match ${index + 1}** | ${dateTime}](${process.env.UI_BASE_URL}/matches/${matchData.matchId}) [Replay](https://pubg.sh/${nickname}/steam/${matchData.matchId})\n` +
           details.join('\n').replace('Kills', '🎯 Kills')
             .replace('Damage', '💥 Damage')
             .replace('Survived', '⏱️ Survived')
