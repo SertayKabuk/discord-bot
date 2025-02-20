@@ -223,7 +223,7 @@ export function summarizeMatchDetails(
     totalWinPlace = 0;
 
   let countMatches = 0;
-  const matchSummaries: string[] = [];
+  const matchSummaries: { summary: string; matchId: string }[] = [];
 
   for (const matchResponse of matchDataList) {
     const participant = matchResponse.included.find(
@@ -249,13 +249,14 @@ export function summarizeMatchDetails(
       const mapName = matchResponse.data.attributes.mapName || "N/A";
       const createdAt = matchResponse.data.attributes.createdAt || "N/A";
 
-      matchSummaries.push(
-        `• ${createdAt}, Kills ${
+      matchSummaries.push({
+        matchId: matchResponse.data.id,
+        summary: `• ${createdAt}, Kills ${
           stats.kills
         }, Damage ${stats.damageDealt.toFixed(0)}, Survived ${
           stats.timeSurvived
         }s, Assists ${stats.assists}, Map ${mapName}, Place ${stats.winPlace}`
-      );
+      });
     }
   }
 

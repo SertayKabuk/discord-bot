@@ -65,6 +65,7 @@ declare global {
             GOOGLE_LLM_MODEL: string,
             API_KEY: string,
             SWAGGER_PORT: string,
+            UI_BASE_URL: string,
         }
     }
 
