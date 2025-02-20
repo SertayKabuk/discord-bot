@@ -29,10 +29,10 @@ router.get('/matches/filter/playerName/:playerName/startDate/:startDate/endDate/
     const { playerName, startDate, endDate } = req.params;
 
     // Validate date format
-    const dateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
+    const dateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
     if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
         res.status(400).json({
-            error: 'Invalid date format. Expected format: YYYY-MM-DDThh:mm:ssZ (e.g. 2025-02-13T18:01:27Z)'
+            error: 'Invalid date format. Expected format: YYYY-MM-DDThh:mm:ss.sssZ (e.g. 2025-02-13T18:01:27.495Z)'
         });
         return;
     }
