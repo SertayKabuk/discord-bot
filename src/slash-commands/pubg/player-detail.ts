@@ -90,29 +90,10 @@ const command: SlashCommand = {
         matchDataList
       );
 
-      // Format average stats with emojis and better organization
-      const formattedAvgStats = avgStats.replace(/•/g, '➤')
-        .replace('Kills:', '🎯 Kills:')
-        .replace('Damage:', '💥 Damage:')
-        .replace('Survived:', '⏱️ Survived:')
-        .replace('Assists:', '🤝 Assists:')
-        .replace('Headshot Kills:', '🎯 Headshot Kills:')
-        .replace('DBNOs:', '🔫 DBNOs:')
-        .replace('Walk Distance:', '👣 Walk Distance:')
-        .replace('Ride Distance:', '🚗 Ride Distance:')
-        .replace('Revives:', '❤️ Revives:')
-        .replace('WinPlace:', '🏆 Average Place:');
-
-      // Format match summaries with emojis and better organization
+      // Format match summaries with links
       const formattedMatchSummaries = matchSummaries.map((matchData, index) => {
         const [dateTime, ...details] = matchData.summary.split(', ');
-        return `[**Match ${index + 1}** | ${dateTime}](${process.env.UI_BASE_URL}/matches/${matchData.matchId}) [Replay](https://pubg.sh/${nickname}/${player.attributes.shardId}/${matchData.matchId})\n` +
-          details.join('\n').replace('Kills', '🎯 Kills')
-            .replace('Damage', '💥 Damage')
-            .replace('Survived', '⏱️ Survived')
-            .replace('Assists', '🤝 Assists')
-            .replace('Map', '🗺️ Map')
-            .replace('Place', '🏆 Place');
+        return `[**Match ${index + 1}** | ${dateTime}](${process.env.UI_BASE_URL}/matches/${matchData.matchId}) [Replay](https://pubg.sh/${nickname}/${player.attributes.shardId}/${matchData.matchId})\n${details.join('\n')}`;
       });
 
       const embed = new EmbedBuilder()
@@ -134,20 +115,33 @@ const command: SlashCommand = {
           },
           {
             name: "📈 Average Performance",
-            value: formattedAvgStats,
-            inline: false
-          },
-          {
-            name: "🎮 Recent Matches",
-            value: formattedMatchSummaries.length ? formattedMatchSummaries.join('\n\n') : "No recent matches found",
+            value: avgStats,
             inline: false
           }
-        )
-        .setFooter({
-          text: `Data refreshed ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
-          iconURL: "https://wstatic-prod.pubg.com/web/live/static/favicons/favicon-16x16.png"
-        })
-        .setTimestamp();
+        );
+
+      // Add each match as a separate field
+      if (formattedMatchSummaries.length) {
+        formattedMatchSummaries.forEach((matchSummary, index) => {
+          embed.addFields({
+            name: `🎮 Match ${index + 1}`,
+            value: matchSummary,
+            inline: false
+          });
+        });
+      } else {
+        embed.addFields({
+          name: "🎮 Recent Matches",
+          value: "No recent matches found",
+          inline: false
+        });
+      }
+
+      embed.setFooter({
+        text: `Data refreshed ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`,
+        iconURL: "https://wstatic-prod.pubg.com/web/live/static/favicons/favicon-16x16.png"
+      })
+      .setTimestamp();
 
       await interaction.editReply({
         embeds: [embed],

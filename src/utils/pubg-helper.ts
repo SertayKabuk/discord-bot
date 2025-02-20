@@ -223,12 +223,12 @@ export function summarizeMatchDetails(
     totalWinPlace = 0;
 
   let countMatches = 0;
-  const matchSummaries: { summary: string; matchId: string }[] = [];
 
-  for (const matchResponse of matchDataList) {
+  // Process each match to calculate totals
+  matchDataList.forEach((matchResponse) => {
     const participant = matchResponse.included.find(
-      (element): element is Participant => 
-        element.type === 'participant' && 
+      (element): element is Participant =>
+        element.type === 'participant' &&
         (element as Participant).attributes.stats.playerId === playerId
     );
 
@@ -245,34 +245,57 @@ export function summarizeMatchDetails(
       totalRevives += stats.revives;
       totalWinPlace += stats.winPlace;
       countMatches++;
-
-      const mapName = matchResponse.data.attributes.mapName || "N/A";
-      const createdAt = matchResponse.data.attributes.createdAt || "N/A";
-
-      matchSummaries.push({
-        matchId: matchResponse.data.id,
-        summary: `• ${createdAt}, Kills ${
-          stats.kills
-        }, Damage ${stats.damageDealt.toFixed(0)}, Survived ${
-          stats.timeSurvived
-        }s, Assists ${stats.assists}, Map ${mapName}, Place ${stats.winPlace}`
-      });
     }
-  }
+  });
 
   let avgStats = "N/A";
   if (countMatches > 0) {
-    avgStats = `• Kills: ${(totalKills / countMatches).toFixed(1)}
- • Damage: ${(totalDamage / countMatches).toFixed(1)}
- • Survived: ${(totalSurvived / countMatches).toFixed(1)}s
- • Assists: ${(totalAssists / countMatches).toFixed(1)}
- • Headshot Kills: ${(totalHeadshotKills / countMatches).toFixed(1)}
- • DBNOs: ${(totalDBNOs / countMatches).toFixed(1)}
- • Walk Distance: ${(totalWalkDistance / countMatches).toFixed(1)}
- • Ride Distance: ${(totalRideDistance / countMatches).toFixed(1)}
- • Revives: ${(totalRevives / countMatches).toFixed(1)}
- • WinPlace: ${(totalWinPlace / countMatches).toFixed(1)}`;
+    avgStats = `➤ 🎯 Kills: ${(totalKills / countMatches).toFixed(1)}
+➤ 💥 Damage: ${(totalDamage / countMatches).toFixed(1)}
+➤ ⏱️ Survived: ${(totalSurvived / countMatches).toFixed(1)}s
+➤ 🤝 Assists: ${(totalAssists / countMatches).toFixed(1)}
+➤ 🎯 Headshot Kills: ${(totalHeadshotKills / countMatches).toFixed(1)}
+➤ 🔫 DBNOs: ${(totalDBNOs / countMatches).toFixed(1)}
+➤ 👣 Walk Distance: ${(totalWalkDistance / countMatches).toFixed(1)}
+➤ 🚗 Ride Distance: ${(totalRideDistance / countMatches).toFixed(1)}
+➤ ❤️ Revives: ${(totalRevives / countMatches).toFixed(1)}
+➤ 🏆 Average Place: ${(totalWinPlace / countMatches).toFixed(1)}`;
   }
 
+  const matchSummaries = matchDataList.map((matchResponse) => {
+    const participant = matchResponse.included.find(
+      (element): element is Participant =>
+        element.type === 'participant' &&
+        (element as Participant).attributes.stats.playerId === playerId
+    );
+
+    if (participant) {
+      const stats = participant.attributes.stats;
+      const mapName = friendlyMapName(matchResponse.data.attributes.mapName) || "N/A";
+      const createdAt = matchResponse.data.attributes.createdAt || "N/A";
+
+      return {
+        matchId: matchResponse.data.id,
+        summary: `• ${createdAt}, 🎯 Kills ${stats.kills}, 💥 Damage ${stats.damageDealt.toFixed(0)}, ⏱️ Survived ${stats.timeSurvived}s, 🤝 Assists ${stats.assists}, 🗺️ Map ${mapName}, 🏆 Place ${stats.winPlace}`
+      };
+    }
+    return null;
+  }).filter((summary): summary is { summary: string; matchId: string } => summary !== null);
+
   return { avgStats, matchSummaries };
+}
+
+const friendlyMapName = (name: string) => {
+  if (name === 'Erangel_Main') return 'Erangel'
+  if (name === 'Baltic_Main') return 'Erangel'
+  if (name === 'Desert_Main') return 'Miramar'
+  if (name === 'Savage_Main') return 'Sanhok'
+  if (name === 'DihorOtok_Main') return 'Vikendi'
+  if (name === 'Summerland_Main') return 'Karakin'
+  if (name === 'Chimera_Main') return 'Paramo'
+  if (name === 'Heaven_Main') return 'Haven'
+  if (name === 'Tiger_Main') return 'Taego'
+  if (name === 'Kiki_Main') return 'Deston'
+  if (name === 'Neon_Main') return 'Rondo'
+  return name
 }
