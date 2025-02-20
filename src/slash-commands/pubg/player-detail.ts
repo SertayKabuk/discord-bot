@@ -75,7 +75,7 @@ const command: SlashCommand = {
           projection: {
             "data": 1,
             "included.$": 1  // This will only return the matched element in the included array
-        }
+          }
         }
       );
 
@@ -106,7 +106,7 @@ const command: SlashCommand = {
       // Format match summaries with emojis and better organization
       const formattedMatchSummaries = matchSummaries.map((matchData, index) => {
         const [dateTime, ...details] = matchData.summary.split(', ');
-        return `[**Match ${index + 1}** | ${dateTime}](${process.env.UI_BASE_URL}/matches/${matchData.matchId}) [Replay](https://pubg.sh/${nickname}/steam/${matchData.matchId})\n` +
+        return `[**Match ${index + 1}** | ${dateTime}](${process.env.UI_BASE_URL}/matches/${matchData.matchId}) [Replay](https://pubg.sh/${nickname}/${player.attributes.shardId}/${matchData.matchId})\n` +
           details.join('\n').replace('Kills', '🎯 Kills')
             .replace('Damage', '💥 Damage')
             .replace('Survived', '⏱️ Survived')
@@ -155,6 +155,7 @@ const command: SlashCommand = {
 
 
     } catch (error: any) {
+      console.error("Error fetching player detail:", error);
       await interaction.editReply({
         content: error instanceof Error ? error.message : String(error),
       });
