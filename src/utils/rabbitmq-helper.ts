@@ -1,13 +1,13 @@
-import client, { Connection, Channel } from "amqplib";
+import client, { Channel, ChannelModel } from "amqplib";
 import { randomUUID } from "crypto";
 
 class RabbitMQConnection {
   private static instance: RabbitMQConnection;
-  connection!: Connection;
+  connection!: ChannelModel;
   channel!: Channel;
-  private connected!: Boolean;
+  private connected: boolean = false;
 
-  private constructor() {}
+  private constructor() { }
 
   static getInstance(): RabbitMQConnection {
     if (!RabbitMQConnection.instance) {
@@ -18,10 +18,7 @@ class RabbitMQConnection {
 
   async connect() {
     if (this.connected && this.channel) return;
-    else this.connected = true;
-
     try {
-      console.log(`⌛️ Connecting to Rabbit-MQ Server`);
       this.connection = await client.connect(
         `amqp://${process.env.RABBITMQ_HOST}:5672`
       );
@@ -32,6 +29,7 @@ class RabbitMQConnection {
       });
 
       console.log(`✅ Rabbit MQ Connection is ready`);
+      this.connected = true;
 
       this.channel = await this.connection.createChannel();
 
