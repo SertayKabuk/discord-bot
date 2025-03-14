@@ -39,10 +39,7 @@ const command: SlashCommand = {
     if (!filteredModels) return;
 
     interaction.respond(
-      filteredModels.map((model) => ({
-        name: model.name,
-        value: model.id,
-      }))
+      filteredModels.map((choice) => ({ name: choice.name, value: choice.id, }))
     );
   },
   execute: async (interaction) => {

@@ -36,6 +36,6 @@ export async function fetchFilteredLLMModels() {
   return response?.data.filter(
     (model) =>
       model.pricing.prompt === "0" &&
-      model.architecture.modality === "text->text"
+      (model.architecture.modality === "text->text" || model.architecture.modality === "text+image->text")
   );
 }
