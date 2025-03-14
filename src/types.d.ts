@@ -66,6 +66,7 @@ declare global {
             API_KEY: string,
             SWAGGER_PORT: string,
             UI_BASE_URL: string,
+            ELEVENLABS_API_KEY: string,
         }
     }
 

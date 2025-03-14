@@ -32,6 +32,7 @@
     "chalk": "^5.4.1",
     "discord.js": "^14.18.0",
     "dotenv": "^16.4.7",
+    "elevenlabs": "^1.54.0",
     "express": "^5.0.0",
     "ffmpeg-static": "^5.2.0",
     "langchain": "^0.3.19",
