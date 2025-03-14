@@ -29,13 +29,17 @@ export interface ApiResponse {
   data: Model[];
 }
 
-export async function fetchFilteredLLMModels() {
+export async function fetchFilteredLLMModels(name: string): Promise<Model[]> {
   const response = await httpClient.Get<ApiResponse>(
     process.env.OPEN_ROUTER_URL + "/models"
   );
-  return response?.data.filter(
+
+  const filteredData = response?.data.filter(
     (model) =>
       model.pricing.prompt === "0" &&
+      model.name.includes(name) &&
       (model.architecture.modality === "text->text" || model.architecture.modality === "text+image->text")
   );
+
+  return filteredData || [];
 }

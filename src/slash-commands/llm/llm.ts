@@ -35,11 +35,13 @@ const command: SlashCommand = {
     })
     .setDescription("Chat with LLM!") as SlashCommandBuilder,
   autocomplete: async (interaction) => {
-    const filteredModels = await fetchFilteredLLMModels();
+    const focusedOption = interaction.options.getFocused(true);
+
+    const filteredModels = await fetchFilteredLLMModels(focusedOption.value);
     if (!filteredModels) return;
 
     interaction.respond(
-      filteredModels.map((choice) => ({ name: choice.name, value: choice.id, }))
+      filteredModels.slice(0, 25).map((choice) => ({ name: choice.name, value: choice.id }))
     );
   },
   execute: async (interaction) => {
