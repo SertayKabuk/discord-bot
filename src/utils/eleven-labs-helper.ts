@@ -26,7 +26,7 @@ class ElevenLabsHelper {
 
     async createAudioStreamFromText(text: string): Promise<Readable> {
 
-        const audioStream = await ElevenLabsHelper.instance.client.textToSpeech.convertAsStream('JBFqnCBsd6RMkjVDRZzb', {
+        const audioStream = await ElevenLabsHelper.instance.client.textToSpeech.convert('JBFqnCBsd6RMkjVDRZzb', {
             model_id: 'eleven_multilingual_v2',
             text,
             output_format: 'mp3_44100_128',
