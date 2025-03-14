@@ -17,13 +17,14 @@ const command: SlashCommand = {
     .addStringOption((option) => {
       return option
         .setName("voice_id")
+        .setDescription("Ses modeli?")
         .setMaxLength(100)
         .setRequired(false);
     })
     .setDescription("Soverim!") as SlashCommandBuilder,
   execute: async (interaction) => {
     const input = String(interaction.options.get("input")?.value);
-    const voiceId = interaction.options.getString("voiceId");
+    const voiceId = interaction.options.getString("voice_id");
 
     if (input === null) {
       await interaction.reply({
