@@ -2,6 +2,7 @@ import { MessageFlags, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types.js";
 import { AudioPlayerStatus, createAudioPlayer, createAudioResource, getVoiceConnection } from "@discordjs/voice";
 import elevenLabs from "../../utils/eleven-labs-helper.js";
+import { Readable } from "stream";
 
 const command: SlashCommand = {
   command: new SlashCommandBuilder()
@@ -48,7 +49,10 @@ const command: SlashCommand = {
 
     try {
       
-        const audioStream = await elevenLabs.createAudioStreamFromText(input);
+        const audioBuffer = await elevenLabs.createAudioStreamFromText(input);
+
+        const audioStream = Readable.from(audioBuffer);
+        
         const player = createAudioPlayer();
       
         player.on(AudioPlayerStatus.Playing, () => {

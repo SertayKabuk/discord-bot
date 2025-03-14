@@ -24,9 +24,9 @@ class ElevenLabsHelper {
         return ElevenLabsHelper.instance;
     }
 
-    async createAudioStreamFromText(text: string): Promise<Readable> {
+    async createAudioStreamFromText(text: string): Promise<Buffer> {
 
-        const audioStream = await ElevenLabsHelper.instance.client.textToSpeech.convert('JBFqnCBsd6RMkjVDRZzb', {
+        const audioStream = await ElevenLabsHelper.instance.client.textToSpeech.convertAsStream('JBFqnCBsd6RMkjVDRZzb', {
             model_id: 'eleven_multilingual_v2',
             text,
             output_format: 'mp3_44100_128',
@@ -39,7 +39,14 @@ class ElevenLabsHelper {
             },
         });
 
-        return audioStream;
+        const chunks: Buffer[] = [];
+
+        for await (const chunk of audioStream) {      
+          chunks.push(chunk);      
+        }
+      
+        const content = Buffer.concat(chunks);      
+        return content;
     };
 }
 
