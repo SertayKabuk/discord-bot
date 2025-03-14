@@ -49,7 +49,7 @@ const command: SlashCommand = {
 
     try {
       
-        const audioBuffer = await elevenLabs.createAudioStreamFromText(input, null);
+        const audioBuffer = await elevenLabs.createAudioStreamFromText(input);
 
         const audioStream = Readable.from(audioBuffer);
         
