@@ -24,9 +24,9 @@ class ElevenLabsHelper {
         return ElevenLabsHelper.instance;
     }
 
-    async createAudioStreamFromText(text: string): Promise<Buffer> {
+    async createAudioStreamFromText(text: string, voiceId: string | null): Promise<Buffer> {
 
-        const audioStream = await ElevenLabsHelper.instance.client.textToSpeech.convertAsStream('JBFqnCBsd6RMkjVDRZzb', {
+        const audioStream = await ElevenLabsHelper.instance.client.textToSpeech.convertAsStream(voiceId ?? 'IuRRIAcbQK5AQk1XevPj', {
             model_id: 'eleven_multilingual_v2',
             text,
             output_format: 'mp3_44100_128',

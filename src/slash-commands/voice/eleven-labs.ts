@@ -14,9 +14,16 @@ const command: SlashCommand = {
         .setMaxLength(500)
         .setRequired(true);
     })
+    .addStringOption((option) => {
+      return option
+        .setName("voiceId")
+        .setMaxLength(100)
+        .setRequired(false);
+    })
     .setDescription("Soverim!") as SlashCommandBuilder,
   execute: async (interaction) => {
     const input = String(interaction.options.get("input")?.value);
+    const voiceId = interaction.options.getString("voiceId");
 
     if (input === null) {
       await interaction.reply({
@@ -49,7 +56,7 @@ const command: SlashCommand = {
 
     try {
       
-        const audioBuffer = await elevenLabs.createAudioStreamFromText(input);
+        const audioBuffer = await elevenLabs.createAudioStreamFromText(input, voiceId);
 
         const audioStream = Readable.from(audioBuffer);
         
