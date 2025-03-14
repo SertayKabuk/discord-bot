@@ -16,7 +16,7 @@ const command: SlashCommand = {
     })
     .addStringOption((option) => {
       return option
-        .setName("voiceId")
+        .setName("voice_id")
         .setMaxLength(100)
         .setRequired(false);
     })
