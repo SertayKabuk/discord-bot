@@ -11,6 +11,7 @@ import { Readable } from "stream";
 import { QueueNames } from "../constants/queue-names.js";
 import dbHelper from "../db/db-helper.js";
 import { VoiceStateEventType } from "../constants/voice-state-types.js";
+import elevenLabs from "../utils/eleven-labs-helper.js";
 
 const logVoiceStateToDb = async (oldState: VoiceState, newState: VoiceState, eventType: VoiceStateEventType) => {
   try {
@@ -134,11 +135,20 @@ const event: BotEvent = {
         // Get welcome message
         const input = getWelcomeMessage(newState);
 
-        const base64Wav = await mqConnection.sendToQueue(QueueNames.TTS_INPUT, input);
-        const binaryWav = Buffer.from(base64Wav, "base64");
+        let audioStream = Readable.from(Buffer.from("")); // Initialize with an empty buffer
 
-        // Create readable stream from buffer
-        const audioStream = Readable.from(binaryWav);
+        try {
+          const audioBuffer = await elevenLabs.createAudioStreamFromText(input);
+
+          audioStream = Readable.from(audioBuffer);
+        } catch (error) {
+          console.error("Error sending voice state update:", error);
+          const base64Wav = await mqConnection.sendToQueue(QueueNames.TTS_INPUT, input);
+          const binaryWav = Buffer.from(base64Wav, "base64");
+
+          // Create readable stream from buffer
+          audioStream = Readable.from(binaryWav);
+        }
 
         const player = createAudioPlayer();
         const resource = createAudioResource(audioStream);
