@@ -103,70 +103,6 @@ const logVoiceStateChanges = async (oldState: VoiceState, newState: VoiceState):
   }
 };
 
-const event: BotEvent = {
-  name: Events.VoiceStateUpdate,
-  execute: async (oldState: VoiceState, newState: VoiceState) => {
-    try {
-      // Log all voice state changes
-      await logVoiceStateChanges(oldState, newState);
-
-      const connection = getVoiceConnection(newState.guild.id);
-
-      if (connection && noOneLeft(oldState)) {
-        connection.destroy();
-        console.log(`No one left in the channel. ${newState.guild?.name}:${newState.channel?.name}`);
-      }
-
-      // Check if user joined a voice channel
-      if (!oldState.channelId && newState.channelId) {
-        if (!connection) {
-          return;
-        }
-
-        if (connection.joinConfig.channelId !== newState.channelId) {
-          return;
-        }
-
-        if (connection.state.status !== VoiceConnectionStatus.Ready) {
-          console.log("Voice connection not ready");
-          return;
-        }
-
-        // Get welcome message
-        const input = getWelcomeMessage(newState);
-
-        let audioStream = Readable.from(Buffer.from("")); // Initialize with an empty buffer
-
-        try {
-          const audioBuffer = await elevenLabs.createAudioStreamFromText(input);
-
-          audioStream = Readable.from(audioBuffer);
-        } catch (error) {
-          console.error("Error sending voice state update:", error);
-          const base64Wav = await mqConnection.sendToQueue(QueueNames.TTS_INPUT, input);
-          const binaryWav = Buffer.from(base64Wav, "base64");
-
-          // Create readable stream from buffer
-          audioStream = Readable.from(binaryWav);
-        }
-
-        const player = createAudioPlayer();
-        const resource = createAudioResource(audioStream);
-
-        player.play(resource);
-        connection.subscribe(player);
-
-        // Error handling
-        player.on("error", (error) => {
-          console.error("Error:", error);
-        });
-      }
-    } catch (error) {
-      console.error("Error in voiceStateUpdate:", error);
-    }
-  },
-};
-
 const getWelcomeMessage = (newState: VoiceState): string => {
 
   const welcomeMessages = [
@@ -199,8 +135,74 @@ const getWelcomeMessage = (newState: VoiceState): string => {
   return input;
 };
 
+const event: BotEvent = {
+  name: Events.VoiceStateUpdate,
+  execute: async (oldState: VoiceState, newState: VoiceState) => {
+    try {
+      // Log all voice state changes
+      await logVoiceStateChanges(oldState, newState);
+
+      const connection = getVoiceConnection(newState.guild.id);
+
+      if (connection && noOneLeft(oldState)) {
+        connection.destroy();
+        console.log(`No one left in the channel. ${newState.guild?.name}:${newState.channel?.name}`);
+      }
+
+      // Check if user joined a voice channel
+      if (!oldState.channelId && newState.channelId) {
+        if (!connection) {
+          return;
+        }
+
+        if (connection.joinConfig.channelId !== newState.channelId) {
+          return;
+        }
+
+        if (connection.state.status !== VoiceConnectionStatus.Ready) {
+          console.log("Voice connection not ready");
+          return;
+        }
+
+        // Get welcome message
+        const input = getWelcomeMessage(newState);
+
+        let audioStream: Readable | null = null;
+
+        try {
+          const audioBuffer = await elevenLabs.createAudioStreamFromText(input);
+          audioStream = Readable.from(audioBuffer);
+        } catch (error) {
+          console.error("Elevenlabs voice state change error:", error);
+        }
+
+        if (audioStream === null) {
+          const base64Wav = await mqConnection.sendToQueue(QueueNames.TTS_INPUT, input);
+          const binaryWav = Buffer.from(base64Wav, "base64");
+
+          // Create readable stream from buffer
+          audioStream = Readable.from(binaryWav);
+        }
+
+        const player = createAudioPlayer();
+        const resource = createAudioResource(audioStream);
+
+        player.play(resource);
+        connection.subscribe(player);
+
+        // Error handling
+        player.on("error", (error) => {
+          console.error("Error:", error);
+        });
+      }
+    } catch (error) {
+      console.error("Error in voiceStateUpdate:", error);
+    }
+  },
+};
+
 const noOneLeft = (oldState: VoiceState): boolean => {
-  return oldState.channel?.members.size === 1;
+  return oldState.channel ? oldState.channel.members.size === 1 : false;
 };
 
 export default event;

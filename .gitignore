@@ -131,3 +131,4 @@ config.json
 build/
 output/
 temp/
+.vscode/
