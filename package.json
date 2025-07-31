@@ -31,14 +31,14 @@
     "axios": "^1.11.0",
     "chalk": "^5.4.1",
     "discord.js": "^14.21.0",
-    "dotenv": "^17.2.1",
+    "dotenv": "^16.6.1",
     "elevenlabs": "^1.59.0",
     "express": "^5.1.0",
     "ffmpeg-static": "^5.2.0",
     "langchain": "^0.3.30",
     "mongodb": "^6.18.0",
     "npm-check-updates": "^18.0.2",
-    "openai": "^5.11.0",
+    "openai": "^4.104.0",
     "pg": "^8.16.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
@@ -58,7 +58,7 @@
     "eslint": "^9.32.0",
     "graphql": "^16.11.0",
     "prisma": "^6.13.0",
-    "undici": ">=7.13.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "undici": ">=7.13.0"
   }
 }
