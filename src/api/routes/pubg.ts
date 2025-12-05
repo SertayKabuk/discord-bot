@@ -4,7 +4,7 @@ import mongoHelper from '../../db/mongo-helper.js';
 import { MongoCollectionNames } from '../../constants/mongo-collection-names.js';
 import { PubgMatchResponse } from '../../utils/pubg-helper.js';
 
-const router = Router();
+const router: Router = Router();
 
 router.get('/match-detail/filter/matchId/:matchId', validateApiKey, async (req: Request, res: Response) => {
     const { matchId } = req.params;

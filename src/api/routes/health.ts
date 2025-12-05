@@ -27,7 +27,7 @@ import { Request, Response, Router } from 'express';
  *                   format: date-time
  *                   description: Current server timestamp
  */
-const router = Router();
+const router: Router = Router();
 
 router.get('/', (_req: Request, res: Response) => {
     const data = {

@@ -7,7 +7,7 @@ import { PresenceHistoryDto } from '../dto/presence-history.dto.js';
 import { GuildsResponseDto, UserDto } from '../dto/guilds.dto.js';
 import { VoiceStateHistoryDto } from '../dto/voice-state-history.dto.js';
 
-const router = Router();
+const router: Router = Router();
 
 router.get('/guilds', validateApiKey, async (_req: Request, res: Response) => {
     try {
