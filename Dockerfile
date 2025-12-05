@@ -30,5 +30,6 @@ WORKDIR /usr/src/app
 COPY --from=build /usr/src/app/build ./build
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/package*.json ./
+COPY --from=build /usr/src/app/node_modules/.prisma ./node_modules/.prisma
 
-CMD [ "pnpm", "start" ]
+CMD [ "node", "build/index.js" ]
