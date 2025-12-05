@@ -1,5 +1,8 @@
 # Stage 1: Build the application
-FROM node:22-slim AS build
+FROM node:22-alpine AS build
+
+# sh
+RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.shrc" SHELL="$(which sh)" sh -
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -31,4 +34,4 @@ COPY --from=build /usr/src/app/build ./build
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/package*.json ./
 
-CMD [ "node", "build/index.js" ]
+CMD [ "npm", "start" ]
