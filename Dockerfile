@@ -38,9 +38,9 @@ RUN adduser --system --uid 1001 dcbot
 
 RUN mkdir -p $PNPM_HOME && pnpm add -g prisma && chown -R dcbot:nodejs $PNPM_HOME
 
-# Copy built application, pruned node_modules, and generated prisma client from build stage
-COPY --from=build /app/build ./build
-COPY --from=build /app/node_modules ./node_modules
+# Copy built application, pruned node_modules, and generated prisma client from builder stage
+COPY --from=builder /app/build ./build
+COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
