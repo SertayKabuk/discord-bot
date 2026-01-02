@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM node:lts-alpine AS build
+FROM node:lts-alpine AS base
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
