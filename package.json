@@ -22,6 +22,7 @@
     "@mikro-orm/cli": "^6.6.2",
     "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
+    "@snazzah/davey": "^0.1.9",
     "@types/amqplib": "^0.10.8",
     "@types/express": "^5.0.6",
     "@types/pg": "^8.16.0",
