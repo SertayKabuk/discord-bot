@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM node:22-alpine AS build
+FROM node:lts-alpine AS build
 
 # sh
 RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.shrc" SHELL="$(which sh)" sh -
@@ -25,7 +25,7 @@ RUN npx prisma generate
 RUN pnpm run build
 
 # Stage 2: Create the production image
-FROM node:22-alpine
+FROM node:lts-alpine
 
 WORKDIR /usr/src/app
 
@@ -34,4 +34,4 @@ COPY --from=build /usr/src/app/build ./build
 COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/package*.json ./
 
-CMD [ "npm", "start" ]
+CMD [ "pnpm", "start" ]

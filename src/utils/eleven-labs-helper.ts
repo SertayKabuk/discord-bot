@@ -1,4 +1,5 @@
-import { ElevenLabsClient } from 'elevenlabs';
+import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
+import { Readable } from 'stream';
 
 class ElevenLabsHelper {
     private static instance: ElevenLabsHelper;
@@ -25,28 +26,30 @@ class ElevenLabsHelper {
 
     async createAudioStreamFromText(text: string): Promise<Buffer> {
 
-        const audioStream = await ElevenLabsHelper.instance.client.textToSpeech.convertAsStream('JBFqnCBsd6RMkjVDRZzb', {
-            model_id: 'eleven_multilingual_v2',
+        const audioStream = await ElevenLabsHelper.instance.client.textToSpeech.stream('JBFqnCBsd6RMkjVDRZzb', {
+            modelId: 'eleven_multilingual_v2',
             text,
-            output_format: 'mp3_44100_128',
+            outputFormat: 'mp3_44100_128',
             // Optional voice settings that allow you to customize the output
-            voice_settings: {
+            voiceSettings: {
                 stability: 0,
-                similarity_boost: 1.0,
-                use_speaker_boost: true,
+                similarityBoost: 1.0,
+                useSpeakerBoost: true,
                 speed: 1.0,
             },
         });
 
         const chunks: Buffer[] = [];
 
-        for await (const chunk of audioStream) {      
-          chunks.push(chunk);      
+        // Convert to Node.js Readable stream for async iteration
+        // Type assertion needed due to Web Streams vs Node.js Streams type mismatch
+        for await (const chunk of Readable.from(audioStream as unknown as AsyncIterable<Buffer>)) {
+            chunks.push(chunk);
         }
-      
-        const content = Buffer.concat(chunks);      
+
+        const content = Buffer.concat(chunks);
         return content;
-    };
+    }
 }
 
 const elevenLabs = ElevenLabsHelper.getInstance();
