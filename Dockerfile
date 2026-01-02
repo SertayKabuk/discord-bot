@@ -1,37 +1,51 @@
 # Stage 1: Build the application
 FROM node:lts-alpine AS build
 
-# sh
-RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.shrc" SHELL="$(which sh)" sh -
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+FROM base AS deps
+WORKDIR /app
 
-# Create app directory
-WORKDIR /usr/src/app
-
-# Copy package files and install dependencies (includes dev)
+# Copy package files
 COPY package.json pnpm-lock.yaml ./
+
 RUN pnpm install --frozen-lockfile
 
-# Copy all files and build the application
+FROM base AS builder
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Generate Prisma client
-RUN npx prisma generate
+RUN pnpm prisma generate
 
 # Build the application
-RUN pnpm run build
+RUN pnpm build
 
-# Stage 2: Create the production image
-FROM node:lts-alpine
 
-WORKDIR /usr/src/app
+FROM base AS runner
+WORKDIR /app
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+# Install wget for healthcheck
+RUN apk add --no-cache wget
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 dcbot
+
+RUN mkdir -p $PNPM_HOME && pnpm add -g prisma && chown -R dcbot:nodejs $PNPM_HOME
 
 # Copy built application, pruned node_modules, and generated prisma client from build stage
-COPY --from=build /usr/src/app/build ./build
-COPY --from=build /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/package*.json ./
+COPY --from=build /app/build ./build
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+
+RUN chown -R dcbot:nodejs /app
+
+USER dcbot
 
 CMD [ "pnpm", "start" ]
