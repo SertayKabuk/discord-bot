@@ -1,6 +1,6 @@
 import { ChannelType, MessageFlags, SlashCommandBuilder } from "discord.js";
 import { SlashCommand } from "../../types.js";
-import dbHelper from "../../db/db-helper.js";
+import { prisma } from "../../db/prisma.js";
 import discordClient from "../../utils/discord-client-helper.js";
 
 const DuplicateUrlCheckCommand: SlashCommand = {
@@ -33,7 +33,7 @@ const DuplicateUrlCheckCommand: SlashCommand = {
       return;
     }
 
-    const foundRecord = await dbHelper.prisma.channel_messages.findFirst({
+    const foundRecord = await prisma.channel_messages.findFirst({
       where: {
         guild_id: serverId,
         urls: {

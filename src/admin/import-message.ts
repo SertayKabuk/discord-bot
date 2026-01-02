@@ -1,6 +1,6 @@
 import { ChannelType, Collection, Message } from "discord.js";
 import discordClient from "../utils/discord-client-helper.js";
-import dbHelper from "../db/db-helper.js";
+import { prisma } from "../db/prisma.js";
 import { extractUrls } from "../utils/functions.js";
 
 export const importAllMessages = async () => {
@@ -37,7 +37,7 @@ export const importAllMessages = async () => {
           });
 
           if (validUrls.length > 0) {
-            await dbHelper.prisma.channel_messages.create({
+            await prisma.channel_messages.create({
               data: {
                 guild_id: message.guildId!,
                 channel_id: message.channel.id,

@@ -2,7 +2,7 @@ import { Request, Response, Router } from 'express';
 import { validateApiKey } from '../middleware/auth.js';
 import discordClient from "../../utils/discord-client-helper.js";
 import { ActivityType, ChannelType, GuildMember, PermissionsBitField } from 'discord.js';
-import dbHelper from '../../db/db-helper.js';
+import { prisma } from '../../db/prisma.js';
 import { PresenceHistoryDto } from '../dto/presence-history.dto.js';
 import { GuildsResponseDto, UserDto } from '../dto/guilds.dto.js';
 import { VoiceStateHistoryDto } from '../dto/voice-state-history.dto.js';
@@ -88,7 +88,7 @@ router.get('/presence-history/filter/guildId/:guildId/startDate/:startDate/endDa
             }
         };
 
-        const data = await dbHelper.prisma.presence_logs.findMany({ where });
+        const data = await prisma.presence_logs.findMany({ where });
 
         // Map database records to PresenceHistoryDto
         const response: PresenceHistoryDto[] = data.map(record => ({
@@ -124,7 +124,7 @@ router.get('/voice-state-history/userId/:userId/startDate/:startDate/endDate/:en
     }
 
     try {
-        const data = await dbHelper.prisma.voice_state_logs.findMany({
+        const data = await prisma.voice_state_logs.findMany({
             where: {
                 user_id: userId,
                 created_at: {

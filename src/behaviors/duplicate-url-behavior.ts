@@ -1,6 +1,6 @@
 import { ChannelType, Message, userMention } from "discord.js";
 import { extractUrls } from "../utils/functions.js";
-import dbHelper from "../db/db-helper.js";
+import { prisma } from "../db/prisma.js";
 import discordClient from "../utils/discord-client-helper.js";
 
 export const checkDuplicateUrl = async (message: Message) => {
@@ -10,7 +10,7 @@ export const checkDuplicateUrl = async (message: Message) => {
 
     if (urls) {
       // Find messages with matching URLs using Prisma
-      const foundRecords = await dbHelper.prisma.channel_messages.findMany({
+      const foundRecords = await prisma.channel_messages.findMany({
         where: {
           AND: [
             { guild_id: message.guildId },
@@ -36,7 +36,7 @@ export const checkDuplicateUrl = async (message: Message) => {
           let excluded = false;
           const element = foundRecords[index];
 
-          if(element.user_id === message.author.id) continue;
+          if (element.user_id === message.author.id) continue;
 
           element.urls.forEach((urlItem: { url: string }) => {
             excludedUrls.forEach((excludedUrl) => {
@@ -67,7 +67,7 @@ export const checkDuplicateUrl = async (message: Message) => {
         // Create new message and URLs using Prisma
         const validUrls = urls.filter(url => url.length < 256);
         if (validUrls.length > 0) {
-          await dbHelper.prisma.channel_messages.create({
+          await prisma.channel_messages.create({
             data: {
               guild_id: message.guildId,
               channel_id: message.channel.id,

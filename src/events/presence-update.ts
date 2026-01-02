@@ -1,6 +1,6 @@
 import { ActivityType, Events, Presence } from "discord.js";
 import { BotEvent } from "../types.js";
-import dbHelper from "../db/db-helper.js";
+import { prisma } from "../db/prisma.js";
 
 const event: BotEvent = {
     name: Events.PresenceUpdate,
@@ -11,7 +11,7 @@ const event: BotEvent = {
             const newActivity = `${newPresence.activities[0]?.type !== undefined ? ActivityType[newPresence?.activities[0]?.type] : ''} ${newPresence?.activities[0]?.name || ''} ${newPresence?.activities[0]?.details || ''} ${newPresence?.activities[0]?.state || ''}`;
 
             // Create and save presence log using Prisma
-            await dbHelper.prisma.presence_logs.create({
+            await prisma.presence_logs.create({
                 data: {
                     guild_id: newPresence.guild?.id || '',
                     user_id: newPresence.userId,

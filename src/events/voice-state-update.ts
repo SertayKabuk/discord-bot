@@ -9,13 +9,13 @@ import {
 import mqConnection from "../utils/rabbitmq-helper.js";
 import { Readable } from "stream";
 import { QueueNames } from "../constants/queue-names.js";
-import dbHelper from "../db/db-helper.js";
+import { prisma } from "../db/prisma.js";
 import { VoiceStateEventType } from "../constants/voice-state-types.js";
 import elevenLabs from "../utils/eleven-labs-helper.js";
 
 const logVoiceStateToDb = async (oldState: VoiceState, newState: VoiceState, eventType: VoiceStateEventType) => {
   try {
-    await dbHelper.prisma.voice_state_logs.create({
+    await prisma.voice_state_logs.create({
       data: {
         user_id: newState.member?.user.id || oldState.member?.user.id || "unknown",
         username: newState.member?.user.globalName || oldState.member?.user.globalName || "Unknown User",

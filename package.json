@@ -20,6 +20,7 @@
     "@elevenlabs/elevenlabs-js": "^2.28.0",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@mikro-orm/cli": "^6.6.2",
+    "@prisma/adapter-pg": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "@types/amqplib": "^0.10.8",
     "@types/express": "^5.0.6",
