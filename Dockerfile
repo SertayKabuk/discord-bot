@@ -30,8 +30,8 @@ WORKDIR /app
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
-# Install wget for healthcheck
-RUN apk add --no-cache wget
+# Install wget for healthcheck and ffmpeg for Discord voice
+RUN apk add --no-cache wget ffmpeg
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 dcbot
